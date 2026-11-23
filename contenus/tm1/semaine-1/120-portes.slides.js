@@ -5,7 +5,7 @@
 // v1.2 (11/16/2026) : fiche 130 EX ; fin : exercices, page interactive 121, animation 125.
 module.exports = function (E) {
   const { pres, DATA, NAVY, BLUE, LBLUE, TINT, K, GR, RED, F, MATIERE, CLASSE, ANNEE, CHAMP, slide, txt, card, frame, badge, img, bullets, life,
-    boxTitle, cell, H, BORDER, LINK, NEXTEC, FLOYDL, LZL, exoSlide, pageSlide, videoSlide, nandCEI, squeeze, tailles } = E;
+    boxTitle, cell, H, BORDER, LINK, NEXTEC, FLOYDL, LZL, exoSlide, pageSlide, videoSlide, nandCEI, squeeze, tailles, eqImg, eqName } = E;
 
   const G = DATA.GATES;               // clé : [nom, anglais, qualificatif, négation, nb entrées, règle, CI 74HC, CI 4000, contenu, section, page, lien Floyd, tdv, chrono]
   const T130 = "fiche 130 EX Portes logiques de base";
@@ -132,7 +132,7 @@ module.exports = function (E) {
 
   // ============================== 5 à 11. LES SEPT PORTES
   function gateSlide(k, guided) {
-    const g = G[k], n = g[4], eqImg = `eq_${k}.png`;
+    const g = G[k], n = g[4], eqFile = `eq_${k}.png`;
     const title = `Porte ${g[0]} (${g[1]})`;
     const notes = [
       `Floyd ${g[9]} p. ${g[10]}. Symbole CEI 60617-12 : rectangle, qualificatif « ${g[2]} »` + (g[3] ? ", cercle de négation en sortie." : "."),
@@ -156,7 +156,7 @@ module.exports = function (E) {
     // carte équation, règle, CI
     frame(s, 5.45, 0.95, 4.05, 2.15);
     txt(s, "Équation", { x: 5.6, y: 1.0, w: 1.4, h: 0.3, fontSize: 12, bold: true, color: BLUE });
-    img(s, eqImg, 6.9, 1.0, 2.0, 0.42);
+    eqImg(s, eqFile, g[14], 6.9, 1.0, 2.0, 0.42);
     txt(s, [{ text: "Règle : ", options: { bold: true } }, { text: g[5] }], { x: 5.6, y: 1.5, w: 3.75, h: 0.75, fontSize: 12 });
     txt(s, [{ text: "CI : ", options: { bold: true } }, { text: `${g[6]} · série 4000 : ${g[7]}`, options: { breakLine: true } }, { text: g[8], options: { color: GR } }],
       { x: 5.6, y: 2.3, w: 3.75, h: 0.7, fontSize: 11 });
@@ -201,7 +201,7 @@ module.exports = function (E) {
       s.addImage({ path: `gate_${k}.png`, x: gx + 0.17, y: yy + 0.04, w: 0.58, h: 0.39 });
       const EQD = tailles(/^eq_.*\.png$/), PX = 0.38 / Math.max(...Object.values(EQD).map(v => v[1]));
       const ew = EQD[`eq_${k}.png`][0] * PX, eh = EQD[`eq_${k}.png`][1] * PX;
-      s.addImage({ path: `eq_${k}.png`, x: ex + (colW[2] - ew) / 2, y: yy + (rh - eh) / 2, w: ew, h: eh });
+      s.addImage({ path: `eq_${k}.png`, x: ex + (colW[2] - ew) / 2, y: yy + (rh - eh) / 2, w: ew, h: eh, objectName: eqName(G[k][14], 1600) });
     });
     txt(s, "Colonnes 00 à 11 : valeurs de B et A (B, poids fort, à gauche). Pour NON, seule A compte.", { x: 0.5, y: y0 + hh + 7 * rh + 0.05, w: 9.0, h: 0.25, fontSize: 9.5, italic: true, color: GR });
     card(s, 0.5, 4.95, 9.0, 0.6);

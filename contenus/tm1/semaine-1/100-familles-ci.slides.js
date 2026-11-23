@@ -5,7 +5,7 @@
 // v1.2 tables B A Y, typographie, liens Floyd, cartouche sans éditeur ; v1.3 (11/16/2026) fin de présentation exercices, page, animation.
 module.exports = function (E) {
   const { pres, DATA, NAVY, BLUE, LBLUE, TINT, K, GR, RED, F, MATIERE, CLASSE, ANNEE, CHAMP, slide, txt, card, frame, badge, img, bullets, life,
-    boxTitle, cell, H, BORDER, LINK, NEXTEC, FLOYDL, LZL, exoSlide, pageSlide, videoSlide, nandCEI, squeeze, tailles } = E;
+    boxTitle, cell, H, BORDER, LINK, NEXTEC, FLOYDL, LZL, exoSlide, pageSlide, videoSlide, nandCEI, squeeze, tailles, eqImg, eqName } = E;
   const REF = (label) => NEXTEC("fam", label);
   const FLOYD = (label, p) => FLOYDL(3, label, p);
 
@@ -119,7 +119,7 @@ module.exports = function (E) {
     frame(s, 6.4, 0.95, 3.1, 2.5);
     txt(s, "Symbole CEI : NON-ET", { x: 6.5, y: 1.02, w: 2.9, h: 0.3, fontSize: 12, bold: true, color: BLUE, align: "center" });
     nandCEI(s, 7.4, 1.45, 1);
-    img(s, "eq_NON-ET.png", 7.15, 2.75, 1.7, 0.5);
+    eqImg(s, "eq_NON-ET.png", DATA.GATES["NON-ET"][14], 7.15, 2.75, 1.7, 0.5);
     frame(s, 0.5, 3.75, 5.6, 0.75);
     txt(s, "Même fonction ≠ même brochage ni même alimentation : on vérifie toujours la fiche technique.", { x: 0.65, y: 3.78, w: 5.3, h: 0.7, fontSize: 12.5, bold: true, color: RED, valign: "middle" });
     life(s, 6.4, 3.6, 3.1, 1.95, [

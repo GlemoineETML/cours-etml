@@ -152,6 +152,39 @@ function creer(cfg) {
     s.addImage({ path: file, x, y, w, h });
     return h;
   }
+  // ---------------------------------------------------------------- équations (REGLES 3.2)
+  // eqImg / eqName : une image d'équation (figures.py) qui devient, avec cfg.equations = "omml", une équation PowerPoint
+  // éditable ; l'image reste en secours (mc:Fallback) pour les lecteurs qui ne lisent pas les équations (LibreOffice…).
+  const EQS = [];
+  const OMML = cfg.equations === "omml";
+  function eqName(src, sz, color) {
+    if (!OMML) return undefined;
+    EQS.push({ src, sz: sz || 2400, color: color || NAVY });
+    return "EQ:" + (EQS.length - 1);
+  }
+  function eqImg(s, file, src, x, y, w, maxH, sz, color) {
+    let h = w * RATIO[file];
+    if (maxH && h > maxH) { w = maxH / RATIO[file]; h = maxH; }
+    const o = { path: file, x, y, w, h }, nm = eqName(src, sz, color);
+    if (nm) o.objectName = nm;
+    s.addImage(o);
+    return h;
+  }
+  function remplacerEquations(x, maths) {
+    return x.replace(/<p:pic>((?:(?!<p:pic>)[\s\S])*?)<\/p:pic>/g, (pic, inner) => {
+      const m = inner.match(/<p:cNvPr id="(\d+)" name="EQ:(\d+)"/);
+      if (!m) return pic;
+      const xfrm = inner.match(/<a:xfrm[\s\S]*?<\/a:xfrm>/)[0];
+      const sp = `<p:sp><p:nvSpPr><p:cNvPr id="${m[1]}" name="Équation ${+m[2] + 1}"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>` +
+        `<p:spPr>${xfrm}<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr>` +
+        `<p:txBody><a:bodyPr wrap="none" lIns="0" tIns="0" rIns="0" bIns="0" anchor="ctr"><a:noAutofit/></a:bodyPr><a:lstStyle/>` +
+        `<a:p><a:pPr algn="ctr"/><a14:m><m:oMathPara xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math">` +
+        `<m:oMathParaPr><m:jc m:val="centerGroup"/></m:oMathParaPr>${maths[+m[2]]}</m:oMathPara></a14:m><a:endParaRPr lang="fr-CH"/></a:p></p:txBody></p:sp>`;
+      return `<mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">` +
+        `<mc:Choice xmlns:a14="http://schemas.microsoft.com/office/drawing/2010/main" Requires="a14">${sp}</mc:Choice>` +
+        `<mc:Fallback>${pic.replace(/ name="EQ:\d+"/, ` name="Équation ${+m[2] + 1} (image)"`)}</mc:Fallback></mc:AlternateContent>`;
+    });
+  }
   function bullets(s, items, o, numbered) {
     const runs = items.map((t, i) => ({ text: t, options: { bullet: numbered ? { type: "number" } : { indent: 12 }, breakLine: i < items.length - 1 } }));
     s.addText(expand(runs), Object.assign({ fontFace: F, fontSize: 12, color: K, margin: 0, valign: "top", paraSpaceAfter: 3 }, o));
@@ -252,6 +285,8 @@ function creer(cfg) {
   function ecrire(sortie) {
     return pres.write({ outputType: "nodebuffer" }).then(async (buf) => {
     const zip = await JSZip.loadAsync(buf);
+    const maths = EQS.length ? JSON.parse(require("child_process").execFileSync("python3", [path.join(__dirname, "omml.py")],
+      { input: JSON.stringify(EQS.map(e => [e.src, e.color, e.sz])), cwd: path.join(__dirname, "..") }).toString()) : [];
     for (const name of Object.keys(zip.files).filter(n => /^ppt\/slides\/slide\d+\.xml$/.test(n))) {
       let x = await zip.file(name).async("string");
       x = x.replace(/<a:p>([\s\S]*?)<\/a:p>/g, (m, inner) => {
@@ -259,6 +294,7 @@ function creer(cfg) {
         inner = inner.replace(/<a:pPr\b[^>]*\/>|<a:pPr\b[^>]*>[\s\S]*?<\/a:pPr>/g, (pp) => { if (first) { first = false; return pp; } return ""; });
         return "<a:p>" + inner + "</a:p>";
       });
+      if (maths.length) x = remplacerEquations(x, maths);
       zip.file(name, x);
     }
     const clean = new JSZip();
@@ -268,7 +304,7 @@ function creer(cfg) {
     });
   }
 
-  return { pres, DATA, NAVY, BLUE, LBLUE, TINT, K, GR, RED, F, MATIERE, TOPIC, CLASSE, ANNEE, CHAMP, DATE_US, VERSION, LZURL, LOGO_BAND, TY, TYR, TYROWS, squeeze, R, lines, expand, slide, txt, card, frame, badge, img, bullets, life, boxTitle, cell, H, BORDER, LINK, NEXTEC, FLOYDP, FLOYDL, LZL, KSQ, PNGURI, ARROW, exoSlide, pageSlide, videoSlide, nandCEI, tailles, ecrire };
+  return { pres, DATA, NAVY, BLUE, LBLUE, TINT, K, GR, RED, F, MATIERE, TOPIC, CLASSE, ANNEE, CHAMP, DATE_US, VERSION, LZURL, LOGO_BAND, TY, TYR, TYROWS, squeeze, R, lines, expand, slide, txt, card, frame, badge, img, bullets, life, boxTitle, cell, H, BORDER, LINK, NEXTEC, FLOYDP, FLOYDL, LZL, KSQ, PNGURI, ARROW, exoSlide, pageSlide, videoSlide, nandCEI, tailles, eqImg, eqName, ecrire };
 }
 
 module.exports = creer;

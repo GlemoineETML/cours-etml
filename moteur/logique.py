@@ -68,8 +68,8 @@ PINS = {
 
 def pour_js():
     """Les portes sous la forme utilisée par les présentations et les pages :
-    [nom, anglais, qualificatif, négation, nb entrées, règle, CI 74HC, CI 4000, contenu, section, page, (lien Floyd), tdv, chrono]."""
-    return {k: [v[0], v[1], v[2], v[3], v[4], v[8], v[9], v[10], v[11], v[12], v[13], None, tdv(k), chrono(k)] for k, v in GATES.items()}
+    [nom, anglais, qualificatif, négation, nb entrées, règle, CI 74HC, CI 4000, contenu, section, page, (lien Floyd), tdv, chrono, équation OMML]."""
+    return {k: [v[0], v[1], v[2], v[3], v[4], v[8], v[9], v[10], v[11], v[12], v[13], None, tdv(k), chrono(k), v[7]] for k, v in GATES.items()}
 
 
 def pour_page():

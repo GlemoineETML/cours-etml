@@ -6,7 +6,8 @@ Usage :
   python3 build.py tm1/semaine-1 --seulement fiches     une partie : figures, fiches, animations, pages, presentations, plan
   python3 build.py tm1/semaine-1 --date "11/16/2026 23:04:03"   date figée (pied de page Word), pour comparer avec reference/
   python3 build.py tm1/semaine-1 --plan chemin.xlsx     classeur du plan de cours à mettre à jour (sinon : celui de reference/)
-  python3 build.py tm1/semaine-1 --videos reference     reprend les vidéos de reference/ au lieu de les recalculer (long)
+  python3 build.py tm1/semaine-1 --videos reference     reprend les vidéos de reference/ au lieu de les recalculer (3 min)
+  python3 build.py tm1/semaine-1 --equations omml       équations éditables dans les présentations (image en secours)
 
 Sorties : sortie/<matière>/<semaine>/ ; fichiers intermédiaires (figures, logos, captures) : sortie/_travail/<matière>/<semaine>/.
 Ordre : charte → figures → fiches → animations → couvertures → pages → captures → présentations → plan.
@@ -52,7 +53,7 @@ def presentations(ctx, dossier):
         num = os.path.basename(f)[:3]
         nom = S.fichier(num)
         cfg = {"donnees": fd, "diapositives": f, "titre": nom[len(num) + 1:-5], "version": S.versions[num],
-               "travail": ctx.travail, "videos": ctx.sortie, "sortie": os.path.join(ctx.sortie, nom)}
+               "travail": ctx.travail, "videos": ctx.sortie, "sortie": os.path.join(ctx.sortie, nom), "equations": ctx.equations}
         fc = os.path.join(ctx.travail, f"deck_{num}.json")
         json.dump(cfg, open(fc, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         subprocess.run(["node", os.path.join(RACINE, "moteur", "deck.js"), fc], check=True)
@@ -95,6 +96,8 @@ def main():
     ap.add_argument("--date")
     ap.add_argument("--plan")
     ap.add_argument("--videos", choices=["calculer", "reference"], default="calculer")
+    ap.add_argument("--equations", choices=["image", "omml"], default="image",
+                    help="équations des présentations : image (actuel) ou omml (éditables, image en secours ; à valider dans PowerPoint)")
     a = ap.parse_args()
     etapes = a.seulement.split(",")
     dossier = os.path.join(RACINE, "contenus", a.seance)
@@ -105,6 +108,7 @@ def main():
     os.makedirs(sortie, exist_ok=True)
     maintenant = dt.datetime.strptime(a.date, "%m/%d/%Y %H:%M:%S") if a.date else None
     ctx = Contexte(S, travail, sortie, reference, maintenant)
+    ctx.equations = a.equations
 
     charte.prepare(travail)
     for f in contenus(os.path.join(dossier, "images"), "*.*"):

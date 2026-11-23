@@ -22,8 +22,19 @@ FONCTIONS = ("sin", "cos", "tan", "ln", "log", "exp")
 _SYM_TRIES = sorted(SYM.items(), key=lambda kv: -len(kv[0]))
 
 
+_CIBLE = ["docx"]      # « docx » (w:rPr, taille en demi-points) ou « pptx » (a:rPr, taille en centièmes de point)
+
+
+def _arpr(color, sz, italic):
+    a = '<a:rPr lang="fr-CH" i="%d"%s>' % (1 if italic else 0, ' sz="%d"' % sz if sz else "")
+    if color: a += '<a:solidFill><a:srgbClr val="%s"/></a:solidFill>' % color
+    return a + '<a:latin typeface="Cambria Math" panose="02040503050406030204" pitchFamily="18" charset="0"/></a:rPr>'
+
+
 def _rpr(color, sz, italic, nor=False):
     sty = '<m:rPr>%s<m:sty m:val="%s"/></m:rPr>' % ("<m:nor/>" if nor else "", "i" if italic else "p")
+    if _CIBLE[0] == "pptx":
+        return sty + _arpr(color, sz, italic)
     w = '<w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>'
     if color: w += '<w:color w:val="%s"/>' % color
     if sz: w += '<w:sz w:val="%d"/>' % sz
@@ -35,6 +46,8 @@ def _run(txt, color, sz, italic, nor=False):
 
 
 def _ctrl(color, sz):
+    if _CIBLE[0] == "pptx":
+        return "<m:ctrlPr>%s</m:ctrlPr>" % _arpr(color, sz, True)
     w = '<w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>'
     if color: w += '<w:color w:val="%s"/>' % color
     if sz: w += '<w:sz w:val="%d"/>' % sz
@@ -109,5 +122,16 @@ def _parse(src, color, sz, up=False):
     return "".join(out)
 
 
-def omath(src, color=None, sz=None):
-    return "<m:oMath>%s</m:oMath>" % _parse(src, color, sz)
+def omath(src, color=None, sz=None, cible="docx"):
+    """cible « docx » : sz en demi-points ; cible « pptx » : sz en centièmes de point (2400 = 24 pt)."""
+    _CIBLE[0] = cible
+    try:
+        return "<m:oMath>%s</m:oMath>" % _parse(src, color, sz)
+    finally:
+        _CIBLE[0] = "docx"
+
+
+if __name__ == "__main__":
+    # pour moteur/deck.js : lit [[source, couleur, taille], …] en JSON sur l'entrée standard, écrit la liste des m:oMath (cible pptx)
+    import json, sys
+    print(json.dumps([omath(src, col, sz, "pptx") for src, col, sz in json.load(sys.stdin)]))
