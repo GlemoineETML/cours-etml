@@ -265,11 +265,19 @@ function creer(cfg) {
     life(s, 0.5, 4.65, 9.0, 0.9, lifeLines, 10.5);
     return s;
   }
+  // Phase « contenu » (cfg.medias === false) : la capture, la vidéo et les liens de la page et de la vidéo sont remplacés
+  // par un emplacement provisoire ; ils arrivent en phase « medias » (REGLES 10).
+  const MEDIAS = cfg.medias !== false;
+  function provisoire(s, x, y, w, h, texte) {
+    card(s, x, y, w, h);
+    txt(s, texte, { x: x + 0.2, y, w: w - 0.4, h, fontSize: 12, italic: true, color: GR, align: "center", valign: "middle" });
+  }
   function pageSlide(num, file, url, art, shot, steps, lifeLines, notes) {
     const s = slide(`Page interactive ${num} : comprendre, puis s'exercer`, notes);
     const r = 1290 / 1800, h = 3.42, w = h / r;
     frame(s, 0.5, 0.95, 5.05, 3.56);
-    s.addImage({ path: shot, x: 0.5 + (5.05 - w) / 2, y: 1.02, w, h });
+    if (MEDIAS) s.addImage({ path: shot, x: 0.5 + (5.05 - w) / 2, y: 1.02, w, h });
+    else provisoire(s, 0.6, 1.05, 4.85, 3.36, `Capture de la page interactive ${num} : ajoutée en phase médias.`);
     card(s, 5.75, 0.95, 3.75, 1.22);
     txt(s, "Chaque étape, en deux temps", { x: 5.9, y: 1.0, w: 3.5, h: 0.3, fontSize: 12.5, bold: true, color: BLUE });
     txt(s, [{ text: "Comprendre : ", options: { bold: true } }, { text: "une animation reprise de la présentation, avec pause et étapes.", options: { breakLine: true } },
@@ -278,18 +286,23 @@ function creer(cfg) {
     txt(s, "Les étapes", { x: 5.75, y: 2.25, w: 3.75, h: 0.28, fontSize: 12, bold: true, color: NAVY });
     bullets(s, steps, { x: 5.75, y: 2.55, w: 3.75, h: 1.36, fontSize: 10.5 }, true);
     frame(s, 5.75, 3.95, 3.75, 0.56);
-    s.addText([ARROW, LINK(`Ouvrir la page ${num} sur Teams`, url, file + " : à ouvrir dans Edge ou Chrome"), { text: "", options: { breakLine: true } },
+    if (MEDIAS) s.addText([ARROW, LINK(`Ouvrir la page ${num} sur Teams`, url, file + " : à ouvrir dans Edge ou Chrome"), { text: "", options: { breakLine: true } },
       { text: "version en ligne : ", options: { color: GR, bold: false } }, LINK("artefact claude.ai", art, "Page en ligne (une fois partagée)")],
       { x: 5.9, y: 3.97, w: 3.5, h: 0.52, fontFace: F, fontSize: 10.5, bold: true, color: NAVY, margin: 0, valign: "middle" });
+    else txt(s, "Liens Teams et artefact : phase médias", { x: 5.9, y: 3.97, w: 3.5, h: 0.52, fontSize: 10.5, italic: true, color: GR, valign: "middle" });
     life(s, 0.5, 4.65, 9.0, 0.9, lifeLines, 10.5);
     return s;
   }
   function videoSlide(num, file, url, cover, dur, chapters, lifeLines, notes) {
     const s = slide(`Animation ${num} : toute la leçon en ${dur}`, notes);
     const w = 5.6 * KSQ, h = w * 9 / 16;
-    s.addMedia({ type: "video", path: path.join(cfg.videos, file), x: 0.5, y: 0.95, w, h, cover: PNGURI(cover) });
-    s.addText([{ text: "En diaporama, clique sur l'image pour lancer la vidéo. · ", options: { color: GR } }, LINK("La vidéo sur Teams", url, file)],
-      { x: 0.5, y: 0.95 + h + 0.07, w: 5.6, h: 0.3, fontFace: F, fontSize: 10.5, color: NAVY, margin: 0, valign: "middle" });
+    if (MEDIAS) {
+      s.addMedia({ type: "video", path: path.join(cfg.videos, file), x: 0.5, y: 0.95, w, h, cover: PNGURI(cover) });
+      s.addText([{ text: "En diaporama, clique sur l'image pour lancer la vidéo. · ", options: { color: GR } }, LINK("La vidéo sur Teams", url, file)],
+        { x: 0.5, y: 0.95 + h + 0.07, w: 5.6, h: 0.3, fontFace: F, fontSize: 10.5, color: NAVY, margin: 0, valign: "middle" });
+    } else {
+      provisoire(s, 0.5, 0.95, w, h, `Vidéo ${num} : ajoutée en phase médias.`);
+    }
     txt(s, (NOMBRES[chapters.length] || String(chapters.length)) + " démonstrations", { x: 6.3, y: 0.95, w: 3.2, h: 0.3, fontSize: 12.5, bold: true, color: BLUE });
     chapters.forEach(([t, d], i) => {
       const y = 1.32 + i * 0.6;

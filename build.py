@@ -2,8 +2,10 @@
 """Génère tous les supports d'une séance.
 
 Usage :
-  python3 build.py tm1/semaine-1                        tout
-  python3 build.py tm1/semaine-1 --seulement fiches     une partie : figures, fiches, animations, pages, presentations, plan
+  python3 build.py tm1/semaine-1 --phase contenu        boucles courtes : figures, fiches, plan, présentation provisoire (~15 s)
+  python3 build.py tm1/semaine-1 --phase medias         après validation du contenu : page interactive, vidéos, présentation finale
+  python3 build.py tm1/semaine-1                        tout (--phase tout)
+  python3 build.py tm1/semaine-1 --seulement fiches     étapes précises : figures, fiches, plan, pages, animations, presentations
   python3 build.py tm1/semaine-1 --date "11/16/2026 23:04:03"   date figée (pied de page Word), pour comparer avec reference/
   python3 build.py tm1/semaine-1 --plan chemin.xlsx     classeur du plan de cours à mettre à jour (sinon : celui de reference/)
   python3 build.py tm1/semaine-1 --videos reference     reprend les vidéos de reference/ au lieu de les recalculer (3 min)
@@ -11,7 +13,7 @@ Usage :
   python3 build.py tm1/semaine-1 --sauver               après la génération, copie la sortie dans reference/<séance>/ (à commiter)
 
 Sorties : sortie/<matière>/<semaine>/ ; fichiers intermédiaires (figures, logos, captures) : sortie/_travail/<matière>/<semaine>/.
-Ordre : charte → figures → fiches → animations → couvertures → pages → captures → présentations → plan.
+Ordre : charte → figures → fiches → plan → pages et captures → vidéos et couvertures → présentations (le rapide d'abord).
 """
 import argparse, datetime as dt, functools, glob, json, os, shutil, subprocess, sys
 
@@ -22,7 +24,12 @@ from moteur.seance import Seance
 from moteur.fiche import Doc
 from moteur import logique, page, couverture, plan
 
-ETAPES = ["figures", "fiches", "animations", "pages", "presentations", "plan"]
+ETAPES = ["figures", "fiches", "plan", "pages", "animations", "presentations"]   # rapide d'abord, vidéos juste avant les présentations
+PHASES = {
+    "contenu": ["figures", "fiches", "plan", "presentations"],        # boucles courtes : présentation provisoire, sans vidéo ni page
+    "medias": ["figures", "pages", "animations", "presentations"],    # après validation du contenu : page, artefact, vidéos, présentation finale
+    "tout": ETAPES,
+}
 
 
 class Contexte:
@@ -54,7 +61,8 @@ def presentations(ctx, dossier):
         num = os.path.basename(f)[:3]
         nom = S.fichier(num)
         cfg = {"donnees": fd, "diapositives": f, "titre": nom[len(num) + 1:-5], "version": S.versions[num],
-               "travail": ctx.travail, "videos": ctx.sortie, "sortie": os.path.join(ctx.sortie, nom), "equations": ctx.equations}
+               "travail": ctx.travail, "videos": ctx.sortie, "sortie": os.path.join(ctx.sortie, nom), "equations": ctx.equations,
+               "medias": ctx.medias}
         fc = os.path.join(ctx.travail, f"deck_{num}.json")
         json.dump(cfg, open(fc, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         subprocess.run(["node", os.path.join(RACINE, "moteur", "deck.js"), fc], check=True)
@@ -93,7 +101,9 @@ def contenus(dossier, motif):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("seance")
-    ap.add_argument("--seulement", default=",".join(ETAPES))
+    ap.add_argument("--phase", choices=list(PHASES), default="tout",
+                    help="contenu : figures, fiches, plan, présentation provisoire ; medias : page, vidéos, présentation finale ; tout")
+    ap.add_argument("--seulement", help="étapes précises, séparées par des virgules (remplace --phase)")
     ap.add_argument("--date")
     ap.add_argument("--plan")
     ap.add_argument("--videos", choices=["calculer", "reference"], default="calculer")
@@ -102,7 +112,9 @@ def main():
     ap.add_argument("--equations", choices=["image", "omml"], default="omml",
                     help="équations des présentations : omml (éditables, image en secours ; validé dans PowerPoint le 11/23/2026) ou image")
     a = ap.parse_args()
-    etapes = a.seulement.split(",")
+    etapes = a.seulement.split(",") if a.seulement else PHASES[a.phase]
+    if a.sauver and a.phase == "contenu":
+        sys.exit("--sauver : seulement pour la version finale, après la phase medias")
     dossier = os.path.join(RACINE, "contenus", a.seance)
     S = Seance(dossier)
     travail = os.path.join(RACINE, "sortie", "_travail", a.seance)
@@ -124,17 +136,20 @@ def main():
     if "fiches" in etapes:
         for f in contenus(dossier, "*-ex.py"):
             S.module(os.path.basename(f)[:-3]).produire(ctx)
-    if "animations" in etapes:
-        animations(ctx, dossier, a.videos)
-    if "animations" in etapes or "presentations" in etapes:
-        couvertures(ctx)
-    if "pages" in etapes:
-        pages(ctx, dossier)
-    if "presentations" in etapes:
-        presentations(ctx, dossier)
     if "plan" in etapes and S.plan:
         source = a.plan or os.path.join(reference, S.plan["fichier"])
         plan.produire(S, source, os.path.join(sortie, S.plan["fichier"]))
+    if "pages" in etapes:
+        pages(ctx, dossier)
+    if "animations" in etapes:
+        animations(ctx, dossier, a.videos)
+    ctx.medias = a.phase != "contenu"
+    if "presentations" in etapes:
+        if ctx.medias:
+            couvertures(ctx)
+        presentations(ctx, dossier)
+        if not ctx.medias:
+            print("présentation provisoire : page interactive et vidéo remplacées par des emplacements (phase medias à faire)")
     if a.sauver:
         sauver(sortie, reference)
     else:

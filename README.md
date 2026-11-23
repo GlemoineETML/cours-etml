@@ -21,8 +21,10 @@ sortie/        fichiers générés (non versionné)
 Prérequis : Python 3 (python-docx, openpyxl, matplotlib, Pillow, PyYAML, playwright), Node.js (pptxgenjs, jszip), ffmpeg, LibreOffice avec son module de formules `libreoffice-math` (contrôle : sans lui, les équations n'apparaissent pas dans le rendu).
 
 ```
-python3 build.py tm1/semaine-1                       # tout : figures, fiches, vidéos, pages, présentations, plan
-python3 build.py tm1/semaine-1 --seulement fiches    # une partie : figures, fiches, animations, pages, presentations, plan
+python3 build.py tm1/semaine-1 --phase contenu       # boucles courtes : figures, fiches, plan, présentation provisoire
+python3 build.py tm1/semaine-1 --phase medias        # après validation du contenu : page, vidéos, présentation finale
+python3 build.py tm1/semaine-1                       # tout
+python3 build.py tm1/semaine-1 --seulement fiches    # étapes précises : figures, fiches, plan, pages, animations, presentations
 python3 build.py tm1/semaine-1 --videos reference    # reprend les vidéos de reference/ (sinon 3 min de calcul)
 python3 build.py tm1/semaine-1 --sauver              # version finale validée par Gaël : copie dans reference/ (à commiter)
 python3 controle/controler.py tm1/semaine-1          # validation, conventions, recalcul (verif.py) ; --rendu, --reference
