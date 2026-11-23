@@ -13,7 +13,13 @@ Document de travail pour reprendre la migration dans une nouvelle discussion. À
 - Les fiches (`build_doc_110_familles.py`, `build_doc_130_portes.py`) sont déjà presque du contenu pur, posé sur `docw1.py` ; certains blocs (fiche d'une porte) sont des mises en page propres.
 - `w1_data.py` mélange trois choses : les métadonnées de la séance (classe, LZ, liens), des données de cours réutilisables (portes logiques, niveaux des familles) et la typographie.
 
-## Découpage retenu (à confirmer par Gaël)
+## Pour reprendre dans une nouvelle discussion
+
+1. Rattacher le dépôt `GlemoineETML/cours-etml` (accès en écriture), le cloner, lire `CLAUDE.md`, `REGLES.md` et ce fichier.
+2. Les anciens scripts sont dans les documents du projet claude.ai « Projet ETML cours théorique » (dossier `generateurs/`) : les lire avec l'outil Projects et les copier tels quels dans `archive/generateurs/`.
+3. Suivre le découpage ci-dessous, commit à chaque brique, puis l'étape 6.
+
+## Découpage retenu (validé par Gaël le 11/23/2026 : scripts de contenu, pas de YAML générique)
 
 | Ancien fichier | Nouveau |
 |---|---|
