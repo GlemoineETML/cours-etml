@@ -18,7 +18,7 @@ sys.path.insert(0, RACINE)
 from moteur import charte
 from moteur.seance import Seance
 from moteur.fiche import Doc
-from moteur import logique
+from moteur import logique, page, couverture, plan
 
 ETAPES = ["figures", "fiches", "animations", "pages", "presentations", "plan"]
 
@@ -58,6 +58,32 @@ def presentations(ctx, dossier):
         subprocess.run(["node", os.path.join(RACINE, "moteur", "deck.js"), fc], check=True)
 
 
+def pages(ctx, dossier, captures=True):
+    for f in contenus(dossier, "*-page.html"):
+        num = os.path.basename(f)[:3]
+        html = ctx.sortie_de(num)
+        page.produire(ctx.S, f, f[:-5] + ".js", html, os.path.join(ctx.travail, "logo_white_h.png"), logique.pour_page())
+        if captures:
+            page.capture(html, os.path.join(ctx.travail, f"shot_{num}.png"))
+
+
+def animations(ctx, dossier, mode):
+    for f in contenus(dossier, "*-anim.py"):
+        num = os.path.basename(f)[:3]
+        mp4 = ctx.sortie_de(num)
+        if mode == "reference":
+            shutil.copyfile(os.path.join(ctx.reference, ctx.S.fichier(num)), mp4); print("repris de reference/ :", os.path.basename(mp4))
+        else:
+            ctx.S.module(os.path.basename(f)[:-3]).produire(ctx)
+
+
+def couvertures(ctx):
+    for num, duree in ctx.S.videos.items():
+        mp4 = ctx.sortie_de(num)
+        if os.path.exists(mp4):
+            couverture.produire(mp4, os.path.join(ctx.travail, f"cover_{num}.png"), duree)
+
+
 def contenus(dossier, motif):
     return sorted(glob.glob(os.path.join(dossier, motif)))
 
@@ -91,8 +117,17 @@ def main():
     if "fiches" in etapes:
         for f in contenus(dossier, "*-ex.py"):
             S.module(os.path.basename(f)[:-3]).produire(ctx)
+    if "animations" in etapes:
+        animations(ctx, dossier, a.videos)
+    if "animations" in etapes or "presentations" in etapes:
+        couvertures(ctx)
+    if "pages" in etapes:
+        pages(ctx, dossier)
     if "presentations" in etapes:
         presentations(ctx, dossier)
+    if "plan" in etapes and S.plan:
+        source = a.plan or os.path.join(reference, S.plan["fichier"])
+        plan.produire(S, source, os.path.join(sortie, S.plan["fichier"]))
 
 
 if __name__ == "__main__":

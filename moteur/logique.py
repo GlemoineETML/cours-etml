@@ -70,3 +70,10 @@ def pour_js():
     """Les portes sous la forme utilisée par les présentations et les pages :
     [nom, anglais, qualificatif, négation, nb entrées, règle, CI 74HC, CI 4000, contenu, section, page, (lien Floyd), tdv, chrono]."""
     return {k: [v[0], v[1], v[2], v[3], v[4], v[8], v[9], v[10], v[11], v[12], v[13], None, tdv(k), chrono(k)] for k, v in GATES.items()}
+
+
+def pour_page():
+    """Données des pages interactives (moteur/page.py, __DATA__)."""
+    gates = {k: {"nom": v[0], "en": v[1], "regle": v[8], "ci74": v[9], "ci4000": v[10], "contenu": v[11], "sec": v[12], "page": v[13]}
+             for k, v in GATES.items()}
+    return {"GATES": gates, "ORDER": ORDER, "NIV": NIV, "CHRONO_A": CHRONO_A, "CHRONO_B": CHRONO_B}

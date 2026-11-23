@@ -15,6 +15,14 @@ MODELE = os.path.join(RACINE, "modeles", "Rapport_Simple.dotx")
 NAVY, BLUE, LBLUE, TINT, RED, GREY = "242852", "297FD5", "ACCBF9", "E8EFFB", "EE0000", "5A6478"
 
 
+def logo_blanc_vertical(modele=MODELE):
+    """Logo blanc vertical (RGBA), identique à logo_white_v.png, sans passer par un fichier."""
+    from PIL import Image
+    im = Image.open(io.BytesIO(zipfile.ZipFile(modele).read("word/media/image1.png"))).convert("RGBA")
+    blanc = Image.new("RGBA", im.size, (255, 255, 255, 0)); blanc.putalpha(im.split()[3])
+    return blanc.rotate(90, expand=True)
+
+
 def prepare(dossier, modele=MODELE):
     from PIL import Image
     os.makedirs(dossier, exist_ok=True)
