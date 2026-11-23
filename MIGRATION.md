@@ -58,6 +58,8 @@ La semaine 1 reste identique après ces ajouts (vérifié avec controle/comparer
 
 ## Reste à faire
 
+0. Script d'import du plan de cours (`moteur/cadrage.py`) : lit une ligne de `plans/<module>/PlanDeCours_<module>.xlsx` (PlanDeCours, Export, Couverture) et pré-remplit `seance.yaml`. À écrire dès que le premier plan (TM2) est commité dans `plans/tm2/`, pour le tester sur le vrai fichier.
+
 1. Équations dans PowerPoint : fichier de test validé par Gaël le 11/23/2026, équations éditables par défaut (`--equations omml`).
 2. Bascule du projet claude.ai (étape 7) : remplacer les instructions du projet par un renvoi au dépôt (REGLES.md, CLAUDE.md) ; ne garder dans le projet que la fiche mémoire, les références et les synthèses ; retirer les générateurs du projet une fois la bascule validée.
 3. Test sur une séance neuve : fait (séance de test ci-dessus). Prochaine vraie séance : `contenus/tm1/semaine-2/`, avec les informations de REGLES 2 demandées à Gaël.
