@@ -11,13 +11,14 @@ Usage :
 Sorties : sortie/<matière>/<semaine>/ ; fichiers intermédiaires (figures, logos, captures) : sortie/_travail/<matière>/<semaine>/.
 Ordre : charte → figures → fiches → animations → couvertures → pages → captures → présentations → plan.
 """
-import argparse, datetime as dt, functools, glob, os, shutil, subprocess, sys
+import argparse, datetime as dt, functools, glob, json, os, shutil, subprocess, sys
 
 RACINE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, RACINE)
 from moteur import charte
 from moteur.seance import Seance
 from moteur.fiche import Doc
+from moteur import logique
 
 ETAPES = ["figures", "fiches", "animations", "pages", "presentations", "plan"]
 
@@ -31,6 +32,30 @@ class Contexte:
 
     def sortie_de(self, num):
         return os.path.join(self.sortie, self.S.fichier(num))
+
+
+def donnees_js(ctx):
+    """Données de la séance pour les présentations et les pages (JSON)."""
+    S = ctx.S
+    gates = logique.pour_js()
+    for k, g in gates.items():
+        g[11] = S.floyd_url(3, g[10])
+    return S.pour_js({"GATES": gates, "ORDER": logique.ORDER, "NIV": logique.NIV,
+                      "CHRONO_A": logique.CHRONO_A, "CHRONO_B": logique.CHRONO_B})
+
+
+def presentations(ctx, dossier):
+    S = ctx.S
+    fd = os.path.join(ctx.travail, "donnees.json")
+    json.dump(donnees_js(ctx), open(fd, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    for f in contenus(dossier, "*.slides.js"):
+        num = os.path.basename(f)[:3]
+        nom = S.fichier(num)
+        cfg = {"donnees": fd, "diapositives": f, "titre": nom[len(num) + 1:-5], "version": S.versions[num],
+               "travail": ctx.travail, "videos": ctx.sortie, "sortie": os.path.join(ctx.sortie, nom)}
+        fc = os.path.join(ctx.travail, f"deck_{num}.json")
+        json.dump(cfg, open(fc, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        subprocess.run(["node", os.path.join(RACINE, "moteur", "deck.js"), fc], check=True)
 
 
 def contenus(dossier, motif):
@@ -66,6 +91,8 @@ def main():
     if "fiches" in etapes:
         for f in contenus(dossier, "*-ex.py"):
             S.module(os.path.basename(f)[:-3]).produire(ctx)
+    if "presentations" in etapes:
+        presentations(ctx, dossier)
 
 
 if __name__ == "__main__":
