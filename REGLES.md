@@ -32,7 +32,7 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 ### 3.2 Formules et calculs
 
 - Toute résolution suit le même ordre : formule littérale, puis application numérique avec les unités, puis résultat avec unité et préfixe, puis contrôle (ordre de grandeur, autre méthode ou vérification inverse). Le contrôle est écrit : c'est une compétence évaluée.
-- Formules dans Word : équations natives OMML (voir section 4). Dans les présentations et les pages : même écriture (italiques, indices, fractions), jamais de « * » ni de « / » à la place d'une fraction dans une formule mise en avant.
+- Formules toujours éditables, dans Word comme dans PowerPoint : équations natives OMML (`moteur/omml.py`), jamais en texte simple ni en image. Dans les pages interactives : même écriture (italiques, indices, fractions). Jamais de « * » ni de « / » à la place d'une fraction dans une formule mise en avant.
 - Multiplication : point médian (U = R · I) ; « × » seulement entre deux nombres (3 × 0,2 V).
 
 ### 3.3 Schémas et graphiques
@@ -56,7 +56,7 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 - En-tête : logo à gauche ; « Section électronique » et « Nom - Type - Numéro » à droite. Pied de page sur 3 colonnes : auteur/modification, Page X sur Y, création/impression/nom de fichier.
 - Couleurs ETML (thème T&M) : bleu marine `242852` dominant, bleu `297FD5`, bleu clair `ACCBF9`.
 - Corrigé : réponses en rouge `EE0000`. La fiche élève et le corrigé sortent du même contenu ; on produit toujours les deux.
-- Formules : équations Word natives et éditables (OMML, `moteur/omml.py`), jamais en texte simple ni en image.
+- Formules : équations natives éditables (voir 3.2).
 - Exercices : « N°1 », « N°2 »… suivis directement du titre, sans tabulation ni minutage aligné à droite.
 - Lignes de réponse gardées sur la même page que leur question. Grille d'auto-évaluation dans la fiche élève seulement, pas dans le corrigé.
 
@@ -65,7 +65,7 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 - Même police que le modèle Word (Arial), couleurs ETML, format 16:10 (10 × 6,25 pouces).
 - Bande bleue verticale à droite avec le logo en blanc, « Section électronique » et le numéro de page.
 - Ordre de fin : d'abord les exercices, puis la page interactive, puis la vidéo d'animation.
-- Cartouche des diapositives de titre : classe, année, matière, champ (lien, sauf cours hors réforme), version. Depuis la génération TM1 semaine 1 (11/16/2026), sans ligne « éditeur · date » sur les diapositives (le pied de page Word garde l'auteur).
+- Cartouche de la première diapositive (titre) : classe, année, matière, champ (lien, sauf cours hors réforme), version, et la ligne « Gaël Lemoine · date ». L'éditeur n'apparaît que là et dans le pied de page Word, sur aucune autre diapositive.
 
 ## 6. Liens
 
