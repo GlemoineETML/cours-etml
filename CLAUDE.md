@@ -6,5 +6,7 @@ Générateurs des supports de cours de la section électronique de l'ETML (Gaël
 - Le contenu d'une séance est dans `contenus/<matière>/<semaine>/`. Le code commun est dans `moteur/`. Une retouche se fait dans le contenu, jamais dans un fichier produit.
 - Ne jamais dupliquer un fichier de `moteur/` pour un cas particulier : on étend la brique existante.
 - `sortie/` n'est pas versionné. `reference/` contient les sorties étalons servant à vérifier qu'une modification du moteur ne change rien d'imprévu.
-- Avant de livrer : `controle/`, puis humanizer-fr, puis vérification visuelle de la mise en page.
+- Générer : `python3 build.py <matière>/<semaine>` (voir README.md). Les fichiers sortent dans `sortie/`.
+- Avant de livrer : `python3 controle/controler.py <matière>/<semaine> --rendu`, puis humanizer-fr, puis vérification visuelle de la mise en page (images dans `sortie/_controle/`).
+- Après une modification du moteur : comparer avec `reference/` (`--reference`) et expliquer chaque différence.
 - Répondre en français.

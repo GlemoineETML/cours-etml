@@ -6,47 +6,43 @@ Document de travail pour reprendre la migration dans une nouvelle discussion. À
 
 - Étape 2 : squelette, REGLES.md (validé par Gaël le 11/23/2026), modèle Rapport_Simple et logo.
 - Étape 3 : `reference/tm1/semaine-1/` (fichiers réellement livrés) et `sources/tm1/semaine-1/` (anciens supports pour les figures).
+- Anciens scripts copiés tels quels dans `archive/generateurs/` (les 107 fichiers du dossier `generateurs/` du projet claude.ai).
+- Étape 4 : moteur (`moteur/`), une brique par rôle.
+- Étape 5 : contenus de la semaine 1 TM1 (`contenus/tm1/semaine-1/`).
+- Étape 6 : `build.py`, `controle/` et comparaison avec `reference/` (11/23/2026).
 
-## Constat sur les générateurs de la semaine 1 (11/23/2026)
+## Résultat de la comparaison avec reference/ (avant les écarts voulus)
 
-- Les présentations (`build_deck_familles_ci.js`, `build_deck_120_portes_body.js`) sont mises en page à la main, diapositive par diapositive (positions en pouces). Un format YAML générique ferait perdre cette mise en page.
-- Les fiches (`build_doc_110_familles.py`, `build_doc_130_portes.py`) sont déjà presque du contenu pur, posé sur `docw1.py` ; certains blocs (fiche d'une porte) sont des mises en page propres.
-- `w1_data.py` mélange trois choses : les métadonnées de la séance (classe, LZ, liens), des données de cours réutilisables (portes logiques, niveaux des familles) et la typographie.
+Avec `python3 build.py tm1/semaine-1 --date "11/16/2026 23:04:03"` :
 
-## Pour reprendre dans une nouvelle discussion
+- présentations 100 et 120, fiches 110 EX et 110 EX C, pages 101 et 121 : identiques partie par partie ;
+- fiches 130 EX et 130 EX C : identiques, sauf la date d'impression (1 s d'écart, l'original avait été généré une seconde plus tard) ;
+- vidéos 105 et 125 recalculées : identiques image par image (PSNR infini sur toute la durée) ;
+- plan de cours : identique, sauf trois lignes vides (25 à 27) qu'openpyxl n'écrit plus ;
+- seules les captures des pages interactives (diapositives « Page interactive ») sont refaites : même cadrage, autre instant de l'animation.
 
-1. Rattacher le dépôt `GlemoineETML/cours-etml` (accès en écriture), le cloner, lire `CLAUDE.md`, `REGLES.md` et ce fichier.
-2. Les anciens scripts sont dans les documents du projet claude.ai « Projet ETML cours théorique » (dossier `generateurs/`) : les lire avec l'outil Projects et les copier tels quels dans `archive/generateurs/`.
-3. Suivre le découpage ci-dessous, commit à chaque brique, puis l'étape 6.
+## Écarts appliqués ensuite (un commit chacun)
 
-## Découpage retenu (validé par Gaël le 11/23/2026 : scripts de contenu, pas de YAML générique)
+- Fiches : typographie aussi dans les titres d'exercices, les Titre 1, « Nom : / Date : », les titres A.x et les unités dans les équations (`\u{ ns}`).
+- 110 EX C : grille d'auto-évaluation retirée du corrigé (REGLES 4 : fiche élève seulement).
+- Présentations : ligne « Gaël Lemoine · date · version » au bas de la diapositive de titre (REGLES 5) ; titres de diapositive et NON‑ET avec la typographie de `typo.py`.
+- Pages interactives : typographie française sur le texte affiché du gabarit.
+- Équations éditables dans les présentations : prêtes (`--equations omml`), mais **pas encore par défaut** : à ouvrir dans PowerPoint pour valider (voir ci-dessous).
 
-| Ancien fichier | Nouveau |
-|---|---|
-| en-tête de `build_deck_familles_ci.js` (masques, typo, squeeze, helpers, diapositives exercices/page/vidéo, écriture) | `moteur/deck.js` |
-| corps des présentations (diapositives 1 à n) | `contenus/tm1/semaine-1/100-familles-ci.slides.js`, `120-portes.slides.js` |
-| `docw1.py` | `moteur/fiche.py` |
-| `build_doc_110_familles.py`, `build_doc_130_portes.py` | `contenus/tm1/semaine-1/110-ex.py`, `130-ex.py` |
-| `mathml.py` + `mathml_w1.py` | `moteur/omml.py` (fusion : \bar, \oplus, \sqrt, grecques, indices droits, sin/cos/ln droits) |
-| `prep_modele.py` | `moteur/charte.py` |
-| métadonnées de `w1_data.py` | `contenus/tm1/semaine-1/seance.yaml` |
-| portes, tables de vérité, chronogrammes, niveaux des familles | `moteur/logique.py` |
-| typographie (`typo`, `TY`) | `moteur/typo.py` + `moteur/typo.js` (mêmes règles) |
-| `figs_w1.py` | `moteur/cei.py` (symboles) + `contenus/.../figures.py` (figures propres à la séance) |
-| `build_pages_w1.py`, `pages/common.*`, `tpl_*.html` | `moteur/page.py`, `moteur/pages/` |
-| `lessons_101.js`, `lessons_121.js` | `contenus/tm1/semaine-1/101-page.js`, `121-page.js` |
-| `anim_common.py` | `moteur/anim.py` ; `anim_105.py`, `anim_125.py` → `contenus/.../105-anim.py`, `125-anim.py` |
-| `make_covers.py` | `moteur/couverture.py` |
-| `maj_plan_tm1_s1.py` | `moteur/plan.py` + données dans `seance.yaml` |
-| `rebuild_all_w1.sh` | `build.py` (plus d'assemblage du 120 par découpage de texte) |
+`python3 controle/controler.py tm1/semaine-1` : 0 erreur, 0 avertissement.
 
-Les anciens scripts sont copiés tels quels dans `archive/generateurs/` avant toute modification.
+## Différences avec le découpage prévu
 
-## Écarts voulus par rapport à la référence
-
-- Ligne « Gaël Lemoine · date » sur la diapositive de titre (REGLES 5).
-- Formules éditables (OMML) dans les présentations (REGLES 3.2).
+- `tpl_101.html` et `tpl_121.html` contiennent tout le texte des exercices : ce sont des contenus (`contenus/tm1/semaine-1/101-page.html`, `121-page.html`), pas du moteur. `moteur/pages/` ne garde que `common.css` et `common.js`.
+- Nouvelle brique `moteur/seance.py` : lecture de `seance.yaml` et construction de tous les liens (Teams, Floyd, FutureMEM, nextecmedia).
+- Les données de cours sur les portes logiques (`moteur/logique.py`) servent aussi aux pages interactives (`pour_page()`) et aux présentations (`pour_js()`).
+- Les brochages DIP 14 sont dans `moteur/logique.py` ; `moteur/cei.py` dessine.
+- Le plan de cours : `moteur/plan.py` met à jour les lignes de la semaine dans un classeur existant (par défaut celui de `reference/`, sinon `--plan`). Les modifications de structure faites une fois en novembre (suppression d'une ligne, colonnes F à L, note) sont déjà dans le classeur.
+- Les images reprises des anciens supports sont dans `contenus/tm1/semaine-1/images/` (provenance : `images/SOURCES.md`).
 
 ## Reste à faire
 
-4. Moteur (tableau ci-dessus), 5. Contenus, 6. `build.py` + `controle/` + comparaison avec `reference/`, 7. bascule du projet claude.ai et vrai test sur une nouvelle séance.
+1. **Équations dans PowerPoint** : Gaël ouvre le fichier de test (120 avec `--equations omml`) dans PowerPoint pour Windows. Si les équations s'affichent et se modifient sans message de réparation, passer `--equations` à `omml` par défaut dans `build.py` et régénérer.
+2. Bascule du projet claude.ai (étape 7) : remplacer les instructions du projet par un renvoi au dépôt (REGLES.md, CLAUDE.md) ; ne garder dans le projet que la fiche mémoire, les références et les synthèses ; retirer les générateurs du projet une fois la bascule validée.
+3. Vrai test sur une nouvelle séance (étape 7) : créer `contenus/tm1/semaine-2/` à partir de la semaine 1, avec les informations de REGLES 2 demandées à Gaël.
+4. Typographie des textes écrits par les scripts des pages interactives (leçons animées) : pas encore traitée (seul le texte du gabarit l'est).

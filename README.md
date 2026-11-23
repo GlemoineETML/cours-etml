@@ -18,17 +18,29 @@ sortie/        fichiers générés (non versionné)
 
 ## Utilisation
 
-À compléter à l'étape 6 de la migration :
+Prérequis : Python 3 (python-docx, openpyxl, matplotlib, Pillow, PyYAML, playwright), Node.js (pptxgenjs, jszip), ffmpeg, LibreOffice (contrôle).
 
 ```
-python build.py tm1/semaine-1
+python3 build.py tm1/semaine-1                       # tout : figures, fiches, vidéos, pages, présentations, plan
+python3 build.py tm1/semaine-1 --seulement fiches    # une partie : figures, fiches, animations, pages, presentations, plan
+python3 build.py tm1/semaine-1 --videos reference    # reprend les vidéos de reference/ (sinon 3 min de calcul)
+python3 controle/controler.py tm1/semaine-1          # validation, conventions, recalcul (verif.py) ; --rendu, --reference
+python3 controle/comparer.py produit.pptx etalon.pptx --diff
+```
+
+Une séance = un dossier `contenus/<matière>/<semaine>/` :
+
+```
+seance.yaml               classe, année, matière, champ, date, éditeur, LZ, liens Floyd / nextecmedia / Teams, fichiers, plan
+figures.py                figures de la séance (briques : moteur/cei.py)
+1x0-….slides.js           diapositives d'une présentation (moteur/deck.js)
+1x0-ex.py                 fiche d'exercices et corrigé (moteur/fiche.py)
+1x1-page.html, .js        page interactive : gabarit et leçons animées (moteur/page.py)
+1x5-anim.py               animation (moteur/anim.py)
+verif.py                  recalcul indépendant des résultats (controle/)
+images/                   images reprises d'anciens supports (provenance dans SOURCES.md)
 ```
 
 ## État de la migration
 
-1. Squelette et règles : fait
-2. Référence semaine 1 TM1 : fait (fichiers livrés, 11/23/2026)
-3. Moteur : à faire
-4. Contenus semaine 1 : à faire
-5. Génération et comparaison : à faire
-6. Bascule du projet claude.ai : à faire
+Voir `MIGRATION.md`. Semaine 1 TM1 : régénérée à l'identique de `reference/`, puis écarts voulus appliqués (11/23/2026).
