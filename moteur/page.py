@@ -9,6 +9,7 @@ Champs remplacés dans le gabarit :
   __CLASSE__ __ANNEE__ __MATIERE__ __CHAMPNOM__ __CHAMP__ (lien du champ) __FLNOTE__
   __FL<chapitre>__ (Floyd)  __NX<CLÉ>__ (nextecmedia)  __T<numéro>__ (fichier sur Teams)  __LZ<numéro>__ (lien du LZ)
 Liens FutureMEM sans préfixe microsoft-edge: : dans le navigateur, l'ancre « # » est conservée (REGLES 6).
+Le texte affiché du gabarit reçoit la typographie française (typo_html).
 
 capture() photographie le haut de la page (1200 × 860 px, × 1,5) pour la diapositive « Page interactive » des présentations.
 """
@@ -34,6 +35,14 @@ def champs(S, logo):
     return sub
 
 
+def typo_html(s):
+    """Typographie française (moteur/typo.py) sur le texte affiché, hors balises, scripts et styles.
+    Les textes écrits par les scripts des leçons ne sont pas touchés."""
+    from moteur.typo import typo
+    morceaux = re.split(r"(<script\b.*?</script>|<style\b.*?</style>|<[^>]+>)", s, flags=re.S)
+    return "".join(m if (k % 2 or not m.strip()) else typo(m) for k, m in enumerate(morceaux))
+
+
 def produire(S, gabarit, lecons, sortie, logo_png, donnees):
     css = open(os.path.join(ICI, "pages", "common.css"), encoding="utf-8").read()
     js = open(os.path.join(ICI, "pages", "common.js"), encoding="utf-8").read()
@@ -46,6 +55,7 @@ def produire(S, gabarit, lecons, sortie, logo_png, donnees):
     s = s.replace("__LESSONS__", open(lecons, encoding="utf-8").read() if os.path.exists(lecons) else "")
     for k in sorted(sub, key=len, reverse=True):
         s = s.replace(k, sub[k])
+    s = typo_html(s)
     reste = sorted(set(re.findall(r"__[A-Z0-9]+__", s)))
     assert not reste, (os.path.basename(gabarit), reste)
     open(sortie, "w", encoding="utf-8").write(s)
