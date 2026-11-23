@@ -38,8 +38,10 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 ### 3.3 Schémas et graphiques
 
 - Symboles électriques et logiques : norme CEI 60617. Résistance en rectangle. Portes logiques : symboles européens seulement (rectangle + qualificatif, cercle de négation).
-- Flèche de tension toujours du + vers le − (pointe du côté du potentiel le plus bas). Convention récepteur (courant et tension dans le même sens), sauf pour les sources (convention générateur : sens contraires).
-- Masse (GND) : symbole CEI 60617-2 « masse, châssis » (trait horizontal et trois traits obliques), relié par un court fil à un nœud du circuit, avec l'étiquette « GND ». Le symbole de la terre est réservé à une vraie liaison à la terre.
+- Flèche de tension toujours du + vers le − (pointe du côté du potentiel le plus bas), toujours à droite de son composant et toujours en bleu ETML `297FD5`, nom de la tension à droite de la flèche. Convention récepteur (courant et tension dans le même sens), sauf pour les sources (convention générateur : sens contraires).
+- Nom et valeur d'un composant (R_1, 4k7, 9 V) à gauche de son symbole : la droite est réservée à la flèche de tension.
+- Masse (GND) : un trait horizontal relié par un court fil vertical à un nœud du circuit, avec l'étiquette « GND ». Le symbole de la terre (traits décroissants) est réservé à une vraie liaison à la terre.
+- Ces conventions sont imposées par `moteur/cei.py` (`fleche_tension`, `resistance`, `source_tension`, `masse`) : un nouveau schéma les suit sans réglage.
 - Graphiques : chaque axe porte la grandeur et son unité ; mêmes couleurs ETML que les documents.
 
 ### 3.4 Numérique

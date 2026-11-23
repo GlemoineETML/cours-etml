@@ -144,9 +144,12 @@ def fig_dip(ref):
 
 
 # ------------------------------------------------------------------ circuits (CEI 60617-2 et -4) : résistance, source, masse, terre, flèches
-# Convention (REGLES 3.3) : la flèche de tension va toujours du + vers le − (du potentiel le plus élevé vers le plus bas) ;
-# récepteur : courant et tension dans le même sens ; source : sens contraires (convention générateur).
-def resistance(ax, x, y0, y1, nom=None, valeur=None, lw=2.0, w=0.32, h=0.85, cote="droite", fs=15):
+# Conventions (REGLES 3.3), imposées ici pour toutes les séances :
+# - flèche de tension du + vers le −, toujours à droite de son composant, toujours en bleu ETML ;
+#   récepteur : courant et tension dans le même sens ; source : sens contraires (convention générateur) ;
+# - nom et valeur d'un composant à gauche de son symbole (la droite est réservée à la flèche de tension) ;
+# - masse GND : trait horizontal relié au nœud par un court fil, étiquette « GND ».
+def resistance(ax, x, y0, y1, nom=None, valeur=None, lw=2.0, w=0.32, h=0.85, cote="gauche", fs=15):
     """Résistance verticale (rectangle CEI) entre y0 et y1, avec son nom (R_1) et sa valeur (4k7) à côté."""
     ym = (y0 + y1) / 2
     line(ax, [(x, y0), (x, ym - h / 2)], lw=lw); line(ax, [(x, ym + h / 2), (x, y1)], lw=lw)
@@ -159,28 +162,27 @@ def resistance(ax, x, y0, y1, nom=None, valeur=None, lw=2.0, w=0.32, h=0.85, cot
         ax.text(x + s * (w / 2 + 0.15), ym - 0.22, valeur, ha=ha, va="center", fontsize=fs - 2, color=GR)
 
 
-def source_tension(ax, x, y0, y1, r=0.34, lw=2.0):
-    """Source de tension idéale (CEI 60617-2) : cercle traversé par le conducteur, entre y0 (−) et y1 (+)."""
+def source_tension(ax, x, y0, y1, valeur=None, r=0.34, lw=2.0, fs=13):
+    """Source de tension idéale (CEI 60617-2) : cercle traversé par le conducteur, entre y0 (−) et y1 (+) ; valeur à gauche."""
     ym = (y0 + y1) / 2
+    if valeur:
+        ax.text(x - r - 0.15, ym, valeur, ha="right", va="center", fontsize=fs, color=GR)
     line(ax, [(x, y0), (x, ym - r)], lw=lw); line(ax, [(x, ym + r), (x, y1)], lw=lw)
     ax.add_patch(Circle((x, ym), r, fill=True, fc="white", ec=K, lw=lw, zorder=3))
     line(ax, [(x, ym - r), (x, ym + r)], lw=lw, zorder=4)        # le conducteur traverse le cercle
 
 
 def masse(ax, x, y, etiquette="GND", fil=0.35, lw=2.2, fs=12):
-    """Masse, châssis (CEI 60617-2, 02-15-04) posée sous le nœud (x, y) : court fil vertical, trait horizontal,
-    trois traits obliques en dessous ; étiquette « GND » à droite (None pour l'omettre)."""
+    """Masse GND posée sous le nœud (x, y) : court fil vertical et trait horizontal ; étiquette « GND » à droite."""
     yb = y - fil
     line(ax, [(x, y), (x, yb)], lw=lw)
-    line(ax, [(x - 0.3, yb), (x + 0.3, yb)], lw=lw)
-    for dx in (-0.3, 0.0, 0.3):
-        line(ax, [(x + dx, yb), (x + dx - 0.15, yb - 0.18)], lw=lw - 0.4)
+    line(ax, [(x - 0.3, yb), (x + 0.3, yb)], lw=lw + 0.6)
     if etiquette:
         ax.text(x + 0.42, yb, etiquette, ha="left", va="center", fontsize=fs, color=GR)
 
 
 def terre(ax, x, y, lw=2.2):
-    """Terre (CEI 60617-2, 02-15-01) : trait horizontal et traits décroissants."""
+    """Terre (CEI 60617-2, 02-15-01) : trait horizontal et traits décroissants. Seulement pour une vraie liaison à la terre."""
     for k_, w_ in enumerate((0.3, 0.2, 0.1)):
         line(ax, [(x - w_, y - 0.1 * k_), (x + w_, y - 0.1 * k_)], lw=lw)
 
@@ -193,12 +195,14 @@ def borne(ax, x, y, r=0.07, lw=1.8):
     ax.add_patch(Circle((x, y), r, fill=True, fc="white", ec=K, lw=lw, zorder=4))
 
 
-def fleche_tension(ax, x, y_moins, y_plus, nom, couleur=BLUE, fs=15, cote="droite"):
-    """Flèche de tension verticale, du + (y_plus) vers le − (y_moins) : la pointe est du côté du −."""
-    ax.annotate("", xy=(x, y_moins), xytext=(x, y_plus),
-                arrowprops=dict(arrowstyle="-|>,head_length=0.6,head_width=0.3", color=couleur, lw=2.0))
-    ax.text(x + (0.12 if cote == "droite" else -0.12), (y_moins + y_plus) / 2, nom, ha="left" if cote == "droite" else "right",
-            va="center", fontsize=fs, color=couleur, fontweight="bold")
+def fleche_tension(ax, x, y_moins, y_plus, nom, ecart=0.45, retrait=0.18, fs=15):
+    """Flèche de tension aux bornes du composant d'axe x, entre ses nœuds y_plus (+) et y_moins (−) :
+    toujours à droite du composant (x + ecart), du + vers le −, en bleu ETML, nom à droite de la flèche."""
+    xf = x + ecart
+    s = 1 if y_plus > y_moins else -1
+    ax.annotate("", xy=(xf, y_moins + s * retrait), xytext=(xf, y_plus - s * retrait),
+                arrowprops=dict(arrowstyle="-|>,head_length=0.6,head_width=0.3", color=BLUE, lw=2.0))
+    ax.text(xf + 0.12, (y_moins + y_plus) / 2, nom, ha="left", va="center", fontsize=fs, color=BLUE, fontweight="bold")
 
 
 def fleche_courant(ax, x0, y0, x1, y1, nom, couleur=RED, fs=14, decal=(0.12, 0.0)):

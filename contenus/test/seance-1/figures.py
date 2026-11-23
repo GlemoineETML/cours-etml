@@ -1,37 +1,34 @@
 # -*- coding: utf-8 -*-
 """Figures de la séance de test « Diviseur de tension » : schémas CEI (moteur/cei.py) et équations en image (présentation)."""
 import matplotlib.pyplot as plt
-from moteur.cei import (save, line, resistance, source_tension, masse, noeud, borne, fleche_tension, fleche_courant, fig_eq_txt,
-                        K, NAVY, BLUE, RED, GR)
+from moteur.cei import save, line, resistance, source_tension, masse, noeud, borne, fleche_tension, fleche_courant, fig_eq_txt
 
 
 def diviseur(nom, r1=("$R_1$", None), r2=("$R_2$", None), u=("$U$", None), u2="$U_2$", charge=None, courant="$I$", u1=None):
-    """Diviseur de tension alimenté par une source ; charge = (nom, valeur) ajoute une résistance de charge en parallèle sur R2."""
-    larg = 6.4 if charge else 5.0
+    """Diviseur de tension alimenté par une source ; charge = (nom, valeur) ajoute une résistance de charge en parallèle sur R2.
+    Conventions de moteur/cei.py : noms et valeurs à gauche des composants, flèches de tension à droite, en bleu."""
+    larg = 6.6 if charge else 5.2
     fig, ax = plt.subplots(figsize=(larg * 0.95, 4.6)); ax.axis("off"); ax.set_aspect("equal")
-    top, bas, xs, xr, xo = 4.0, 0.0, 0.0, 2.2, 3.7
-    source_tension(ax, xs, bas, top)
-    line(ax, [(xs, top), (xr, top)]); line(ax, [(xs, bas), (xo + (1.4 if charge else 0), bas)])
+    top, bas, xs, xr, xo = 4.0, 0.0, 0.0, 2.4, 3.9
+    xd = xo + (1.4 if charge else 0)                         # extrémité droite du circuit
+    source_tension(ax, xs, bas, top, u[1])
+    line(ax, [(xs, top), (xr, top)]); line(ax, [(xs, bas), (xd, bas)])
     resistance(ax, xr, 2.0, top, *r1)
     resistance(ax, xr, bas, 2.0, *r2)
     noeud(ax, xr, 2.0); noeud(ax, xr, bas)
-    line(ax, [(xr, 2.0), (xo + (1.4 if charge else 0), 2.0)])
+    line(ax, [(xr, 2.0), (xd, 2.0)])
     if charge:
-        noeud(ax, xo, 2.0); noeud(ax, xo, bas)
-        resistance(ax, xo + 1.4, bas, 2.0, *charge)
-        fleche_tension(ax, xo + 0.45, bas + 0.2, 2.0 - 0.2, u2)
+        resistance(ax, xd, bas, 2.0, *charge)
     else:
         borne(ax, xo, 2.0); borne(ax, xo, bas)
-        fleche_tension(ax, xo + 0.25, bas + 0.2, 2.0 - 0.2, u2)
+    fleche_tension(ax, xs, bas, top, u[0])
     if u1:
-        fleche_tension(ax, xr - 0.75, 2.2, top - 0.2, u1, couleur=GR, cote="gauche")
-    fleche_tension(ax, xs - 0.6, bas + 0.4, top - 0.4, u[0], couleur=NAVY, cote="gauche")
-    if u[1]:
-        ax.text(xs + 0.5, (top + bas) / 2, u[1], ha="left", va="center", fontsize=13, color=GR)
+        fleche_tension(ax, xr, 2.0, top, u1)
+    fleche_tension(ax, xr, bas, 2.0, u2)
     if courant:
-        fleche_courant(ax, 0.7, top, 1.5, top, courant, decal=(0.0, 0.3))
+        fleche_courant(ax, 1.0, top, 1.7, top, courant, decal=(0.0, 0.3))
     masse(ax, xr, bas)                                         # sous le nœud du bas de R2
-    ax.set_xlim(-1.6, xo + (2.6 if charge else 1.3)); ax.set_ylim(-0.85, top + 0.6)
+    ax.set_xlim(-1.3, xd + 0.9); ax.set_ylim(-0.6, top + 0.6)
     save(fig, nom)
 
 
