@@ -33,6 +33,17 @@ def _formes(xml):
             gras = 'b="1"' in p
             paras.append((texte, max(tailles), gras, p.count("<a:br/>")))
         texte = " ".join(t for t, *_ in paras).strip()
+        if "<m:oMath" in bloc:
+            # équation éditable : PowerPoint l'affiche à sa taille de police (sz), centrée dans le cadre, sans la réduire ;
+            # le rendu LibreOffice montre l'image de secours, ajustée au cadre : seule cette estimation voit le débordement.
+            sz = max([int(t) / 100 for t in re.findall(r'<a:rPr[^>]*\bsz="(\d+)"', bloc)] or [18.0])
+            car = len("".join(re.findall(r"<m:t[^>]*>([^<]*)</m:t>", bloc)))
+            fr = bloc.count("<m:f>")
+            hn = sz * (2.6 if fr else 1.3)                        # une fraction : numérateur + dénominateur ≈ 2,6 corps
+            ln = sz * 0.55 * car * (0.6 if fr else 1.0)           # dans une fraction, numérateur et dénominateur se superposent
+            cx, cy = x + l / 2, y + h / 2
+            out.append(("eq", x, y, l, h, "équation", paras, False, (cx - max(l, ln) / 2, cy - max(h, hn) / 2, max(l, ln), max(h, hn), ln, hn)))
+            continue
         out.append((genre, x, y, l, h, texte, paras, "<a:normAutofit" in bloc or "<a:spAutoFit" in bloc))
     return out
 
@@ -69,9 +80,14 @@ def controler_pptx(chemin):
     diapos = sorted((int(m.group(1)), n) for n in z.namelist() if (m := re.match(r"ppt/slides/slide(\d+)\.xml$", n)))
     for k, n in diapos:
         formes = _formes(z.read(n).decode("utf-8"))
+        for f in [f for f in formes if f[0] == "eq"]:
+            ln, hn = f[8][4], f[8][5]
+            if hn > f[4] + 4 or ln > f[3] + 4:
+                A.append(f"{nom} (diapo {k}) : équation plus grande que son cadre dans PowerPoint (≈ {ln:.0f} × {hn:.0f} pt pour {f[3]:.0f} × {f[4]:.0f} pt)")
+        formes = [(("sp",) + f[8][:4] + (f"équation {i + 1}", f[6], True)) if f[0] == "eq" else f for i, f in enumerate(formes)]
         textes = [f for f in formes if f[0] == "sp" and f[5]]
         for g, x, y, l, h, t, paras, retrecir in textes:
-            if retrecir or t == "équation":
+            if retrecir:
                 continue
             besoin = _hauteur_texte(paras, l - 2)
             if besoin > h + 6:

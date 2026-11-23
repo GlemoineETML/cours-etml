@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>121 Diode et diode Zener</title>
+<style>
+:root {
+  /* Charte ETML : marine, bleu, bleu clair. Mise en page : une colonne de fiches d'exercices, chacune avec sa situation réelle. */
+  --navy: #242852; --blue: #297FD5; --light: #ACCBF9; --tint: #E8EFFB;
+  --bg: #F6F8FC; --surface: #FFFFFF; --ink: #1D2140; --muted: #5A6478; --line: #C9D2E3;
+  --ok: #1E8C46; --ok-bg: #E2F4E8; --bad: #C81E1E; --bad-bg: #FBE4E4; --warn: #C86A10; --warn-bg: #FDF0E0;
+  --one: #297FD5; --zero: #242852; --head: #242852;
+  --font-body: Arial, "Liberation Sans", Helvetica, sans-serif;
+  --font-mono: "IBM Plex Mono", "Liberation Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11132A; --surface: #1A1D3A; --ink: #E6EAF6; --muted: #A3ACC4; --line: #343A66; --tint: #232852;
+    --ok: #4CC27A; --ok-bg: #173A27; --bad: #F06A6A; --bad-bg: #3D1C24; --warn: #F0A050; --warn-bg: #3A2A18;
+    --one: #5AA2EA; --zero: #ACCBF9; --head: #ACCBF9; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11132A; --surface: #1A1D3A; --ink: #E6EAF6; --muted: #A3ACC4; --line: #343A66; --tint: #232852;
+  --ok: #4CC27A; --ok-bg: #173A27; --bad: #F06A6A; --bad-bg: #3D1C24; --warn: #F0A050; --warn-bg: #3A2A18;
+  --one: #5AA2EA; --zero: #ACCBF9; --head: #ACCBF9; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--font-body); }
+a { color: var(--blue); }
+a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--light); outline-offset: 2px; }
+.top { background: #242852; color: #fff; }
+.top .in { max-width: 1060px; margin: 0 auto; padding: 18px 20px 20px; display: grid; grid-template-columns: 1fr auto; gap: 8px 24px; align-items: center; }
+.top img { height: 30px; grid-column: 2; grid-row: 1 / span 2; }
+.top .eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #ACCBF9; font-weight: 700; }
+.top h1 { margin: 2px 0 0; font-size: clamp(24px, 3.4vw, 34px); line-height: 1.15; text-wrap: balance; }
+.top p { grid-column: 1 / -1; margin: 6px 0 0; color: #D7E2F8; max-width: 70ch; }
+.bar { position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.bar .in { max-width: 1060px; margin: 0 auto; padding: 10px 20px; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 14px; }
+.bar nav { display: flex; flex-wrap: wrap; gap: 6px; }
+.bar nav a { text-decoration: none; padding: 3px 10px; border-radius: 999px; background: var(--tint); color: var(--head); font-weight: 700; }
+.score { margin-left: auto; font-weight: 700; color: var(--head); font-variant-numeric: tabular-nums; }
+.score .dots { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle; }
+.score .dots i { width: 12px; height: 12px; border-radius: 50%; background: var(--line); display: inline-block; }
+.score .dots i.on { background: var(--ok); }
+main { max-width: 1060px; margin: 0 auto; padding: 20px 20px 40px; display: grid; gap: 22px; }
+.ex { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: grid; gap: 14px; scroll-margin-top: 60px; }
+.ex > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.ex h2 { margin: 0; font-size: 22px; color: var(--head); text-wrap: balance; }
+.num { display: inline-grid; place-items: center; min-width: 38px; height: 30px; padding: 0 8px; border-radius: 8px; background: #242852; color: #fff; font-weight: 700; font-size: 15px; }
+.refs { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.situ { border-left: 5px solid var(--blue); background: var(--tint); padding: 10px 14px; border-radius: 0 10px 10px 0; max-width: 78ch; }
+.situ b { color: var(--head); }
+.q { margin: 0; font-weight: 700; max-width: 78ch; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; align-items: start; }
+.panel { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--bg); }
+.panel h3 { margin: 0 0 8px; font-size: 15px; color: var(--head); text-transform: uppercase; letter-spacing: .05em; }
+button { font: inherit; cursor: pointer; }
+.btn { border: 0; border-radius: 10px; padding: 9px 16px; font-weight: 700; background: var(--blue); color: #fff; }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 2px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 5px 12px; font-weight: 700; font-size: 14px; }
+.chip[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+select, input[type="number"] { max-width: 100%; font: inherit; padding: 6px 8px; border-radius: 8px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); }
+.fb { border-radius: 10px; padding: 10px 14px; display: none; max-width: 80ch; }
+.fb.ok { display: block; background: var(--ok-bg); border: 2px solid var(--ok); }
+.fb.bad { display: block; background: var(--bad-bg); border: 2px solid var(--bad); }
+.fb.info { display: block; background: var(--tint); border: 2px solid var(--blue); }
+.fb b:first-child { display: block; margin-bottom: 2px; }
+.fb.ok b:first-child { color: var(--ok); } .fb.bad b:first-child { color: var(--bad); }
+table.tdv { border-collapse: collapse; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+table.tdv th, table.tdv td { border: 1px solid var(--line); padding: 4px 0; width: 54px; text-align: center; font-size: 18px; }
+table.tdv th { background: var(--light); color: #242852; font-family: var(--font-body); }
+table.tdv td.out, table.tdv th.out { border-left: 3px solid var(--head); }
+table.tdv tr.hl td { background: var(--tint); outline: 2px solid var(--blue); outline-offset: -2px; }
+table.tdv td.one { color: var(--one); font-weight: 700; }
+table.tdv td button { width: 42px; height: 30px; border-radius: 6px; border: 2px dashed var(--line); background: var(--surface); color: var(--ink); font: 700 18px var(--font-mono); }
+table.tdv td button.set { border-style: solid; border-color: var(--blue); }
+table.tdv td.wrong button { border-color: var(--bad); background: var(--bad-bg); }
+.bit { display: inline-grid; place-items: center; width: 44px; height: 38px; border-radius: 8px; border: 2px solid var(--head); font: 700 20px var(--font-mono); background: var(--surface); color: var(--ink); }
+.bit.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.eq { font: 700 22px var(--font-body); color: var(--head); }
+.ov { text-decoration: overline; text-decoration-thickness: 2px; }
+.muted { color: var(--muted); font-size: 14px; }
+.life { font-size: 15px; }
+.life b { color: var(--blue); }
+svg text { font-family: var(--font-body); }
+.svgbox { overflow-x: auto; }
+.svgbox svg { max-width: 100%; height: auto; }
+main > *, .ex > *, .grid2 > *, .sim > * { min-width: 0; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; }
+.tag { display: inline-block; padding: 2px 9px; border-radius: 999px; font-weight: 700; font-size: 14px; }
+.tag.ok { background: var(--ok-bg); color: var(--ok); } .tag.bad { background: var(--bad-bg); color: var(--bad); } .tag.warn { background: var(--warn-bg); color: var(--warn); }
+.cases { display: grid; gap: 10px; }
+.case { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 8px; background: var(--surface); }
+.case .row label { font-weight: 700; }
+footer { max-width: 1060px; margin: 0 auto; padding: 0 20px 30px; color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+input[type="range"] { width: 100%; accent-color: var(--blue); }
+/* leçon animée (« Comprendre ») avant chaque exercice, puis « À toi » */
+.lesson { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: 14px 16px; display: grid; gap: 10px; }
+.ls-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.ls-tag { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--blue); padding: 2px 8px; border-radius: 6px; }
+.ls-tag.alt { background: #242852; }
+.ls-head h3 { margin: 0; font-size: 18px; color: var(--head); }
+.ls-body { display: grid; gap: 8px; min-width: 0; }
+.ls-stage { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.ls-stage svg { width: 100%; height: auto; display: block; }
+.ls-cap { min-height: 3.1em; font-size: 16.5px; max-width: 82ch; }
+.ls-cap b { color: var(--blue); }
+.ls-ctrl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ls-btn { border: 2px solid var(--blue); background: var(--surface); color: var(--blue); border-radius: 8px; padding: 4px 10px; font-weight: 700; font-size: 14px; }
+.ls-steps { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.ls-steps button { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; font-size: 13px; padding: 0; }
+.ls-steps button[aria-current="step"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+.ls-prog { flex: 1 1 100px; min-width: 80px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.ls-prog i { display: block; height: 100%; width: 0; background: var(--blue); }
+.ls-extra { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.ls-extra input[type="range"] { width: 180px; }
+/* bandeau visible tant que le script de la page n'a pas fini de démarrer (aperçu sans JavaScript, erreur) */
+.jsx { background: #FDF0E0; color: #7A3E00; border-bottom: 3px solid #C86A10; padding: 10px 20px; font: 600 15px/1.45 Arial, sans-serif; }
+.todo { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.todo::after { content: ""; flex: 1; border-top: 2px dashed var(--line); }
+@media (max-width: 520px) { .top .in { grid-template-columns: 1fr; } .top img { grid-row: 1; grid-column: 1; justify-self: start; height: 24px; } .ex { padding: 16px; } table.tdv th, table.tdv td { width: 44px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.big { font: 700 26px var(--font-body); color: var(--head); font-variant-numeric: tabular-nums; }
+.vals { display: grid; grid-template-columns: auto auto; gap: 2px 14px; align-items: baseline; }
+.vals span { color: var(--muted); }
+.vals b { font-variant-numeric: tabular-nums; color: var(--head); }
+.cases.two { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.etat { font-weight: 700; padding: 4px 10px; border-radius: 8px; display: inline-block; }
+.etat.ok { background: var(--ok-bg); color: var(--ok); }
+.etat.bad { background: var(--bad-bg); color: var(--bad); }
+.etat.info { background: var(--tint); color: var(--head); }
+</style>
+</head>
+<body>
+<div id="jsx" class="jsx" role="alert">Cette page a besoin de JavaScript pour afficher les animations et les exercices. Si ce message reste affiché, ouvre la page depuis le lien de l'artefact sur claude.ai, ou ouvre le fichier .html dans Edge, Chrome ou Safari (pas dans un aperçu de fichier).</div>
+<header class="top"><div class="in">
+  <div class="eyebrow">Test et Mesure 2 – El Dim 4 · page interactive 121</div>
+  <img src="data:image/png;base64,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" alt="ETML">
+  <h1>La diode, la diode Zener et la LED</h1>
+  <p>Quatre étapes, avec les dessins de la présentation 120 : polariser la jonction PN, lire la caractéristique de la diode, faire claquer la Zener, allumer une LED sans la détruire. Chaque étape commence par une animation (« Comprendre »), puis tu t'exerces (« À toi »). Va avec la fiche 130.</p>
+</div></header>
+<div class="bar"><div class="in">
+  <nav aria-label="Étapes"><a href="#ex1">N°1</a><a href="#ex2">N°2</a><a href="#ex3">N°3</a><a href="#ex4">N°4</a></nav>
+  <div class="score">Exercices réussis : <span id="score-n">0</span> / 4
+    <span class="dots"><i data-id="t1"></i><i data-id="t2"></i><i data-id="t3"></i><i data-id="t4"></i></span></div>
+</div></div>
+
+<main>
+<!-- ============================================ N°1 -->
+<section class="ex" id="ex1">
+  <header><span class="num">N°1</span><h2>Polarise la jonction PN</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/120%20Diode%20et%20diode%20Zener.pptx?csf=1&amp;web=1">Présentation 120, diapos 3 à 5</a><span>Fiche 130, N°1</span><a href="https://skills.futuremem.swiss/fr/data/5000_lze_07/#54206F31-B8AD-944A-B3DF-EA1AAF8DF388">LZ_5627</a></span></header>
+  <div class="lesson" id="L1"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Sens direct, sens inverse</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/120%20Diode%20et%20diode%20Zener.pptx?csf=1&amp;web=1">Présentation 120, diapos 3 et 4</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> une diode en série dans l'alimentation 24 V de l'équipement de test protège la carte si quelqu'un branche l'alimentation à l'envers.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Au laboratoire :</b> tu branches une pile réglable sur une jonction PN au silicium. Essaie, puis réponds.</div>
+  <div class="grid2">
+    <div>
+      <p class="q">a) Essaie : règle la tension et le sens de la pile.</p>
+      <div class="row"><input type="range" id="t1-u" min="0" max="1" step="0.1" value="0.3" aria-label="Tension de la pile en volts"><span class="big" id="t1-utxt">0,3 V</span></div>
+      <div class="row"><button class="btn" id="t1-sens" type="button">Retourner la pile</button></div>
+      <p style="margin:8px 0 0"><span class="etat info" id="t1-etat"></span></p>
+    </div>
+    <div class="svgbox" id="t1-svg"></div>
+  </div>
+  <div class="cases two" id="t1-list"></div>
+  <div class="row"><button class="btn" id="t1-check">Vérifier</button></div>
+  <div class="fb" id="t1-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°2 -->
+<section class="ex" id="ex2">
+  <header><span class="num">N°2</span><h2>Lis la caractéristique de la diode</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/120%20Diode%20et%20diode%20Zener.pptx?csf=1&amp;web=1">Présentation 120, diapos 7 à 9</a><span>Fiche 130, N°2</span><a href="https://skills.futuremem.swiss/fr/data/5000_lze_07/#54206F31-B8AD-944A-B3DF-EA1AAF8DF388">LZ_5627</a></span></header>
+  <div class="lesson" id="L2"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Le point de fonctionnement monte la courbe</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/120%20Diode%20et%20diode%20Zener.pptx?csf=1&amp;web=1">Présentation 120, diapos 7 et 8</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> en TM2-A1-S3, tu relèves cette courbe point par point. Une diode qui conduit affiche presque toujours entre 0,6 et 0,8 V.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Sur l'équipement :</b> la diode au silicium de la fiche 130. Règle la tension et lis le courant.</div>
+  <div class="grid2">
+    <div>
+      <p class="q">Essaie : règle U<sub>F</sub>.</p>
+      <div class="row"><input type="range" id="t2-u" min="0" max="0.85" step="0.01" value="0.6" aria-label="Tension directe en volts"><span class="big" id="t2-utxt"></span></div>
+      <div class="vals"><span>Courant I<sub>F</sub></span><b id="t2-i"></b></div>
+    </div>
+    <div class="svgbox" id="t2-svg"></div>
+  </div>
+  <div class="cases">
+    <div class="case"><div><b>a)</b> Cherche la tension qui donne I<sub>F</sub> ≈ 20 mA. Que vaut U<sub>F</sub> ?</div>
+      <div class="row"><input type="text" inputmode="decimal" id="t2-a" style="width:110px" aria-label="Tension en volts"><span>V</span><span id="t2-ra"></span></div></div>
+    <div class="case"><div><b>b)</b> À U<sub>F</sub> = 0,5 V, le courant est…</div>
+      <div class="row"><select id="t2-b" aria-label="Courant à 0,5 volt"><option value="">choisir…</option><option value="0">moins de 1 mA</option><option value="5">environ 5 mA</option><option value="20">environ 20 mA</option></select><span id="t2-rb"></span></div></div>
+    <div class="case"><div><b>c)</b> Modèle avec seuil : quelle tension U<sub>F</sub> prends-tu pour une diode au silicium qui conduit ?</div>
+      <div class="row"><select id="t2-c" aria-label="Tension du modèle avec seuil"><option value="">choisir…</option><option value="0">0 V</option><option value="0.7">0,7 V</option><option value="1.5">1,5 V</option></select><span id="t2-rc"></span></div></div>
+  </div>
+  <div class="row"><button class="btn" id="t2-check">Vérifier</button></div>
+  <div class="fb" id="t2-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°3 -->
+<section class="ex" id="ex3">
+  <header><span class="num">N°3</span><h2>Fais claquer la Zener</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/120%20Diode%20et%20diode%20Zener.pptx?csf=1&amp;web=1">Présentation 120, diapos 11 à 13</a><span>Fiche 130, N°4 à N°6</span><a href="https://skills.futuremem.swiss/fr/data/5000_lze_07/#30CE4A6D-E46E-2340-AD9E-06A2E28FA7BA">LZ_5628</a></span></header>
+  <div class="lesson" id="L3"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>La sortie suit l'entrée, puis s'arrête à U<sub>Z</sub></h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/120%20Diode%20et%20diode%20Zener.pptx?csf=1&amp;web=1">Présentation 120, diapos 11 et 13</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> un capteur de la ligne envoie 0 à 24 V ; avec R<sub>1</sub> et une Zener 5V1, l'entrée du contrôleur ne reçoit jamais plus de 5,1 V environ.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Sur l'équipement :</b> la protection d'entrée R<sub>1</sub> = 2k2 et Zener 5V1. Règle la tension du capteur.</div>
+  <div class="grid2">
+    <div>
+      <p class="q">Essaie : règle U<sub>e</sub>.</p>
+      <div class="row"><input type="range" id="t3-u" min="0" max="24" step="1" value="12" aria-label="Tension du capteur en volts"><span class="big" id="t3-utxt"></span></div>
+      <div class="vals"><span>Sortie U<sub>s</sub></span><b id="t3-us"></b><span>Courant I<sub>Z</sub></span><b id="t3-iz"></b><span>État de la Zener</span><b id="t3-et"></b></div>
+    </div>
+    <div class="svgbox" id="t3-svg"></div>
+  </div>
+  <div class="cases">
+    <div class="case"><div><b>a)</b> U<sub>e</sub> = 3 V. Que vaut U<sub>s</sub> ?</div>
+      <div class="row"><input type="text" inputmode="decimal" id="t3-a" style="width:110px" aria-label="Tension de sortie en volts"><span>V</span><span id="t3-ra"></span></div></div>
+    <div class="case"><div><b>b)</b> U<sub>e</sub> = 24 V. Que vaut U<sub>s</sub> (à 0,1 V près) ?</div>
+      <div class="row"><input type="text" inputmode="decimal" id="t3-b" style="width:110px" aria-label="Tension de sortie en volts"><span>V</span><span id="t3-rb"></span></div></div>
+    <div class="case"><div><b>c)</b> U<sub>e</sub> = 24 V. Qui prend la différence de tension ?</div>
+      <div class="row"><select id="t3-c" aria-label="Composant qui prend la différence"><option value="">choisir…</option><option value="r">la résistance R1</option><option value="z">la Zener</option><option value="c">l'entrée du contrôleur</option></select><span id="t3-rc"></span></div></div>
+  </div>
+  <div class="row"><button class="btn" id="t3-check">Vérifier</button></div>
+  <div class="fb" id="t3-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°4 -->
+<section class="ex" id="ex4">
+  <header><span class="num">N°4</span><h2>Allume la LED sans la détruire</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/120%20Diode%20et%20diode%20Zener.pptx?csf=1&amp;web=1">Présentation 120, diapos 14 et 15</a><span>Fiche 130, N°1 et N°6</span><a href="https://skills.futuremem.swiss/fr/data/5000_lze_07/#30CE4A6D-E46E-2340-AD9E-06A2E28FA7BA">LZ_5628</a></span></header>
+  <div class="lesson" id="L4"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Une LED, toujours avec sa résistance</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/120%20Diode%20et%20diode%20Zener.pptx?csf=1&amp;web=1">Présentation 120, diapos 14 et 15</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> le voyant « en marche » de l'équipement : une LED rouge et sa résistance sur 24 V. Le calcul de la résistance vient en présentation 140.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Sur l'équipement :</b> tu essaies plusieurs voyants sur l'alimentation 24 V. Valeurs limites de chaque LED : I<sub>F</sub> max 30 mA, U<sub>R</sub> max 5 V.</div>
+  <div class="grid2">
+    <div>
+      <p class="q">Essaie : choisis la LED, la résistance et le sens.</p>
+      <div class="row"><label>LED <select id="t4-led" aria-label="Couleur de la LED"><option value="1.9">rouge (≈ 1,9 V)</option><option value="2.1">jaune (≈ 2,1 V)</option><option value="3.2">bleue (≈ 3,2 V)</option></select></label></div>
+      <div class="row"><label>R<sub>1</sub> <select id="t4-r" aria-label="Résistance série"><option value="0">aucune (0 Ω)</option><option value="470">470 Ω</option><option value="1000">1 kΩ</option><option value="2200" selected>2,2 kΩ</option><option value="4700">4,7 kΩ</option></select></label></div>
+      <div class="row"><button class="btn" id="t4-sens" type="button">Retourner la LED</button></div>
+      <div class="vals"><span>Courant I<sub>F</sub></span><b id="t4-i"></b></div>
+      <p style="margin:8px 0 0"><span class="etat info" id="t4-etat"></span></p>
+    </div>
+    <div class="svgbox" id="t4-svg"></div>
+  </div>
+  <div class="cases" id="t4-list"></div>
+  <div class="row"><button class="btn" id="t4-check">Vérifier</button></div>
+  <div class="fb" id="t4-fb" aria-live="polite"></div>
+</section>
+</main>
+<footer>
+  <span>Classe XLO1 · 2026-2027 · Test et Mesure 2 – El Dim 4 · champ <a href="https://skills.futuremem.swiss/fr/9999_et/2000_lfe_bfs_2/#comp%C3%A9tences-op%C3%A9rationnelles-et-crit%C3%A8res-de-performance_1">LFB_El_Dim4</a></span>
+  <span>Objectifs : <a href="https://skills.futuremem.swiss/fr/data/5000_lze_07/#54206F31-B8AD-944A-B3DF-EA1AAF8DF388">LZ_5627</a>, <a href="https://skills.futuremem.swiss/fr/data/5000_lze_07/#30CE4A6D-E46E-2340-AD9E-06A2E28FA7BA">LZ_5628</a></span>
+  <span><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/120%20Diode%20et%20diode%20Zener.pptx?csf=1&amp;web=1">Présentation 120 Diode et diode Zener</a> · <a href="https://eduvaud.sharepoint.com/:w:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/130%20EX%20Diode%20et%20Zener.docx?csf=1&amp;web=1">Fiche 130 EX</a></span>
+</footer>
+<script>
+window.addEventListener("error", (e) => { const b = document.getElementById("jsx"); if (b) { b.hidden = false; b.textContent = "Erreur dans la page : " + e.message + " (ligne " + e.lineno + "). Envoie ce message à l'enseignant."; } });
+const $ = (id) => document.getElementById(id);
+const FN = {
+  "NON": (a) => 1 - a, "ET": (a, b) => a & b, "OU": (a, b) => a | b, "NON-ET": (a, b) => 1 - (a & b),
+  "NON-OU": (a, b) => 1 - (a | b), "OUX": (a, b) => a ^ b, "NON-OUX": (a, b) => 1 - (a ^ b),
+};
+const QUAL = { "NON": "1", "ET": "&amp;", "OU": "≥1", "NON-ET": "&amp;", "NON-OU": "≥1", "OUX": "=1", "NON-OUX": "=1" };
+const NEG = { "NON": 1, "ET": 0, "OU": 0, "NON-ET": 1, "NON-OU": 1, "OUX": 0, "NON-OUX": 1 };
+const EQH = {
+  "NON": 'Y = <span class="ov">A</span>', "ET": "Y = A · B", "OU": "Y = A + B", "NON-ET": 'Y = <span class="ov">A · B</span>',
+  "NON-OU": 'Y = <span class="ov">A + B</span>', "OUX": "Y = A ⊕ B", "NON-OUX": 'Y = <span class="ov">A ⊕ B</span>',
+};
+// table de vérité, entrées du poids fort au poids faible : [B, A, Y] ou [A, Y]
+function tdv(key) {
+  if (key === "NON") return [[0, 1], [1, 0]];
+  const r = [];
+  for (const b of [0, 1]) for (const a of [0, 1]) r.push([b, a, FN[key](a, b)]);
+  return r;
+}
+const wireStyle = (v) => v === 1 ? "stroke:var(--one);stroke-width:5" : (v === 0 ? "stroke:var(--zero);stroke-width:3" : "stroke:var(--muted);stroke-width:3");
+
+// Symbole CEI 60617-12 : rectangle, qualificatif, cercle de négation
+function gateParts(key, a, b, y, opt = {}) {
+  const n = key === "NON" ? 1 : 2, w = 90, h = n === 1 ? 90 : 116, x0 = 84, y0 = 14, L = 50;
+  const labels = opt.labels || ["A", "B"], out = opt.out != null ? opt.out : "Y";
+  const ys = n === 1 ? [y0 + h / 2] : [y0 + h * 0.28, y0 + h * 0.72];
+  let s = "";
+  const vin = n === 1 ? [a] : [a, b];
+  ys.forEach((yy, i) => {
+    s += `<line x1="${x0 - L}" y1="${yy}" x2="${x0}" y2="${yy}" style="${wireStyle(vin[i])}"/>`;
+    s += `<text x="${x0 - L - 8}" y="${yy + 6}" text-anchor="end" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${labels[i]}</text>`;
+  });
+  s += `<rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="2" style="fill:var(--surface);stroke:var(--ink);stroke-width:3"/>`;
+  s += `<text x="${x0 + w / 2}" y="${y0 + 30}" text-anchor="middle" font-size="24" font-weight="700" style="fill:var(--ink)">${QUAL[key]}</text>`;
+  let xo = x0 + w;
+  if (NEG[key]) { s += `<circle cx="${xo + 7}" cy="${y0 + h / 2}" r="7" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/>`; xo += 14; }
+  s += `<line x1="${xo}" y1="${y0 + h / 2}" x2="${xo + L}" y2="${y0 + h / 2}" style="${wireStyle(y)}"/>`;
+  s += `<text x="${xo + L + 8}" y="${y0 + h / 2 + 6}" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${out}</text>`;
+  return { w: x0 + w + 2 * L + 50, h: h + 2 * y0, body: s, inX: x0 - L, inY: ys, outX: xo + L, outY: y0 + h / 2 };
+}
+function gateSVG(key, a, b, y, opt = {}) {
+  const p = gateParts(key, a, b, y, opt);
+  return `<svg viewBox="0 0 ${p.w} ${p.h}" width="${p.w * (opt.scale || 1)}" role="img" aria-label="Symbole CEI de la porte ${key}">${p.body}</svg>`;
+}
+// porte placée dans un dessin : renvoie le groupe SVG et les points de raccordement (entrées, sortie)
+function gateAt(key, a, b, y, X, Y, s = 1, opt = {}) {
+  const p = gateParts(key, a, b, y, opt);
+  return { svg: `<g transform="translate(${X} ${Y}) scale(${s})">${p.body}</g>`, inX: X + p.inX * s, inY: p.inY.map((v) => Y + v * s), outX: X + p.outX * s, outY: Y + p.outY * s, w: p.w * s, h: p.h * s };
+}
+
+// suivi des exercices réussis (en mémoire seulement)
+const DONE = new Set();
+function markDone(id, ok) {
+  if (ok) DONE.add(id); else DONE.delete(id);
+  const dots = document.querySelectorAll(".score .dots i");
+  dots.forEach((d) => d.classList.toggle("on", DONE.has(d.dataset.id)));
+  $("score-n").textContent = DONE.size;
+}
+function feedback(el, kind, title, html) {
+  el.className = "fb " + kind;
+  el.innerHTML = `<b>${title}</b>${html}`;
+}
+const fmtV = (x) => String(x).replace(".", ",") + " V";
+// liens externes dans un nouvel onglet
+// démarrage : tout de suite si la page est déjà chargée (certains lecteurs injectent la page après DOMContentLoaded)
+const ready = (f) => { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", f); else f(); };
+// liens externes : <a href> simples ; le lecteur d'artefact les ouvre lui-même hors de la page (pas de target="_blank", refusé dans le cadre isolé)
+// typographie française : espaces insécables (avant « : ; ? ! », nombre + unité, « A = 1 », plages « 0 … 70 »)
+const NBSP = "\u00a0";
+function typo(s) {
+  return s
+    .replace(/ ([:;?!»])/g, NBSP + "$1").replace(/« /g, "«" + NBSP)
+    .replace(/ (=|·|×|≥|≤|<|>|→|⊕|…|\+) /g, NBSP + "$1" + NBSP)
+    .replace(/(\d) (ou|à) (?=[\d−])/g, "$1" + NBSP + "$2" + NBSP)
+    .replace(/(\d) (?=(V|mV|mA|ns|ms|µs|s|°C|%|ko|L|[a-zà-ÿ]))/g, "$1" + NBSP)
+    .replace(/\b(p\.|chap\.|diapos?|N°|Floyd|LZ) (?=\d)/g, "$1" + NBSP);
+}
+function typoTree(root) {
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: (n) => /^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  let n; while ((n = w.nextNode())) { const t = typo(n.nodeValue); if (t !== n.nodeValue) n.nodeValue = t; }
+}
+const inStage = (n) => { const e = n.nodeType === 1 ? n : n.parentElement; return !!(e && e.closest && e.closest(".ls-stage, .nt")); };
+ready(() => {
+  typoTree(document.body);
+  new MutationObserver((ms) => ms.forEach((m) => { if (inStage(m.target)) return; m.addedNodes.forEach((x) => { if (x.nodeType === 3) { const t = typo(x.nodeValue); if (t !== x.nodeValue) x.nodeValue = t; } else if (x.nodeType === 1 && !/^(SCRIPT|STYLE)$/.test(x.nodeName)) typoTree(x); }); }))
+    .observe(document.body, { childList: true, subtree: true });
+});
+
+// ---------------------------------------------- outils de dessin des animations
+const REDUCE = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
+const prog = (t, a, b) => ease((t - a) / (b - a));
+const lerp = (a, b, p) => a + (b - a) * p;
+// texte SVG ; o = { size, anchor, bold, italic, mono, color, op }
+const TX = (x, y, s, o = {}) => `<text x="${x}" y="${y}" font-size="${o.size || 16}"${o.anchor ? ` text-anchor="${o.anchor}"` : ""}${o.bold ? ' font-weight="700"' : ""}${o.italic ? ' font-style="italic"' : ""}${o.mono ? ' font-family="IBM Plex Mono, Liberation Mono, monospace"' : ""} style="fill:${o.color || "var(--ink)"}${o.op != null ? ";opacity:" + o.op : ""}">${s}</text>`;
+const SUBV = (i, rest = "") => `V<tspan font-size="0.72em" dy="0.3em">${i}</tspan><tspan dy="-0.3em">${rest}</tspan>`;
+const wireP = (pts, v) => `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" style="${wireStyle(v)};stroke-linejoin:round"/>`;
+const lampG = (x, y, r, on, col = "var(--one)") => (on ? `<circle cx="${x}" cy="${y}" r="${r + 8}" style="fill:${col};opacity:.25"/>` : "") +
+  `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${on ? col : "var(--surface)"};stroke:var(--ink);stroke-width:2.5"/>`;
+const pill = (x, y, v, o = {}) => `<rect x="${x - 15}" y="${y - 15}" width="30" height="30" rx="7" style="fill:${v ? "var(--one)" : "var(--surface)"};stroke:var(--head);stroke-width:2"/>` +
+  TX(x, y + 7, v, { size: 19, bold: true, mono: true, anchor: "middle", color: v ? "#fff" : "var(--ink)" });
+const okMark = (x, y, ok, r = 11) => `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${ok ? "var(--ok)" : "var(--bad)"}"/>` +
+  (ok ? `<path d="M ${x - r * .45} ${y} l ${r * .3} ${r * .35} l ${r * .55} ${-r * .7}" style="fill:none;stroke:#fff;stroke-width:2.6"/>`
+      : `<path d="M ${x - r * .4} ${y - r * .4} l ${r * .8} ${r * .8} M ${x + r * .4} ${y - r * .4} l ${-r * .8} ${r * .8}" style="stroke:#fff;stroke-width:2.6"/>`);
+// boîtier DIP 14 vu de dessus, encoche à gauche : broches 1 à 7 en bas (gauche → droite), 8 à 14 en haut (droite → gauche)
+function dipG(x, y, w, h, label, o = {}) {
+  const n = 7, pw = w / n; let s = "";
+  for (let i = 0; i < n; i++) {
+    const px = x + pw * (i + 0.5) - 6;
+    s += `<rect x="${px}" y="${y - 14}" width="12" height="14" style="fill:#C8CEDA;stroke:#5A6478"/><rect x="${px}" y="${y + h}" width="12" height="14" style="fill:#C8CEDA;stroke:#5A6478"/>`;
+  }
+  s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" style="fill:#3A3F52;stroke:#23263A;stroke-width:2"/>`;
+  s += `<path d="M ${x} ${y + h / 2 - 12} a 12 12 0 0 1 0 24 z" style="fill:#23263A"/><circle cx="${x + 16}" cy="${y + h - 14}" r="5" style="fill:#5A6070"/>`;
+  if (label) s += TX(x + w / 2, y + h / 2 + 8, label, { size: o.fs || 22, bold: true, mono: true, anchor: "middle", color: "#EEF1F7" });
+  if (o.nums) for (let i = 0; i < n; i++) {
+    s += TX(x + pw * (i + 0.5), y + h - 6, i + 1, { size: 11, anchor: "middle", color: "#B8BED0" });
+    s += TX(x + pw * (i + 0.5), y + 14, 14 - i, { size: 11, anchor: "middle", color: "#B8BED0" });
+  }
+  return s;
+}
+const dipPin = (x, y, w, h, k) => k <= 7 ? [x + (w / 7) * (k - 0.5), y + h + 14] : [x + (w / 7) * (14 - k + 0.5), y - 14];
+// chronogramme qui s'écrit au fil du temps : rows = [{ name, f(s) → 0/1, color }], de s = 0 à min(t, tmax)
+function traceG(x, y, w, rows, t, tmax, o = {}) {
+  const rh = o.rh || 34, hi = rh * 0.55, X = (s) => x + w * s / tmax, dt = o.dt || tmax / 400, end = Math.min(t, tmax);
+  let g = "";
+  rows.forEach((r, i) => {
+    const yb = y + i * rh + rh - 6, yh = yb - hi;
+    g += TX(x - 10, yb - 3, r.name, { anchor: "end", bold: true, italic: true, size: o.fs || 15 });
+    g += `<line x1="${x}" y1="${yb}" x2="${x + w}" y2="${yb}" style="stroke:var(--line);stroke-width:1"/>`;
+    if (end <= 0) return;
+    let v = r.f(0), d = `M ${x} ${v ? yh : yb}`;
+    for (let s = dt; s <= end + 1e-9; s += dt) { const nv = r.f(s); if (nv !== v) { d += ` L ${X(s)} ${v ? yh : yb} L ${X(s)} ${nv ? yh : yb}`; v = nv; } }
+    d += ` L ${X(end)} ${v ? yh : yb}`;
+    g += `<path d="${d}" fill="none" style="stroke:${r.color || "var(--ink)"};stroke-width:2.6;stroke-linejoin:round"/>`;
+  });
+  if (o.cursor !== false && t > 0 && t < tmax) g += `<line x1="${X(end)}" y1="${y}" x2="${X(end)}" y2="${y + rows.length * rh}" style="stroke:var(--bad);stroke-width:1.5"/>`;
+  return g;
+}
+
+// ---------------------------------------------- leçons animées : lecture, pause, étapes numérotées, sous-titres
+// L'animation tourne en boucle et s'arrête quand elle sort de l'écran. Avec « réduire les animations », elle démarre en pause.
+const LESSONS = [];
+function lesson(id, cfg) {
+  const root = $(id), body = root.querySelector(".ls-body");
+  body.innerHTML = `<div class="ls-stage"></div><div class="ls-cap"></div>
+    <div class="ls-ctrl"><button class="ls-btn ls-play" type="button"></button><button class="ls-btn ls-back" type="button">↺ Recommencer</button>
+    <span class="ls-steps" role="group" aria-label="Étapes"></span><span class="ls-prog"><i></i></span></div>`;
+  if (cfg.extra) { const e = document.createElement("div"); e.className = "ls-extra"; e.innerHTML = cfg.extra; body.insertBefore(e, body.querySelector(".ls-cap")); }
+  const st = { t: 0, T: 0, playing: !REDUCE, vis: true, last: null, step: -1, dirty: true, cfg };
+  const stage = body.querySelector(".ls-stage"), cap = body.querySelector(".ls-cap"), play = body.querySelector(".ls-play"), bar = body.querySelector(".ls-prog i"), steps = body.querySelector(".ls-steps");
+  stage.setAttribute("role", "img"); stage.setAttribute("aria-label", cfg.label);
+  cfg.steps.forEach(([t0], i) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = i + 1; b.setAttribute("aria-label", "Étape " + (i + 1));
+    b.onclick = () => { st.t = t0 + 0.01; st.dirty = true; }; steps.appendChild(b);
+  });
+  const setPlay = () => { play.textContent = st.playing ? "❚❚ Pause" : "▶ Lecture"; };
+  play.onclick = () => { st.playing = !st.playing; setPlay(); }; setPlay();
+  body.querySelector(".ls-back").onclick = () => { st.t = 0; st.dirty = true; if (!st.playing) { st.playing = true; setPlay(); } };
+  if ("IntersectionObserver" in window) new IntersectionObserver((es) => es.forEach((e) => { st.vis = e.isIntersecting; st.last = null; }), { threshold: 0.1 }).observe(stage);
+  st.render = () => {
+    stage.innerHTML = cfg.draw(st.t, st.T, st);
+    let k = 0; cfg.steps.forEach(([t0], i) => { if (st.t >= t0) k = i; });
+    if (k !== st.step) {
+      st.step = k; cap.innerHTML = `<b>${k + 1}.</b> ${cfg.steps[k][1]}`;
+      steps.querySelectorAll("button").forEach((b, i) => b.setAttribute("aria-current", i === k ? "step" : "false"));
+    }
+    bar.style.width = (100 * st.t / cfg.dur).toFixed(1) + "%";
+  };
+  LESSONS.push(st);
+  try { st.render(); } catch (e) { console.error(e); }   // première image tout de suite, même si l'animation ne démarre pas
+  return st;
+}
+function lessonLoop(ts) {
+  LESSONS.forEach((st) => {
+    if (!st.vis) return;
+    const dt = st.last == null ? 0 : Math.min(0.1, (ts - st.last) / 1000); st.last = ts;
+    if (st.playing) { st.t += dt; st.T += dt; if (st.t >= st.cfg.dur) st.t = 0; st.dirty = true; }
+    if (st.dirty && ts - (st.drawn || 0) > 33) { st.render(); st.drawn = ts; st.dirty = false; }
+  });
+  requestAnimationFrame(lessonLoop);
+}
+ready(() => requestAnimationFrame(lessonLoop));
+
+const D = {"GATES": {"NON": {"nom": "NON", "en": "NOT", "regle": "Y = 1 si A = 0 : la sortie est l'inverse de l'entrée.", "ci74": "74HC04", "ci4000": "4069", "contenu": "6 inverseurs", "sec": "3-1", "page": 112}, "ET": {"nom": "ET", "en": "AND", "regle": "Y = 1 seulement si A = 1 et B = 1.", "ci74": "74HC08", "ci4000": "4081", "contenu": "4 portes ET à 2 entrées", "sec": "3-2", "page": 115}, "OU": {"nom": "OU", "en": "OR", "regle": "Y = 1 si au moins une entrée vaut 1.", "ci74": "74HC32", "ci4000": "4071", "contenu": "4 portes OU à 2 entrées", "sec": "3-3", "page": 122}, "NON-ET": {"nom": "NON-ET", "en": "NAND", "regle": "Y = 0 seulement si A = 1 et B = 1.", "ci74": "74HC00", "ci4000": "4011", "contenu": "4 portes NON-ET à 2 entrées", "sec": "3-4", "page": 126}, "NON-OU": {"nom": "NON-OU", "en": "NOR", "regle": "Y = 1 seulement si A = 0 et B = 0.", "ci74": "74HC02", "ci4000": "4001", "contenu": "4 portes NON-OU à 2 entrées", "sec": "3-5", "page": 131}, "OUX": {"nom": "OU exclusif", "en": "XOR", "regle": "Y = 1 si les deux entrées sont différentes.", "ci74": "74HC86", "ci4000": "4070", "contenu": "4 portes OU exclusif à 2 entrées", "sec": "3-6", "page": 135}, "NON-OUX": {"nom": "NON-OU exclusif", "en": "XNOR", "regle": "Y = 1 si les deux entrées sont égales.", "ci74": "74HC7266", "ci4000": "4077", "contenu": "4 portes NON-OU exclusif à 2 entrées", "sec": "3-6", "page": 135}}, "ORDER": ["NON", "ET", "OU", "NON-ET", "NON-OU", "OUX", "NON-OUX"], "NIV": {"TTL": [0.8, 2.0, 0.4, 2.4], "HC": [1.5, 3.5, 0.33, 4.4], "HCT": [0.8, 2.0, 0.33, 4.4]}, "CHRONO_A": [0, 1, 0, 1, 1, 0, 1, 0], "CHRONO_B": [0, 0, 1, 1, 0, 1, 1, 0]};
+const tag = (ok) => ` <span class="tag ${ok ? "ok" : "bad"}">${ok ? "juste" : "à revoir"}</span>`;
+const vir = (x, n = 2) => (+x).toFixed(n).replace(".", ",");
+const num = (id) => { const v = $(id).value.replace(",", "."); return v === "" ? null : +v; };
+function sel(id, opts, label) {
+  return `<select id="${id}" aria-label="${label}"><option value="">choisir…</option>${opts.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select>`;
+}
+function qcm(liste, cible, prefixe) {
+  liste.forEach(([q, o], i) => {
+    const d = document.createElement("div"); d.className = "case";
+    d.innerHTML = `<div>${q}</div><div class="row">${sel(prefixe + i, o, q.replace(/<[^>]+>/g, ""))}<span id="${prefixe}r${i}"></span></div>`;
+    $(cible).appendChild(d);
+  });
+}
+function corrige(liste, prefixe, fb, id, bravo) {
+  let ok = 0, vide = 0; const notes = [];
+  liste.forEach(([, , r, why], i) => {
+    const v = $(prefixe + i).value; if (!v) { vide++; $(prefixe + "r" + i).innerHTML = ""; return; }
+    const g = v === r; if (g) ok++; else notes.push(why); $(prefixe + "r" + i).innerHTML = tag(g);
+  });
+  if (vide) { feedback($(fb), "info", "Il manque des réponses.", ` ${vide} question${vide > 1 ? "s" : ""} sans réponse.`); return; }
+  if (ok === liste.length) { feedback($(fb), "ok", "Tout est juste.", " " + bravo); markDone(id, true); }
+  else { feedback($(fb), "bad", `${ok} sur ${liste.length}.`, " " + notes.join(" ")); markDone(id, false); }
+}
+
+// ---------------------------------------------- N°1 jonction
+let t1direct = true;
+function draw1() {
+  const u = +$("t1-u").value;
+  $("t1-utxt").textContent = vir(u, 1) + " V";
+  const i = t1direct ? iDiode(u) : 0;
+  $("t1-etat").className = "etat " + (i > 1e-3 ? "ok" : "info");
+  $("t1-etat").textContent = !t1direct ? "Sens inverse : zone large, pas de courant" :
+    (i > 1e-3 ? "Sens direct : la diode conduit (" + vir(i * 1e3, 1) + " mA)" : "Sens direct, mais sous le seuil : presque pas de courant");
+  $("t1-svg").innerHTML = `<svg viewBox="0 0 460 260" width="460" role="img" aria-label="Jonction PN, pile ${t1direct ? "dans le sens direct" : "dans le sens inverse"}, ${vir(u, 1)} volt">` +
+    jonctionG(20, 30, 420, 130, t1direct ? 1 - 0.7 * clamp(u / 0.7) : 1 + 1.2 * clamp(u), 0, i > 1e-3 ? 1 : 0) + pileG(230, 220, t1direct) + "</svg>";
+}
+$("t1-u").oninput = draw1;
+$("t1-sens").onclick = () => { t1direct = !t1direct; draw1(); };
+ready(draw1);
+const Q1 = [
+  ["Le + de la pile sur la zone p (anode), U = 0,3 V. La diode…", [["c", "conduit nettement"], ["p", "ne conduit pas encore"], ["k", "claque"]], "p", "À 0,3 V, on est sous le seuil du silicium (≈ 0,6 à 0,7 V) : presque pas de courant."],
+  ["Le + sur la zone p, U = 0,8 V. La diode…", [["c", "conduit"], ["b", "bloque"]], "c", "Le + est sur l'anode et la tension dépasse le seuil : la diode conduit."],
+  ["Le + sur la zone n (cathode), U = 0,8 V. La diode…", [["c", "conduit"], ["b", "bloque"]], "b", "Le + est sur la cathode : c'est le sens inverse, la diode bloque."],
+  ["En sens inverse, la zone de déplétion devient…", [["l", "plus large"], ["m", "plus mince"]], "l", "En inverse, les porteurs sont tirés loin de la frontière : la zone s'élargit."],
+];
+qcm(Q1, "t1-list", "t1-s");
+$("t1-check").onclick = () => corrige(Q1, "t1-s", "t1-fb", "t1", "Le + sur l'anode et plus de 0,7 V : la diode conduit. Le + sur la cathode : elle bloque.");
+
+// ---------------------------------------------- N°2 caractéristique
+function draw2() {
+  const u = +$("t2-u").value, i = iDiode(u);
+  $("t2-utxt").textContent = vir(u, 2) + " V";
+  $("t2-i").textContent = i < 1e-4 ? "≈ 0 mA" : vir(i * 1e3, 1) + " mA";
+  $("t2-svg").innerHTML = `<svg viewBox="0 0 460 320" width="460" role="img" aria-label="Caractéristique de la diode, point de fonctionnement à ${vir(u, 2)} volt">` + caracG(50, 20, 380, 250, u) + "</svg>";
+}
+$("t2-u").oninput = draw2;
+ready(draw2);
+$("t2-check").onclick = () => {
+  const a = num("t2-a"), b = $("t2-b").value, c = $("t2-c").value;
+  if (a === null || !b || !c) { feedback($("t2-fb"), "info", "Il manque des réponses.", " Réponds aux trois questions."); return; }
+  const ua = uDiode(20e-3), ga = Math.abs(a - ua) <= 0.03, gb = b === "0", gc = c === "0.7";
+  $("t2-ra").innerHTML = tag(ga); $("t2-rb").innerHTML = tag(gb); $("t2-rc").innerHTML = tag(gc);
+  const notes = [];
+  if (!ga) notes.push(`À 20 mA, la courbe donne U_F ≈ ${vir(ua, 2)} V : déplace le curseur jusqu'à lire 20 mA.`);
+  if (!gb) notes.push("À 0,5 V, on est sous le seuil : le courant reste sous 1 mA.");
+  if (!gc) notes.push("Modèle avec seuil d'une diode au silicium : U_F = 0,7 V dès qu'elle conduit.");
+  if (ga && gb && gc) { feedback($("t2-fb"), "ok", "Tout est juste.", " Au-dessus du seuil, la tension change peu quand le courant varie beaucoup : d'où le modèle U<sub>F</sub> = 0,7 V."); markDone("t2", true); }
+  else { feedback($("t2-fb"), "bad", "À revoir.", " " + notes.map((n) => n.replace("U_F", "U<sub>F</sub>")).join(" ")); markDone("t2", false); }
+};
+
+// ---------------------------------------------- N°3 Zener
+function draw3() {
+  const ue = +$("t3-u").value, iz = iZener(ue, 2200), us = iz > 0 ? uZener(iz) : ue;
+  $("t3-utxt").textContent = ue + " V";
+  $("t3-us").textContent = vir(us, 2) + " V";
+  $("t3-iz").textContent = iz < 5e-5 ? "≈ 0 mA" : vir(iz * 1e3, 2) + " mA";
+  $("t3-et").textContent = iz < 5e-5 ? "bloquée" : "elle conduit (claquage)";
+  $("t3-svg").innerHTML = `<svg viewBox="0 0 460 300" width="460" role="img" aria-label="Protection d'entrée : ${ue} volt à l'entrée, ${vir(us, 1)} volt à la sortie">` + zenerG(20, 20, ue, us, iz) + "</svg>";
+}
+$("t3-u").oninput = draw3;
+ready(draw3);
+$("t3-check").onclick = () => {
+  const a = num("t3-a"), b = num("t3-b"), c = $("t3-c").value;
+  if (a === null || b === null || !c) { feedback($("t3-fb"), "info", "Il manque des réponses.", " Réponds aux trois questions."); return; }
+  const ub = uZener(iZener(24, 2200));
+  const ga = Math.abs(a - 3) <= 0.05, gb = Math.abs(b - ub) <= 0.1, gc = c === "r";
+  $("t3-ra").innerHTML = tag(ga); $("t3-rb").innerHTML = tag(gb); $("t3-rc").innerHTML = tag(gc);
+  const notes = [];
+  if (!ga) notes.push("À 3 V, la Zener est bloquée : aucun courant, R<sub>1</sub> ne prend aucune tension, U<sub>s</sub> = U<sub>e</sub> = 3 V.");
+  if (!gb) notes.push(`À 24 V, la Zener conduit : U<sub>s</sub> ≈ ${vir(ub, 2)} V, à peine plus que sa tension U<sub>Z</sub> = 5,1 V.`);
+  if (!gc) notes.push("C'est R<sub>1</sub> qui prend la différence (environ 24 − 5,1 = 18,9 V) et limite le courant de la Zener.");
+  if (ga && gb && gc) { feedback($("t3-fb"), "ok", "Tout est juste.", " Sous U<sub>Z</sub>, la sortie suit l'entrée ; au-dessus, la Zener la tient à U<sub>Z</sub> et R<sub>1</sub> prend le reste."); markDone("t3", true); }
+  else { feedback($("t3-fb"), "bad", "À revoir.", " " + notes.join(" ")); markDone("t3", false); }
+};
+
+// ---------------------------------------------- N°4 LED
+let t4direct = true;
+function etatLED() {
+  const uf = +$("t4-led").value, r = +$("t4-r").value;
+  if (!t4direct) return { i: 0, msg: "LED à l'envers : elle reçoit 24 V en inverse, bien plus que 5 V. Elle peut claquer.", kind: "bad", casse: true, mot: "claquage" };
+  if (r === 0) return { i: Infinity, msg: "Sans résistance : le courant n'est plus limité. LED détruite.", kind: "bad", casse: true };
+  const i = (24 - uf) / r;
+  if (i > 0.03) return { i, msg: "Trop de courant (plus de 30 mA) : la LED chauffe et sera détruite.", kind: "bad", casse: true };
+  return { i, msg: i < 0.006 ? "La LED éclaire faiblement : courant faible." : "La LED éclaire normalement.", kind: "ok", casse: false };
+}
+function draw4() {
+  const e = etatLED(), col = { "1.9": "#E53935", "2.1": "#F2B705", "3.2": "#2F6FE4" }[$("t4-led").value];
+  $("t4-i").textContent = e.i === Infinity ? "très grand" : (e.i === 0 ? "0 mA" : vir(e.i * 1e3, 1) + " mA");
+  $("t4-etat").className = "etat " + e.kind; $("t4-etat").textContent = e.msg;
+  $("t4-svg").innerHTML = `<svg viewBox="0 0 460 300" width="460" role="img" aria-label="${e.msg}">` + ledCircuitG(20, 20, +$("t4-r").value, t4direct, e, col) + "</svg>";
+}
+["t4-led", "t4-r"].forEach((k) => { $(k).onchange = draw4; });
+$("t4-sens").onclick = () => { t4direct = !t4direct; draw4(); };
+ready(draw4);
+const Q4 = [
+  ["Sans résistance en série sur 24 V, la LED…", [["d", "est détruite"], ["f", "éclaire très fort, sans risque"], ["e", "reste éteinte"]], "d", "Sans résistance, rien ne limite le courant : la LED est détruite."],
+  ["Branchée à l'envers sur 24 V, la LED…", [["k", "peut claquer"], ["s", "ne risque rien, elle bloque"]], "k", "Elle bloque, mais elle reçoit 24 V en inverse : bien plus que ses 5 V, elle peut claquer."],
+  ["Avec la même résistance, une LED bleue à la place de la rouge : le courant est…", [["m", "un peu plus faible"], ["p", "un peu plus fort"], ["s", "le même"]], "m", "La LED bleue a une tension U<sub>F</sub> plus grande (≈ 3,2 V) : il reste moins de tension pour la résistance, donc un peu moins de courant."],
+];
+qcm(Q4, "t4-list", "t4-s");
+$("t4-check").onclick = () => corrige(Q4, "t4-s", "t4-fb", "t4", "Une LED a toujours une résistance en série, et sa tension inverse maximale est petite.");
+
+// ================================================================ leçons animées et dessins de la page 121 (présentation 120 Diode et diode Zener)
+// Tout est écrit en déclarations de fonction : les exercices de la page les appellent avant que ce bloc ne soit lu.
+// Modèles identiques à figures.py (courbes de la présentation et de la fiche 130).
+
+// ---------------------------------------------------------------- modèles
+function uDiode(i) { return 1.9 * 0.02585 * Math.log(i / 10e-9 + 1) + 2.0 * i; }          // diode Si d'exercice
+function iDiode(u) {                                                                       // inverse, par dichotomie
+  if (u <= 0) return 0;
+  let a = 0, b = 1;
+  for (let k = 0; k < 60; k++) { const m = (a + b) / 2; if (uDiode(m) > u) b = m; else a = m; }
+  return a;
+}
+function uZener(i) { return 5.05 + 10 * i - 0.08 * Math.exp(-i / 1e-3); }                 // Zener 5V1 d'exercice
+function iZener(ue, r) {                                                                   // courant de la Zener avec R en série
+  if (ue <= uZener(0)) return 0;
+  let a = 0, b = 0.2;
+  for (let k = 0; k < 60; k++) { const m = (a + b) / 2; if (r * m + uZener(m) > ue) b = m; else a = m; }
+  return a;
+}
+
+// ---------------------------------------------------------------- briques de dessin
+function diodeV(x, y1, y2, o) {
+  // diode verticale (CEI 60617-5) entre y1 et y2 ; o.sens « bas » (anode en haut) ou « haut » ; o.genre « diode », « zener », « led »
+  o = o || {};
+  const ym = (y1 + y2) / 2, t = o.t || 15, s = o.sens === "haut" ? -1 : 1, ya = ym - s * t, yk = ym + s * t;
+  let g = `<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" style="stroke:var(--ink);stroke-width:3"/>` +
+    `<polygon points="${x - t},${ya} ${x + t},${ya} ${x},${yk}" style="fill:var(--surface);stroke:var(--ink);stroke-width:3;stroke-linejoin:round"/>` +
+    `<line x1="${x}" y1="${ya}" x2="${x}" y2="${yk}" style="stroke:var(--ink);stroke-width:3"/>` +
+    `<line x1="${x - t}" y1="${yk}" x2="${x + t}" y2="${yk}" style="stroke:var(--ink);stroke-width:4"/>`;
+  if (o.genre === "zener") g += `<line x1="${x + t}" y1="${yk}" x2="${x + t}" y2="${yk - s * 8}" style="stroke:var(--ink);stroke-width:4"/>`;
+  if (o.genre === "led") [0, 12].forEach((d) => {
+    const x0 = x + t + 4, y0 = ym - 2 + d;
+    g += `<line x1="${x0}" y1="${y0}" x2="${x0 + 16}" y2="${y0 - 12}" style="stroke:var(--ink);stroke-width:2.2"/>` +
+      `<polygon points="${x0 + 19},${y0 - 14} ${x0 + 10},${y0 - 12} ${x0 + 16},${y0 - 5}" style="fill:var(--ink)"/>`;
+  });
+  return g;
+}
+function NOMI(l, i) { return `${l}<tspan font-size="0.72em" dy="0.3em" font-style="normal">${i}</tspan>`; }
+function resV(x, y1, y2, nom, val) {
+  const ym = (y1 + y2) / 2;
+  return `<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" style="stroke:var(--ink);stroke-width:3"/>` +
+    `<rect x="${x - 10}" y="${ym - 26}" width="20" height="52" style="fill:var(--surface);stroke:var(--ink);stroke-width:3"/>` +
+    (nom ? TX(x - 20, ym - 4, nom, { size: 17, anchor: "end", italic: true, color: "var(--head)" }) : "") +
+    (val ? TX(x - 20, ym + 18, val, { size: 15, anchor: "end", color: "var(--muted)" }) : "");
+}
+function sourceV(x, y1, y2, val) {
+  const ym = (y1 + y2) / 2;
+  return `<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" style="stroke:var(--ink);stroke-width:3"/>` +
+    `<circle cx="${x}" cy="${ym}" r="20" style="fill:var(--surface);stroke:var(--ink);stroke-width:3"/>` +
+    `<line x1="${x}" y1="${ym - 20}" x2="${x}" y2="${ym + 20}" style="stroke:var(--ink);stroke-width:3"/>` +
+    TX(x - 28, ym + 6, val, { size: 16, anchor: "end", color: "var(--muted)" }) +
+    TX(x - 14, y1 + 26, "+", { size: 20, bold: true, anchor: "middle", color: "var(--bad)" });
+}
+function flecheU(x, yh, yb, nom) {   // flèche de tension bleue, du + (haut) vers le − (bas), nom à droite
+  return `<line x1="${x}" y1="${yh + 6}" x2="${x}" y2="${yb - 12}" style="stroke:var(--blue);stroke-width:3"/>` +
+    `<polygon points="${x - 7},${yb - 14} ${x + 7},${yb - 14} ${x},${yb}" style="fill:var(--blue)"/>` +
+    TX(x + 10, (yh + yb) / 2 + 6, nom, { size: 17, italic: true, color: "var(--blue)" });
+}
+function porteurs(x0, x1, y0, y1, n, genre, graine, dx) {
+  // porteurs sur une grille (pas de 30 px) légèrement décalée : jamais deux porteurs l'un sur l'autre
+  const pas = 30, cols = Math.max(1, Math.floor((x1 - x0 - 16) / pas)), rows = Math.max(1, Math.floor((y1 - y0 - 16) / pas));
+  const larg = cols * pas;
+  let g = "", k = 0;
+  for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) {
+    const h = ((Math.sin(graine * 12.9898 + (c * 7 + r) * 78.233) * 43758.5453) % 1 + 1) % 1;
+    if (h > 0.55) continue;                                     // environ une case sur deux occupée
+    let x = x0 + 8 + pas / 2 + c * pas + (h - 0.27) * 10, y = y0 + 8 + pas / 2 + r * pas + (h - 0.27) * 8;
+    if (dx) x = x0 + 8 + (((x - x0 - 8) + dx) % larg + larg) % larg;
+    k++;
+    g += genre === "trou"
+      ? `<circle cx="${x}" cy="${y}" r="9" style="fill:var(--surface);stroke:var(--bad);stroke-width:2.2"/>` + TX(x, y + 5, "+", { size: 13, bold: true, anchor: "middle", color: "var(--bad)" })
+      : `<circle cx="${x}" cy="${y}" r="9" style="fill:var(--blue);stroke:#242852;stroke-width:1.5"/>` + TX(x, y + 5, "−", { size: 13, bold: true, anchor: "middle", color: "#fff" });
+  }
+  return g;
+}
+function jonctionG(x, y, w, h, k, t, flux) {
+  // barreau PN ; k : largeur relative de la zone de déplétion (1 au repos) ; flux : porteurs qui traversent
+  const zw = 60 * k, xm = x + w / 2, xg = xm - zw / 2, xd = xm + zw / 2, dx = flux ? (t || 0) * 40 : 0;
+  let g = `<rect x="${x}" y="${y}" width="${xg - x}" height="${h}" style="fill:#E8EFFB"/>` +
+    `<rect x="${xd}" y="${y}" width="${x + w - xd}" height="${h}" style="fill:#ACCBF9"/>` +
+    `<rect x="${xg}" y="${y}" width="${zw}" height="${h}" style="fill:#fff;stroke:#5A6478;stroke-dasharray:5 4"/>`;
+  g += porteurs(x, xg, y, y + h, Math.max(3, Math.round((xg - x) / 26)), "trou", 3, dx);
+  g += porteurs(xd, x + w, y, y + h, Math.max(3, Math.round((x + w - xd) / 26)), "e", 5, -dx);
+  for (let j = 0; j < 3; j++) {
+    const yy = y + 22 + j * (h - 44) / 2;
+    g += `<rect x="${xg + zw * 0.25 - 8}" y="${yy - 8}" width="16" height="16" style="fill:#fff;stroke:#242852;stroke-width:1.6"/>` + TX(xg + zw * 0.25, yy + 5, "−", { size: 13, bold: true, anchor: "middle", color: "#242852" }) +
+      `<rect x="${xd - zw * 0.25 - 8}" y="${yy - 8}" width="16" height="16" style="fill:#fff;stroke:#C81E1E;stroke-width:1.6"/>` + TX(xd - zw * 0.25, yy + 5, "+", { size: 13, bold: true, anchor: "middle", color: "#C81E1E" });
+  }
+  g += `<rect x="${x}" y="${y}" width="${w}" height="${h}" style="fill:none;stroke:#242852;stroke-width:2.5"/>` +
+    TX(x + 6, y - 8, "zone p", { size: 16, bold: true, color: "var(--head)" }) + TX(x + w - 6, y - 8, "zone n", { size: 16, bold: true, anchor: "end", color: "var(--head)" });
+  return g;
+}
+function pileG(cx, yb, direct) {
+  const xp = direct ? cx - 18 : cx + 18, xn = direct ? cx + 18 : cx - 18;
+  return `<polyline points="20,95 6,95 6,${yb} ${cx - 18},${yb}" style="fill:none;stroke:var(--ink);stroke-width:2.5"/>` +
+    `<polyline points="440,95 454,95 454,${yb} ${cx + 18},${yb}" style="fill:none;stroke:var(--ink);stroke-width:2.5"/>` +
+    `<line x1="${xp}" y1="${yb - 20}" x2="${xp}" y2="${yb + 20}" style="stroke:var(--ink);stroke-width:2.5"/>` +
+    `<line x1="${xn}" y1="${yb - 11}" x2="${xn}" y2="${yb + 11}" style="stroke:var(--ink);stroke-width:7"/>` +
+    TX(xp, yb - 26, "+", { size: 20, bold: true, anchor: "middle", color: "var(--bad)" }) + TX(xn, yb - 26, "−", { size: 20, bold: true, anchor: "middle", color: "var(--head)" });
+}
+function caracG(x, y, w, h, u, o) {
+  // caractéristique directe (0 à 0,9 V, 0 à 40 mA) et point de fonctionnement à u ; o.marques : repères 10 et 30 mA
+  o = o || {};
+  const X = (v) => x + w * v / 0.9, Y = (i) => y + h - h * Math.min(i, 0.04) / 0.04;
+  let g = "";
+  for (let v = 0; v <= 0.9001; v += 0.1) g += `<line x1="${X(v)}" y1="${y}" x2="${X(v)}" y2="${y + h}" style="stroke:var(--line);stroke-width:1"/>` + TX(X(v), y + h + 20, vir(v, 1), { size: 13, anchor: "middle", color: "var(--muted)" });
+  for (let i = 0; i <= 0.04001; i += 0.005) g += `<line x1="${x}" y1="${Y(i)}" x2="${x + w}" y2="${Y(i)}" style="stroke:var(--line);stroke-width:1"/>` + (Math.round(i * 1e3) % 10 === 0 ? TX(x - 8, Y(i) + 5, Math.round(i * 1e3), { size: 13, anchor: "end", color: "var(--muted)" }) : "");
+  let pts = [];
+  for (let k = 0; k <= 900; k++) { const v = k / 1000, i = iDiode(v); if (i > 0.04) break; pts.push([X(v), Y(i)]); }
+  g += `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" style="fill:none;stroke:var(--blue);stroke-width:3.5"/>`;
+  g += `<line x1="${x}" y1="${y + h}" x2="${x + w}" y2="${y + h}" style="stroke:var(--ink);stroke-width:2"/><line x1="${x}" y1="${y}" x2="${x}" y2="${y + h}" style="stroke:var(--ink);stroke-width:2"/>`;
+  g += TX(x + w, y + h + 42, "U<tspan font-size=\"0.7em\" dy=\"0.3em\" font-style=\"normal\">F</tspan><tspan dy=\"-0.3em\" font-style=\"normal\"> [V]</tspan>", { size: 15, anchor: "end", italic: true, color: "var(--head)" });
+  g += TX(x + 6, y - 6, "I<tspan font-size=\"0.7em\" dy=\"0.3em\" font-style=\"normal\">F</tspan><tspan dy=\"-0.3em\" font-style=\"normal\"> [mA]</tspan>", { size: 15, italic: true, color: "var(--head)" });
+  (o.marques || []).forEach(([i, op]) => {
+    const v = uDiode(i);
+    g += `<g style="opacity:${op}"><line x1="${x}" y1="${Y(i)}" x2="${X(v)}" y2="${Y(i)}" style="stroke:var(--bad);stroke-width:1.8;stroke-dasharray:6 4"/>` +
+      `<line x1="${X(v)}" y1="${Y(i)}" x2="${X(v)}" y2="${y + h}" style="stroke:var(--bad);stroke-width:1.8;stroke-dasharray:6 4"/>` +
+      TX(X(v) - 10, Y(i) - 8, Math.round(i * 1e3) + " mA → " + vir(v, 2) + " V", { size: 14, bold: true, anchor: "end", color: "var(--bad)" }) + "</g>";
+  });
+  if (u != null) {
+    const i = iDiode(u);
+    g += `<line x1="${X(u)}" y1="${Y(i)}" x2="${X(u)}" y2="${y + h}" style="stroke:var(--head);stroke-width:1.5;stroke-dasharray:4 4"/>` +
+      `<circle cx="${X(u)}" cy="${Y(i)}" r="8" style="fill:var(--bad);stroke:var(--surface);stroke-width:2"/>`;
+  }
+  return g;
+}
+function zenerG(x, y, ue, us, iz) {
+  // protection d'entrée : source U_e, R1 = 2k2, Zener 5V1 vers la masse, sortie U_s
+  const xs = x + 60, xr = x + 220, xo = x + 330, yh = y + 20, yn = y + 130, yb = y + 240;
+  let g = sourceV(xs, yh, yb, vir(ue, 0) + " V") + flecheU(xs + 32, yh + 30, yb - 30, "U<tspan font-size=\"0.7em\" dy=\"0.3em\" font-style=\"normal\">e</tspan>");
+  g += `<polyline points="${xs},${yh} ${xr},${yh}" style="fill:none;stroke:var(--ink);stroke-width:3"/><polyline points="${xs},${yb} ${xo},${yb}" style="fill:none;stroke:var(--ink);stroke-width:3"/>`;
+  g += resV(xr, yh, yn, NOMI("R", 1), "2k2") + diodeV(xr, yn, yb, { sens: "haut", genre: "zener" });
+  g += TX(xr - 34, yn + 62, "5V1", { size: 15, anchor: "end", color: "var(--muted)" });
+  g += `<line x1="${xr}" y1="${yn}" x2="${xo}" y2="${yn}" style="stroke:var(--ink);stroke-width:3"/>` +
+    `<circle cx="${xr}" cy="${yn}" r="5" style="fill:var(--ink)"/><circle cx="${xr}" cy="${yb}" r="5" style="fill:var(--ink)"/>` +
+    `<circle cx="${xo}" cy="${yn}" r="6" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/><circle cx="${xo}" cy="${yb}" r="6" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/>`;
+  g += flecheU(xo + 24, yn + 12, yb - 10, "U<tspan font-size=\"0.7em\" dy=\"0.3em\" font-style=\"normal\">s</tspan>");
+  g += TX(xo + 34, (yn + yb) / 2 + 34, vir(us, 2) + " V", { size: 17, bold: true, color: "var(--head)" });
+  if (iz > 5e-5) g += `<circle cx="${xr}" cy="${(yn + yb) / 2}" r="26" style="fill:none;stroke:var(--bad);stroke-width:2.5;stroke-dasharray:4 3"/>` +
+    TX(xr + 32, (yn + yb) / 2 - 22, "elle conduit", { size: 14, bold: true, color: "var(--bad)" });
+  return g;
+}
+function ledCircuitG(x, y, r, direct, e, col) {
+  const xs = x + 70, xb = x + 250, yh = y + 20, ym = y + 130, yb = y + 240;
+  let g = sourceV(xs, yh, yb, "24 V") + flecheU(xs + 32, yh + 30, yb - 30, "U");
+  g += `<polyline points="${xs},${yh} ${xb},${yh}" style="fill:none;stroke:var(--ink);stroke-width:3"/><polyline points="${xs},${yb} ${xb},${yb}" style="fill:none;stroke:var(--ink);stroke-width:3"/>`;
+  g += r > 0 ? resV(xb, yh, ym, NOMI("R", 1), { 470: "470", 1000: "1k", 2200: "2k2", 4700: "4k7" }[r] || String(r)) : `<line x1="${xb}" y1="${yh}" x2="${xb}" y2="${ym}" style="stroke:var(--ink);stroke-width:3"/>` + TX(xb - 14, (yh + ym) / 2 + 5, "sans R", { size: 15, anchor: "end", color: "var(--bad)", bold: true });
+  if (!e.casse && e.i > 0) {
+    const op = clamp(e.i / 0.02, 0.15, 1);
+    g += `<circle cx="${xb}" cy="${(ym + yb) / 2}" r="${30 + 14 * op}" style="fill:${col};opacity:${0.35 * op}"/>`;
+  }
+  g += diodeV(xb, ym, yb, { sens: direct ? "bas" : "haut", genre: "led" });
+  g += TX(xb - 52, (ym + yb) / 2 + 6, NOMI("D", 1), { size: 17, italic: true, anchor: "end", color: "var(--head)" });
+  if (e.casse) g += `<line x1="${xb - 30}" y1="${(ym + yb) / 2 - 30}" x2="${xb + 30}" y2="${(ym + yb) / 2 + 30}" style="stroke:var(--bad);stroke-width:5"/>` +
+    `<line x1="${xb + 30}" y1="${(ym + yb) / 2 - 30}" x2="${xb - 30}" y2="${(ym + yb) / 2 + 30}" style="stroke:var(--bad);stroke-width:5"/>` +
+    TX(xb + 42, (ym + yb) / 2 + 6, e.mot || "détruite", { size: 16, bold: true, color: "var(--bad)" });
+  return g;
+}
+
+// ---------------------------------------------------------------- L1 la jonction (diapos 3 et 4)
+lesson("L1", {
+  dur: 26, label: "Animation : une jonction PN au repos, puis en sens direct (la zone de déplétion devient mince et le courant passe), puis en sens inverse (la zone s'élargit, pas de courant)",
+  steps: [
+    [0, "Au repos : à la frontière, il ne reste que des ions fixes. Cette zone de déplétion n'a pas de porteurs libres : elle isole."],
+    [6, "Sens direct : le + sur la zone p. La zone devient mince ; au-dessus de ≈ 0,7 V, les porteurs la traversent : le courant passe."],
+    [14, "Sens inverse : le + sur la zone n. Les porteurs sont tirés loin de la frontière, la zone s'élargit : pas de courant."],
+    [21, "À retenir : une diode conduit de l'anode (zone p) vers la cathode (zone n), et bloque dans l'autre sens."],
+  ],
+  draw(t) {
+    let k = 1, direct = true, flux = false;
+    if (t >= 6 && t < 14) { k = 1 - 0.7 * prog(t, 6, 8); flux = t > 8; }
+    if (t >= 14) { direct = false; k = 1 + 1.4 * prog(t, 14, 16); }
+    let s = '<svg viewBox="0 0 960 380"><g transform="translate(250,30)">' + jonctionG(20, 30, 420, 130, k, t, flux);
+    if (t >= 6) s += pileG(230, 220, direct);
+    if (flux) s += `<line x1="140" y1="0" x2="300" y2="0" style="stroke:var(--bad);stroke-width:4"/><polygon points="300,-9 318,0 300,9" style="fill:var(--bad)"/>` +
+      TX(230, -10, "courant", { size: 16, bold: true, anchor: "middle", color: "var(--bad)" });
+    if (t >= 14 && t < 21) s += TX(230, 300, "pas de courant", { size: 20, bold: true, anchor: "middle", color: "var(--head)" });
+    s += "</g>";
+    const r = prog(t, 21, 22);
+    if (r > 0) s += `<rect x="90" y="330" width="780" height="42" rx="8" style="fill:#242852;opacity:${r}"/>` +
+      TX(480, 358, "Anode vers cathode : elle conduit. Dans l'autre sens : elle bloque.", { size: 18, bold: true, anchor: "middle", color: "#fff", op: r });
+    return s + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L2 la caractéristique (diapos 7 et 8)
+lesson("L2", {
+  dur: 24, label: "Animation : le point de fonctionnement d'une diode au silicium monte le long de sa caractéristique ; presque rien sous 0,6 volt, puis le courant monte très vite",
+  steps: [
+    [0, "On augmente la tension U<sub>F</sub> de la diode et on lit le courant I<sub>F</sub>."],
+    [3, "Jusqu'à ≈ 0,6 V : presque pas de courant. La barrière de la jonction n'est pas franchie."],
+    [10, "Au-dessus du seuil, le courant monte très vite pour une petite hausse de tension."],
+    [17, "10 mA → 0,70 V ; 30 mA → 0,79 V. Le courant triple, la tension monte d'à peine 0,1 V : d'où le modèle U<sub>F</sub> = 0,7 V."],
+  ],
+  draw(t) {
+    const u = t < 3 ? 0 : (t < 17 ? 0.82 * prog(t, 3, 16) : null);
+    let s = '<svg viewBox="0 0 960 380"><g transform="translate(260,20)">' +
+      caracG(60, 10, 400, 290, u, { marques: [[10e-3, prog(t, 17, 18)], [30e-3, prog(t, 18.5, 19.5)]] }) + "</g>";
+    if (u != null) {
+      const i = iDiode(u);
+      s += TX(780, 120, "U = " + vir(u, 2) + " V", { size: 20, bold: true, color: "var(--head)" }) +
+        TX(780, 152, "I " + (i < 1e-4 ? "≈ 0" : "= " + vir(i * 1e3, 1)) + " mA", { size: 20, bold: true, color: "var(--bad)" });
+    }
+    return s + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L3 la Zener (diapos 11 et 13)
+lesson("L3", {
+  dur: 24, label: "Animation : la tension d'entrée monte de 0 à 24 volts ; la sortie suit l'entrée jusqu'à 5,1 volts, puis la Zener conduit et la sortie reste vers 5,1 volts",
+  steps: [
+    [0, "La protection d'entrée : R<sub>1</sub> en série, la Zener 5V1 branchée en inverse (cathode vers le +)."],
+    [3, "Sous 5,1 V, la Zener est bloquée : aucun courant, R<sub>1</sub> ne prend rien. La sortie suit l'entrée."],
+    [9, "Au-dessus de 5,1 V, la Zener claque : elle conduit et sa tension reste presque constante. R<sub>1</sub> prend la différence."],
+    [19, "À 24 V : U<sub>s</sub> ≈ 5,1 V, R<sub>1</sub> prend ≈ 18,9 V. L'entrée du contrôleur est protégée."],
+  ],
+  draw(t) {
+    const ue = 24 * prog(t, 3, 18), iz = iZener(ue, 2200), us = iz > 0 ? uZener(iz) : ue;
+    let s = '<svg viewBox="0 0 960 380"><g transform="translate(40,40)">' + zenerG(0, 0, ue, us, iz) + "</g>";
+    // courbe U_s(U_e) tracée au fur et à mesure
+    const x0 = 560, y0 = 320, W = 340, H = 260, X = (v) => x0 + W * v / 24, Y = (v) => y0 - H * v / 12;
+    s += `<line x1="${x0}" y1="${y0}" x2="${x0 + W}" y2="${y0}" style="stroke:var(--ink);stroke-width:2"/><line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y0 - H}" style="stroke:var(--ink);stroke-width:2"/>`;
+    [0, 6, 12, 18, 24].forEach((v) => { s += TX(X(v), y0 + 20, v, { size: 13, anchor: "middle", color: "var(--muted)" }); });
+    [0, 5.1, 10].forEach((v) => { s += TX(x0 - 8, Y(v) + 5, vir(v, v % 1 ? 1 : 0), { size: 13, anchor: "end", color: "var(--muted)" }); });
+    s += `<line x1="${x0}" y1="${Y(5.1)}" x2="${x0 + W}" y2="${Y(5.1)}" style="stroke:var(--muted);stroke-width:1.2;stroke-dasharray:5 4"/>`;
+    s += TX(x0 + W, y0 + 40, "U<tspan font-size=\"0.7em\" dy=\"0.3em\" font-style=\"normal\">e</tspan><tspan dy=\"-0.3em\" font-style=\"normal\"> [V]</tspan>", { size: 15, anchor: "end", italic: true, color: "var(--head)" });
+    s += TX(x0 + 6, y0 - H - 8, "U<tspan font-size=\"0.7em\" dy=\"0.3em\" font-style=\"normal\">s</tspan><tspan dy=\"-0.3em\" font-style=\"normal\"> [V]</tspan>", { size: 15, italic: true, color: "var(--head)" });
+    const pts = [];
+    for (let v = 0; v <= ue + 1e-9; v += 0.25) { const i = iZener(v, 2200); pts.push([X(v), Y(i > 0 ? uZener(i) : v)]); }
+    if (pts.length > 1) s += `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" style="fill:none;stroke:var(--bad);stroke-width:3.5"/>`;
+    s += `<circle cx="${X(ue)}" cy="${Y(us)}" r="7" style="fill:var(--bad)"/>`;
+    return s + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L4 la LED (diapos 14 et 15)
+lesson("L4", {
+  dur: 22, label: "Animation : une LED rouge et sa résistance sur 24 volts éclairent ; sans résistance la LED est détruite ; à l'envers elle reçoit 24 volts en inverse et peut claquer",
+  steps: [
+    [0, "Une LED rouge et R<sub>1</sub> = 2k2 sur 24 V : la LED prend ≈ 1,9 V, R<sub>1</sub> le reste. Environ 10 mA : la LED éclaire."],
+    [6, "Sans R<sub>1</sub>, rien ne limite le courant : il dépasse vite I<sub>F</sub> max. La LED est détruite."],
+    [12, "LED à l'envers : elle bloque, mais elle reçoit 24 V en inverse. Sa limite U<sub>R</sub> max n'est que de 5 V : elle peut claquer."],
+    [18, "À retenir : une LED a toujours une résistance en série, et ne se branche jamais à l'envers sur une tension plus grande que 5 V."],
+  ],
+  draw(t) {
+    let r = 2200, direct = true;
+    if (t >= 6 && t < 12) r = 0;
+    if (t >= 12) direct = t < 18 ? false : true;
+    if (t >= 18) r = 2200;
+    const casse = (t >= 7 && t < 12) || (t >= 13 && t < 18);
+    const e = !direct ? { i: 0, casse, mot: "claquage" } : (r === 0 ? { i: Infinity, casse } : { i: (24 - 1.9) / r, casse: false });
+    let s = '<svg viewBox="0 0 960 380"><g transform="translate(300,40)">' + ledCircuitG(0, 0, r, direct, e, "#E53935") + "</g>";
+    if (t >= 12 && t < 18) s += TX(720, 190, "24 V en inverse > 5 V", { size: 18, bold: true, color: "var(--bad)" });
+    if (t < 6 || t >= 18) s += TX(720, 190, "I ≈ 10 mA", { size: 18, bold: true, color: "var(--head)" });
+    return s + "</svg>";
+  },
+});
+
+$("jsx").hidden = true;
+</script>
+</body>
+</html>

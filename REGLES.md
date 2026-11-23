@@ -108,6 +108,11 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 1. `controle/` passe sans erreur : validation des fichiers Office, rendu en images, conventions de ce document, recalcul indépendant de tous les résultats numériques.
 2. Passer le skill humanizer-fr sur tout le texte rédigé.
 3. Mise en page : `controle/ --rendu` signale débordements, chevauchements, pages presque vides et unités coupées ; chaque avertissement est corrigé ou justifié. Puis relecture visuelle de toutes les pages à une résolution lisible (au moins 90 dpi), pas seulement des pages modifiées. Gaël ne doit pas avoir à demander une correction de mise en page.
+4. Erreurs bloquantes de mise en page (ajoutées le 11/23/2026 après la séance TM2 120) :
+   - Figures (`moteur/cei.save`) : un texte posé sur une courbe, un trait de repère ou une flèche, ou deux textes qui se chevauchent. S'applique aux graphiques comme aux schémas.
+   - Lisibilité : une fois la figure placée, son plus petit texte fait au moins 8 pt dans une présentation et 7 pt dans une fiche. Sinon, on agrandit la figure ou ses textes.
+   - Équations éditables : PowerPoint les affiche à leur taille de police, sans les réduire à leur cadre. Le rendu LibreOffice montre l'image de secours et ne voit donc pas le débordement. `moteur/deck.js` borne la taille au cadre (une fraction occupe environ 2,6 fois le corps) et le contrôle bloque si une équation dépasse.
+5. Relecture des figures et des vidéos : `controle/ --rendu` produit des planches `sortie/_controle/<séance>/figures-*.png` (4 figures par page) et `video-*.png` (images clés des animations, une toutes les 5 s). Les pages interactives sont vérifiées automatiquement : textes des dessins qui se chevauchent ou posés sur un trait ou un cercle, dans les exercices et à chaque étape des animations. Chaque planche est lue en entier avant l'envoi : textes, flèches, étiquettes, porteurs. Le contrôle automatique ne remplace pas cette lecture.
 
 ## 10. Règles de travail du dépôt
 
