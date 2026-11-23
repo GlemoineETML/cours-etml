@@ -32,7 +32,7 @@ python3 controle/controler.py tm1/semaine-1          # validation, conventions, 
 python3 controle/comparer.py produit.pptx etalon.pptx --diff
 ```
 
-Une séance = un dossier `contenus/<matière>/<semaine>/` :
+Une séance (une ligne du plan) = un dossier `contenus/<module>/semaine-<N>/<numéro>-<sujet>/`, par exemple `contenus/tm2/semaine-1/120-diode-zener/` (la semaine 1 de TM1, plus ancienne, tient dans un seul dossier) :
 
 ```
 seance.yaml               classe, année, matière, champ, date, éditeur, LZ, liens Floyd / nextecmedia / Teams, fichiers, plan

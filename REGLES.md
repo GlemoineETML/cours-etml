@@ -22,7 +22,9 @@ Le plan de cours est l'entrée du cadrage. Il est préparé dans une discussion 
 
 Sans plan de cours (cours isolé), demander comme avant : la classe, l'année scolaire, le champ d'apprentissage, la matière et les références. Aucune valeur par défaut : la matière est toujours demandée.
 
-Une discussion par ligne du plan (une présentation et sa fiche), pas une par semaine.
+Une discussion par ligne du plan (une présentation et sa fiche), pas une par semaine. Les lignes d'une même semaine se traitent l'une après l'autre : la première peut compléter le moteur (symboles, briques) dont les suivantes ont besoin.
+
+Rangement : un dossier par ligne du plan, `contenus/<module>/semaine-<N>/<numéro>-<sujet>/` (ex. `contenus/tm2/semaine-1/120-diode-zener/`), avec sa propre `seance.yaml`. On génère et on sauve une ligne à la fois : `python3 build.py tm2/semaine-1/120-diode-zener --phase contenu`. La semaine 1 de TM1, faite avant cette règle, reste dans un seul dossier.
 
 Si la réponse au champ d'apprentissage est « non », le cours est hors réforme : pas de champ, pas de LZ ni de lien FutureMEM, ni dans le cartouche des présentations, ni dans les fiches. Tout le reste des règles s'applique.
 
