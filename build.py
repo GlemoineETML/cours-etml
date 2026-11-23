@@ -2,10 +2,10 @@
 """Génère tous les supports d'une séance.
 
 Usage :
-  python3 build.py tm1/semaine-1 --phase contenu        boucles courtes : figures, fiches, plan, présentation provisoire (~15 s)
+  python3 build.py tm1/semaine-1 --phase contenu        boucles courtes : figures, fiches, présentation provisoire (~6 s)
   python3 build.py tm1/semaine-1 --phase medias         après validation du contenu : page interactive, vidéos, présentation finale
   python3 build.py tm1/semaine-1                        tout (--phase tout)
-  python3 build.py tm1/semaine-1 --seulement fiches     étapes précises : figures, fiches, plan, pages, animations, presentations
+  python3 build.py tm1/semaine-1 --seulement fiches     étapes précises : figures, fiches, pages, animations, presentations (plan : ancien workflow)
   python3 build.py tm1/semaine-1 --date "11/16/2026 23:04:03"   date figée (pied de page Word), pour comparer avec reference/
   python3 build.py tm1/semaine-1 --plan chemin.xlsx     classeur du plan de cours à mettre à jour (sinon : celui de reference/)
   python3 build.py tm1/semaine-1 --videos reference     reprend les vidéos de reference/ au lieu de les recalculer (3 min)
@@ -13,7 +13,8 @@ Usage :
   python3 build.py tm1/semaine-1 --sauver               après la génération, copie la sortie dans reference/<séance>/ (à commiter)
 
 Sorties : sortie/<matière>/<semaine>/ ; fichiers intermédiaires (figures, logos, captures) : sortie/_travail/<matière>/<semaine>/.
-Ordre : charte → figures → fiches → plan → pages et captures → vidéos et couvertures → présentations (le rapide d'abord).
+Ordre : charte → figures → fiches → pages et captures → vidéos et couvertures → présentations (le rapide d'abord).
+Le plan de cours n'est plus écrit ici : il est une entrée (plans/, REGLES 2).
 """
 import argparse, datetime as dt, functools, glob, json, os, shutil, subprocess, sys
 
@@ -24,9 +25,9 @@ from moteur.seance import Seance
 from moteur.fiche import Doc
 from moteur import logique, page, couverture, plan
 
-ETAPES = ["figures", "fiches", "plan", "pages", "animations", "presentations"]   # rapide d'abord, vidéos juste avant les présentations
+ETAPES = ["figures", "fiches", "pages", "animations", "presentations"]   # rapide d'abord, vidéos juste avant les présentations
 PHASES = {
-    "contenu": ["figures", "fiches", "plan", "presentations"],        # boucles courtes : présentation provisoire, sans vidéo ni page
+    "contenu": ["figures", "fiches", "presentations"],        # boucles courtes : présentation provisoire, sans vidéo ni page
     "medias": ["figures", "pages", "animations", "presentations"],    # après validation du contenu : page, artefact, vidéos, présentation finale
     "tout": ETAPES,
 }
@@ -136,7 +137,7 @@ def main():
     if "fiches" in etapes:
         for f in contenus(dossier, "*-ex.py"):
             S.module(os.path.basename(f)[:-3]).produire(ctx)
-    if "plan" in etapes and S.plan:
+    if "plan" in etapes and S.plan:      # ancien workflow (semaine 1 TM1) : seulement avec --seulement plan, le plan vit dans plans/
         source = a.plan or os.path.join(reference, S.plan["fichier"])
         plan.produire(S, source, os.path.join(sortie, S.plan["fichier"]))
     if "pages" in etapes:

@@ -7,6 +7,7 @@ Supports de cours ETML (section électronique) produits à partir de contenus ve
 ```
 REGLES.md      toutes les règles de production
 moteur/        briques communes (charte, équations, symboles CEI, deck, fiche, page, animation, plan)
+plans/         plans de cours (entrée du cadrage), écrits par la discussion « plan »
 contenus/      un fichier par séance, rangé par matière et par semaine
 controle/      validation, rendu, conventions, recalculs
 modeles/       Rapport_Simple.dotx et logo ETML
@@ -21,7 +22,7 @@ sortie/        fichiers générés (non versionné)
 Prérequis : Python 3 (python-docx, openpyxl, matplotlib, Pillow, PyYAML, playwright), Node.js (pptxgenjs, jszip), ffmpeg, LibreOffice avec son module de formules `libreoffice-math` (contrôle : sans lui, les équations n'apparaissent pas dans le rendu).
 
 ```
-python3 build.py tm1/semaine-1 --phase contenu       # boucles courtes : figures, fiches, plan, présentation provisoire
+python3 build.py tm1/semaine-1 --phase contenu       # boucles courtes : figures, fiches, présentation provisoire
 python3 build.py tm1/semaine-1 --phase medias        # après validation du contenu : page, vidéos, présentation finale
 python3 build.py tm1/semaine-1                       # tout
 python3 build.py tm1/semaine-1 --seulement fiches    # étapes précises : figures, fiches, plan, pages, animations, presentations

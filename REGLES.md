@@ -10,11 +10,21 @@ Seule référence pour produire les présentations, fiches, corrigés, tests, pa
 - Chaque séance : théorie, présentation diapositive par diapositive, exercices, avec les méthodes d'apprentissage les plus solides connues (activation des acquis, exemples travaillés, pratique espacée, auto-évaluation).
 - Toute notion, tout exemple ou exercice nouveau arrive avec son contexte : à quoi ça sert, pourquoi on l'utilise, où on le retrouve dans le métier, pour que l'apprenti puisse se projeter. Pour TM1, le fil rouge est la situation de travail FutureMEM (ligne de remplissage de boissons).
 
-## 2. Avant chaque nouvelle édition
+## 2. Avant chaque nouvelle édition : le cadrage part du plan de cours
 
-Demander, sans exception : la classe, l'année scolaire, le champ d'apprentissage, la matière et les références (liens) à utiliser. Ces informations vont dans l'en-tête du fichier de contenu de la séance. Aucune valeur par défaut : la matière est toujours demandée.
+Le plan de cours est l'entrée du cadrage. Il est préparé dans une discussion à part du projet claude.ai et rangé dans le dépôt (`plans/<module>/`, voir `plans/README.md`). Les discussions de cours le lisent sans jamais le modifier.
 
-Si la réponse au champ d'apprentissage est « non », le cours est hors réforme : pas de champ, pas de LZ ni de lien FutureMEM, ni dans le cartouche des présentations, ni dans les fiches, ni dans le plan de cours. Tout le reste des règles s'applique.
+1. Gaël désigne la ligne du plan à traiter (ex. « TM2, 120 Diode et diode Zener »).
+2. On lit dans le plan : classe, année, module, date de la semaine, périodes, LZ (colonne H), noms de fichiers (colonne Ressources), situation pratique (Remarques) ; dans l'onglet Export : texte et lien de chaque LZ ; dans l'onglet Couverture : ce que la théorie doit couvrir. Ces valeurs pré-remplissent `seance.yaml`.
+3. Matière du cartouche : « Test et Mesure N – » suivi du champ de la colonne H (LFB_El_Dim4 → El Dim 4, LFB_El_DT2 → El DT 2), comme « Test et Mesure 1 – El DT 1 ». Classe en majuscules (XLO1) ; dates converties au format MM/DD/YYYY.
+4. Références : si le plan n'a pas les liens Floyd ou nextecmedia de la ligne, les demander à Gaël. Aucun lien inventé.
+5. On présente à Gaël une fiche de cadrage pré-remplie (objectifs, fil rouge, ce que la théorie doit couvrir, découpage sur les périodes, références) ; il corrige ou valide en un message, puis la phase contenu démarre.
+
+Sans plan de cours (cours isolé), demander comme avant : la classe, l'année scolaire, le champ d'apprentissage, la matière et les références. Aucune valeur par défaut : la matière est toujours demandée.
+
+Une discussion par ligne du plan (une présentation et sa fiche), pas une par semaine.
+
+Si la réponse au champ d'apprentissage est « non », le cours est hors réforme : pas de champ, pas de LZ ni de lien FutureMEM, ni dans le cartouche des présentations, ni dans les fiches. Tout le reste des règles s'applique.
 
 Ne plus écrire « IntElect » ni « El Dim1 ».
 
@@ -99,5 +109,6 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 - On n'édite jamais un .docx ou un .pptx produit : on modifie le contenu (ou le moteur) et on relance. Si Gaël retouche un fichier livré à la main, on reporte la retouche dans le contenu avant toute nouvelle génération.
 - Une seule version de chaque brique dans `moteur/`. Une amélioration demandée pour une séance profite à toutes : on ne copie jamais un fichier du moteur pour l'adapter.
 - Chaque étape validée se termine par un commit.
+- Le plan de cours appartient à sa discussion « plan » : une discussion de cours le lit et ne l'écrit jamais. Une modification du plan (lien, titre, LZ) se demande dans la discussion « plan ».
 - Deux phases de génération. Phase contenu (`build.py --phase contenu`) : figures, fiches, plan de cours et présentation provisoire, où la page interactive et la vidéo sont remplacées par des emplacements ; on boucle relecture et corrections jusqu'à ce que Gaël valide le contenu. Phase médias (`--phase medias`), seulement après cette validation : page interactive et publication de l'artefact, vidéos, présentation finale. Une correction de fond trouvée en phase médias se fait dans le contenu, puis on relance la phase médias.
 - Version finale : après chaque génération, on demande à Gaël si c'est la version finale. Seulement s'il le confirme, la génération est copiée dans `reference/<matière>/<semaine>/` (`build.py --sauver`) et commitée : GitHub garde la dernière version finale de chaque séance, qui sert aussi d'étalon pour les comparaisons. Les générations d'essai restent dans `sortie/`, non versionné.
