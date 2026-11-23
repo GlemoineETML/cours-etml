@@ -72,6 +72,8 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 - Couleurs ETML (thème T&M) : bleu marine `242852` dominant, bleu `297FD5`, bleu clair `ACCBF9`.
 - Corrigé : réponses en rouge `EE0000`. La fiche élève et le corrigé sortent du même contenu ; on produit toujours les deux.
 - Formules : équations natives éditables (voir 3.2).
+- En-tête de fiche : titre centré ; ligne d'informations (fiche, matière, classe, année, puis champ et LZ sur une deuxième ligne) alignée à gauche ; « Nom : » et « Date : » avec une ligne pointillée pour écrire. Consignes, encadrés et questions alignés à gauche, jamais justifiés.
+- Tableaux à remplir : lignes assez hautes pour écrire dans la fiche élève ; dans le corrigé, réponses longues alignées à gauche.
 - Exercices : « N°1 », « N°2 »… suivis directement du titre, sans tabulation ni minutage aligné à droite.
 - Lignes de réponse gardées sur la même page que leur question. Grille d'auto-évaluation dans la fiche élève seulement, pas dans le corrigé.
 
@@ -80,6 +82,7 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 - Même police que le modèle Word (Arial), couleurs ETML, format 16:10 (10 × 6,25 pouces).
 - Bande bleue verticale à droite avec le logo en blanc, « Section électronique » et le numéro de page.
 - Ordre de fin : d'abord les exercices, puis la page interactive, puis la vidéo d'animation.
+- Objectifs de la diapositive de titre : chaque objectif finit par son ou ses LZ cliquables (« … (LZ_4255) »), sauf cours hors réforme. Tous les LZ de `seance.yaml` y figurent ; `controle/` le vérifie et bloque sinon.
 - Cartouche de la première diapositive (titre) : classe, année, matière, champ (lien, sauf cours hors réforme), version, et la ligne « Gaël Lemoine · date ». L'éditeur n'apparaît que là et dans le pied de page Word, sur aucune autre diapositive.
 
 ## 6. Liens
@@ -104,7 +107,7 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 
 1. `controle/` passe sans erreur : validation des fichiers Office, rendu en images, conventions de ce document, recalcul indépendant de tous les résultats numériques.
 2. Passer le skill humanizer-fr sur tout le texte rédigé.
-3. Vérifier la mise en page sur le rendu (pages modifiées au minimum).
+3. Mise en page : `controle/ --rendu` signale débordements, chevauchements, pages presque vides et unités coupées ; chaque avertissement est corrigé ou justifié. Puis relecture visuelle de toutes les pages à une résolution lisible (au moins 90 dpi), pas seulement des pages modifiées. Gaël ne doit pas avoir à demander une correction de mise en page.
 
 ## 10. Règles de travail du dépôt
 

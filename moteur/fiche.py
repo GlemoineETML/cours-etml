@@ -171,7 +171,8 @@ class Doc:
         return h
 
     def HR(self):
-        p = self.d.add_paragraph(); p.paragraph_format.space_before = Pt(2); p.paragraph_format.space_after = Pt(2)
+        p = self.d.add_paragraph(); p.paragraph_format.space_before = Pt(0); p.paragraph_format.space_after = Pt(0)
+        p.paragraph_format.line_spacing = 1.0
         p_border(p, ["bottom"], 4)
 
     def Q(self, lbl, txt):
@@ -192,6 +193,7 @@ class Doc:
             f.space_before = Pt(4 if i == 0 else 0); f.space_after = Pt(6 if i == len(lines) - 1 else 0)
             f.keep_with_next = i < len(lines) - 1; p.alignment = WD_ALIGN_PARAGRAPH.LEFT
             p_border(p, ["top", "left", "bottom", "right"], 4)
+            f.line_spacing = 1.1
             rich(p, t, bold=(i == 0), italic=(i > 0), size=9.5)
 
     # ---------------------------------------------------------------- équations natives
@@ -230,17 +232,21 @@ class Doc:
             tcPr = c._tc.get_or_add_tcPr(); sh = OxmlElement("w:shd")
             sh.set(qn("w:val"), "clear"); sh.set(qn("w:color"), "auto"); sh.set(qn("w:fill"), shade); tcPr.append(sh)
 
-    def TABLE(self, widths, rows, header=True, height=0.6, size=10, first_left=True, keep_after=False, parent=None, bold_first=True):
-        """('R', txt) = réponse : rouge dans le corrigé, vide pour l'apprenti·e."""
+    def TABLE(self, widths, rows, header=True, height=0.6, size=10, first_left=True, keep_after=False, parent=None, bold_first=True,
+              gauche=(), height_eleve=None):
+        """('R', txt) = réponse : rouge dans le corrigé, vide pour l'apprenti·e.
+        gauche : indices des colonnes alignées à gauche (hors en-tête), pour les textes longs ;
+        height_eleve : hauteur des lignes de réponse dans la fiche élève (assez de place pour écrire)."""
         d = self.d
         t = (parent or d).add_table(rows=len(rows), cols=len(widths)); t.style = "Table Grid"
         t.alignment = WD_TABLE_ALIGNMENT.CENTER; t.autofit = False
         for i, row in enumerate(rows):
-            tr = t.rows[i]; tr.height = Cm(height)
+            reponse = any(isinstance(v, tuple) and v[0] == "R" for v in row)
+            tr = t.rows[i]; tr.height = Cm(height_eleve if (height_eleve and reponse and not self.corr) else height)
             for j, v in enumerate(row):
                 c = tr.cells[j]; c.width = Cm(widths[j])
                 hdr_ = header and i == 0
-                al = "left" if (first_left and j == 0 and not hdr_) else "center"
+                al = "left" if ((first_left and j == 0) or j in gauche) and not hdr_ else "center"
                 if isinstance(v, tuple) and v[0] == "R":
                     self.cell_txt(c, v[1] if self.corr else "", color=RED if self.corr else None, bold=True, size=size, align=al)
                 else:
@@ -281,19 +287,27 @@ class Doc:
     def head(self, title, info_items, minutes_box, consignes, ressources):
         d = self.d
         d.add_paragraph(title, style="Title")
-        p = self.P("", align=WD_ALIGN_PARAGRAPH.CENTER, italic=True, after=8, size=10)
+        # informations alignées à gauche (REGLES 4) ; un élément « \n » passe à la ligne
+        p = self.P("", align=WD_ALIGN_PARAGRAPH.LEFT, italic=True, after=8, size=10)
+        p.paragraph_format.line_spacing = 1.15
+        if not any(t == "\n" for t, _ in info_items):      # par défaut : champ et objectifs sur la deuxième ligne
+            info_items = [x for t, u in info_items for x in
+                          ([(t.split(" · Champ")[0], u), ("\n", None), ("Champ" + t.split(" · Champ", 1)[1], u)] if (" · Champ" in t and not u) else [(t, u)])]
         for txt, url in info_items:
-            if url: hyperlink(p, url, txt, size=10)
+            if txt == "\n": p.add_run().add_break()
+            elif url: hyperlink(p, url, txt, size=10)
             else: rich(p, txt, italic=True, size=10)
-        p = d.add_paragraph(); p.paragraph_format.tab_stops.add_tab_stop(Cm(11.5)); p.paragraph_format.space_after = Pt(0)
-        r = p.add_run("Corrigé" if self.corr else "Version apprenti·e"); r.bold = True
-        if self.corr: r.font.color.rgb = RED
-        rich(p, "\tNom :")
-        p = d.add_paragraph(); p.paragraph_format.tab_stops.add_tab_stop(Cm(11.5)); rich(p, "\tDate :")
-        p_border(p, ["bottom"], 4)
+        for k, lab in enumerate(("Nom :", "Date :")):
+            p = d.add_paragraph(); f = p.paragraph_format
+            f.tab_stops.add_tab_stop(Cm(9.5)); f.tab_stops.add_tab_stop(Cm(TW), WD_TAB_ALIGNMENT.RIGHT, WD_TAB_LEADER.DOTS)
+            f.space_after = Pt(2 if k == 0 else 6); f.space_before = Pt(4 if k else 0); f.keep_with_next = True
+            if k == 0:
+                r = p.add_run("Corrigé" if self.corr else "Version apprenti·e"); r.bold = True
+                if self.corr: r.font.color.rgb = RED
+            rich(p, "\t" + lab); p.add_run("\t")
         self.BOX(minutes_box)
         for c in consignes:
-            self.P(c, after=4)
+            self.P(c, after=4, align=WD_ALIGN_PARAGRAPH.LEFT)
         self.P("**Ressources :**", after=1, keep=True)
         for prefix, items in ressources:
             self.LINKS(prefix, items, size=10, after=1, keep=True)

@@ -1,11 +1,11 @@
 // Typographie française (REGLES 7) pour les présentations : mêmes règles que moteur/typo.py.
 "use strict";
 // typographie française : espaces insécables (nombre + unité, avant : ; ? ! », après «, N°, p., diapositive)
-const UNITS = "(?:V|mV|mA|A|µA|ns|ms|µs|s|MHz|kHz|Hz|µW|mW|W|pJ|°C|%|min|L|cm|mm|Ω|kΩ|MΩ|pF|nF|µF|mF|kV|kW|lignes|portes|entrées|broches|bits|bytes|bouteilles|transistors|inverseurs)";
+const UNITS = "(?:V|mV|mA|A|µA|ns|ms|µs|s|MHz|kHz|Hz|µW|mW|W|pJ|°C|%|min|L|cm|mm|Ω|kΩ|MΩ|pF|nF|µF|mF|kV|kW|1/K|K|eV|GΩ|mΩ|µΩ|lignes|portes|entrées|broches|bits|bytes|bouteilles|transistors|inverseurs)";
 function TY(t) {
   if (typeof t !== "string" || t.includes("://")) return t;
   t = t.replace(/ ([:;?!»])/g, "\u00a0$1").replace(/« /g, "«\u00a0");
-  t = t.replace(new RegExp("(\\d) (?=" + UNITS + "(?![\\wÀ-ÿ]))", "g"), "$1\u00a0").replace(/(\d) (?=°C)/g, "$1\u00a0");
+  t = t.replace(new RegExp("(\\d\\}?) (?=" + UNITS + "(?![\\wÀ-ÿ]))", "g"), "$1\u00a0").replace(/(\d) (?=°C)/g, "$1\u00a0");
   t = t.replace(/(N°|n°|p\.|chap\.|diapositives?|LZ|Floyd) (?=\d)/g, "$1\u00a0").replace(/(\d) … (\d|−)/g, "$1\u00a0…\u00a0$2");
   const EQ = /(^|[\s(])([\wÀ-ÿ]{1,3}) = ([\wÀ-ÿ−]{1,3})(?=$|[\s,.;:)!?])/g;      // « A = 1 » ne se coupe pas
   t = t.replace(EQ, "$1$2\u00a0=\u00a0$3").replace(EQ, "$1$2\u00a0=\u00a0$3");

@@ -6,6 +6,7 @@ Usage : python3 controle/controler.py tm1/semaine-1 [--rendu] [--reference]
   2. conventions de REGLES.md vérifiables automatiquement (voir CONVENTIONS) ;
   3. recalcul indépendant : contenus/<séance>/verif.py (fonction verifier() → liste d'erreurs) ;
   4. --rendu : conversion en PDF puis en images (LibreOffice, pdftoppm) dans sortie/_controle/<séance>/ pour la vérification visuelle ;
+     puis contrôle de mise en page (controle/mise_en_page.py : débordements, chevauchements, pages presque vides, unités coupées) ;
   5. --reference : comparaison avec reference/<séance>/ (controle/comparer.py).
 Code de sortie 0 si aucune erreur. Les avertissements (⚠) sont à regarder, pas bloquants.
 """
@@ -142,6 +143,23 @@ def conventions(S, chemin):
     return E, A
 
 
+def lz_titres(S, fichiers):
+    """REGLES 5 : chaque LZ de seance.yaml est écrit et cliquable sur la diapositive de titre d'au moins une présentation
+    de la séance (une seule présentation par séance dans la nouvelle structure : elle les porte donc tous)."""
+    if S.hors_reforme:
+        return []
+    trouves = set()
+    for f in fichiers:
+        if not f.endswith(".pptx"):
+            continue
+        z = zipfile.ZipFile(f)
+        liens = [html.unescape(u) for u in re.findall(r'Target="([^"]+)"[^>]*TargetMode="External"', z.read("ppt/slides/_rels/slide1.xml.rels").decode("utf-8"))]
+        texte = " ".join(texte_pptx(f).get(1, []))
+        trouves |= {c for c, (_, _, lien) in S.lz.items() if c in texte and any(lien in u for u in liens)}
+    return [f"{c} absent ou non cliquable sur la diapositive de titre (REGLES 5 : chaque objectif finit par son LZ)"
+            for c in S.lz if c not in trouves]
+
+
 # ---------------------------------------------------------------- 4. rendu
 def module_formules():
     """LibreOffice sans son module Math (paquet libreoffice-math) n'affiche aucune équation OMML dans le rendu."""
@@ -175,6 +193,7 @@ def main():
         if f.endswith((".docx", ".pptx", ".xlsx")):
             E += [f"{os.path.basename(f)} : {e}" for e in valider(f)]
         e, w = conventions(S, f); E += e; A += w
+    E += lz_titres(S, fichiers)
     verif = os.path.join(S.dossier, "verif.py")
     if os.path.exists(verif):
         e = S.module("verif").verifier()
@@ -194,9 +213,13 @@ def main():
         if not module_formules():
             A.append("LibreOffice n'a pas son module de formules (paquet libreoffice-math) : les équations manquent dans le rendu")
         dossier = os.path.join(RACINE, "sortie", "_controle", a.seance)
+        from controle.mise_en_page import controler_pptx, controler_pdf
         for f in fichiers:
             if f.endswith((".docx", ".pptx")):
                 print(f"rendu · {os.path.basename(f)} : {len(rendu(f, dossier))} page(s)")
+                pdf = os.path.join(dossier, os.path.splitext(os.path.basename(f))[0] + ".pdf")
+                MP = (controler_pptx(f) if f.endswith(".pptx") else []) + controler_pdf(pdf, f.endswith(".docx"))
+                A += [f"mise en page · {m}" for m in MP]
     for x in A: print("⚠", x)
     for x in E: print("✗", x)
     print(f"{len(E)} erreur(s), {len(A)} avertissement(s)")

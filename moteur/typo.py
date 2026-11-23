@@ -4,7 +4,7 @@ Mêmes règles que moteur/typo.js (présentations)."""
 import re
 
 NB, NNB = " ", " "
-UNITES = r"(?:V|mV|mA|A|µA|ns|ms|µs|s|MHz|kHz|Hz|µW|mW|W|pJ|°C|%|min|L|cm|mm|Ω|kΩ|MΩ|pF|nF|µF|mF|kV|kW|lignes|portes|entrées|broches|bits|bytes|bouteilles|transistors|inverseurs)"
+UNITES = r"(?:V|mV|mA|A|µA|ns|ms|µs|s|MHz|kHz|Hz|µW|mW|W|pJ|°C|%|min|L|cm|mm|Ω|kΩ|MΩ|pF|nF|µF|mF|kV|kW|1/K|K|eV|GΩ|mΩ|µΩ|lignes|portes|entrées|broches|bits|bytes|bouteilles|transistors|inverseurs)"
 
 
 def typo(t):
@@ -13,7 +13,7 @@ def typo(t):
         return t
     t = re.sub(r" ([:;?!»])", NB + r"\1", t)
     t = t.replace("« ", "«" + NB)
-    t = re.sub(r"(\d) (?=" + UNITES + r"\b)", r"\1" + NB, t)
+    t = re.sub(r"(\d\}?) (?=" + UNITES + r"\b)", r"\1" + NB, t)      # aussi après un exposant : 10^{3} Ω·m
     t = re.sub(r"(\d) (?=°C)", r"\1" + NB, t)
     t = re.sub(r"\b(N°|n°|p\.|chap\.|diapositives?|LZ|Floyd) (?=\d)", lambda m: m.group(1) + NB, t)
     t = re.sub(r"(\d) … (\d|−)", r"\1" + NB + "…" + NB + r"\2", t)
