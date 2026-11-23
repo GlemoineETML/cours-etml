@@ -30,8 +30,8 @@ def diviseur(nom, r1=("$R_1$", None), r2=("$R_2$", None), u=("$U$", None), u2="$
         ax.text(xs + 0.5, (top + bas) / 2, u[1], ha="left", va="center", fontsize=13, color=GR)
     if courant:
         fleche_courant(ax, 0.7, top, 1.5, top, courant, decal=(0.0, 0.3))
-    masse(ax, 1.1, bas - 0.05)
-    ax.set_xlim(-1.6, xo + (2.6 if charge else 1.3)); ax.set_ylim(-0.5, top + 0.6)
+    masse(ax, xr, bas)                                         # sous le nœud du bas de R2
+    ax.set_xlim(-1.6, xo + (2.6 if charge else 1.3)); ax.set_ylim(-0.85, top + 0.6)
     save(fig, nom)
 
 

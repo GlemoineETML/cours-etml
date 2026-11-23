@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Symboles et figures normalisés (CEI 60617), en PNG via matplotlib, aux couleurs ETML (REGLES 3.3) :
 portes logiques (CEI 60617-12 : rectangle + qualificatif, cercle de négation), équations en notation du Floyd,
-résistance, source de tension, masse, nœuds, flèches de tension et de courant (CEI 60617-2 et -4),
+résistance, source de tension, masse (GND), terre, nœuds, flèches de tension (du + vers le −) et de courant (CEI 60617-2 et -4),
 chronogrammes, contact à fermeture (CEI 60617-7), brochage DIP 14.
 Les figures propres à une séance sont dans contenus/<matière>/<semaine>/figures.py et utilisent ces briques.
 ecrire_dans(dossier) fixe le dossier où save() écrit les images."""
@@ -143,9 +143,9 @@ def fig_dip(ref):
     save(fig, f"dip_{ref}.png")
 
 
-# ------------------------------------------------------------------ circuits (CEI 60617-2 et -4) : résistance, source, masse, flèches
-# Convention (REGLES 3.3) : la flèche de tension pointe vers le potentiel le plus élevé ; récepteur : courant et tension
-# en sens contraires ; source : même sens (convention générateur).
+# ------------------------------------------------------------------ circuits (CEI 60617-2 et -4) : résistance, source, masse, terre, flèches
+# Convention (REGLES 3.3) : la flèche de tension va toujours du + vers le − (du potentiel le plus élevé vers le plus bas) ;
+# récepteur : courant et tension dans le même sens ; source : sens contraires (convention générateur).
 def resistance(ax, x, y0, y1, nom=None, valeur=None, lw=2.0, w=0.32, h=0.85, cote="droite", fs=15):
     """Résistance verticale (rectangle CEI) entre y0 et y1, avec son nom (R_1) et sa valeur (4k7) à côté."""
     ym = (y0 + y1) / 2
@@ -167,8 +167,20 @@ def source_tension(ax, x, y0, y1, r=0.34, lw=2.0):
     line(ax, [(x, ym - r), (x, ym + r)], lw=lw, zorder=4)        # le conducteur traverse le cercle
 
 
-def masse(ax, x, y, lw=2.2):
-    """Masse : trait horizontal et traits décroissants."""
+def masse(ax, x, y, etiquette="GND", fil=0.35, lw=2.2, fs=12):
+    """Masse, châssis (CEI 60617-2, 02-15-04) posée sous le nœud (x, y) : court fil vertical, trait horizontal,
+    trois traits obliques en dessous ; étiquette « GND » à droite (None pour l'omettre)."""
+    yb = y - fil
+    line(ax, [(x, y), (x, yb)], lw=lw)
+    line(ax, [(x - 0.3, yb), (x + 0.3, yb)], lw=lw)
+    for dx in (-0.3, 0.0, 0.3):
+        line(ax, [(x + dx, yb), (x + dx - 0.15, yb - 0.18)], lw=lw - 0.4)
+    if etiquette:
+        ax.text(x + 0.42, yb, etiquette, ha="left", va="center", fontsize=fs, color=GR)
+
+
+def terre(ax, x, y, lw=2.2):
+    """Terre (CEI 60617-2, 02-15-01) : trait horizontal et traits décroissants."""
     for k_, w_ in enumerate((0.3, 0.2, 0.1)):
         line(ax, [(x - w_, y - 0.1 * k_), (x + w_, y - 0.1 * k_)], lw=lw)
 
@@ -182,8 +194,8 @@ def borne(ax, x, y, r=0.07, lw=1.8):
 
 
 def fleche_tension(ax, x, y_moins, y_plus, nom, couleur=BLUE, fs=15, cote="droite"):
-    """Flèche de tension verticale, pointe vers le potentiel le plus élevé (y_plus)."""
-    ax.annotate("", xy=(x, y_plus), xytext=(x, y_moins),
+    """Flèche de tension verticale, du + (y_plus) vers le − (y_moins) : la pointe est du côté du −."""
+    ax.annotate("", xy=(x, y_moins), xytext=(x, y_plus),
                 arrowprops=dict(arrowstyle="-|>,head_length=0.6,head_width=0.3", color=couleur, lw=2.0))
     ax.text(x + (0.12 if cote == "droite" else -0.12), (y_moins + y_plus) / 2, nom, ha="left" if cote == "droite" else "right",
             va="center", fontsize=fs, color=couleur, fontweight="bold")

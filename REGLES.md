@@ -38,7 +38,8 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 ### 3.3 Schémas et graphiques
 
 - Symboles électriques et logiques : norme CEI 60617. Résistance en rectangle. Portes logiques : symboles européens seulement (rectangle + qualificatif, cercle de négation).
-- Flèches de tension et de courant selon la convention récepteur, sauf pour les sources (convention générateur).
+- Flèche de tension toujours du + vers le − (pointe du côté du potentiel le plus bas). Convention récepteur (courant et tension dans le même sens), sauf pour les sources (convention générateur : sens contraires).
+- Masse (GND) : symbole CEI 60617-2 « masse, châssis » (trait horizontal et trois traits obliques), relié par un court fil à un nœud du circuit, avec l'étiquette « GND ». Le symbole de la terre est réservé à une vraie liaison à la terre.
 - Graphiques : chaque axe porte la grandeur et son unité ; mêmes couleurs ETML que les documents.
 
 ### 3.4 Numérique
