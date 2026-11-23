@@ -1,7 +1,7 @@
 // Typographie française (REGLES 7) pour les présentations : mêmes règles que moteur/typo.py.
 "use strict";
 // typographie française : espaces insécables (nombre + unité, avant : ; ? ! », après «, N°, p., diapositive)
-const UNITS = "(?:V|mV|mA|A|µA|ns|ms|µs|s|MHz|kHz|Hz|µW|mW|W|pJ|°C|%|min|L|cm|mm|lignes|portes|entrées|broches|bits|bytes|bouteilles|transistors|inverseurs)";
+const UNITS = "(?:V|mV|mA|A|µA|ns|ms|µs|s|MHz|kHz|Hz|µW|mW|W|pJ|°C|%|min|L|cm|mm|Ω|kΩ|MΩ|pF|nF|µF|mF|kV|kW|lignes|portes|entrées|broches|bits|bytes|bouteilles|transistors|inverseurs)";
 function TY(t) {
   if (typeof t !== "string" || t.includes("://")) return t;
   t = t.replace(/ ([:;?!»])/g, "\u00a0$1").replace(/« /g, "«\u00a0");

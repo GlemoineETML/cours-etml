@@ -152,6 +152,41 @@ function creer(cfg) {
     s.addImage({ path: file, x, y, w, h });
     return h;
   }
+  // ---------------------------------------------------------------- diapositive de titre (REGLES 5)
+  // o = { titre, sousTitre, objectifs: [texte ou runs], question, indice, references: [runs], dessin: (s) => {…}, notes }
+  // Cartouche : classe, année, matière et champ (lien FutureMEM), sauf cours hors réforme ; références si la séance en a.
+  function titreSlide(o) {
+    const s = pres.addSlide({ masterName: "TITRE" });
+    squeeze(s, 0.6, 9.5, 8.9);
+    txt(s, MATIERE.toUpperCase(), { x: 0.6, y: 0.4, w: 5.4, h: 0.3, fontSize: 12, bold: true, color: BLUE, charSpacing: 1 });
+    txt(s, o.titre, { x: 0.6, y: 0.7, w: 5.4, h: 1.05, fontSize: 28, bold: true, color: NAVY, valign: "middle" });
+    if (o.sousTitre) txt(s, o.sousTitre, { x: 0.6, y: 1.78, w: 5.4, h: 0.4, fontSize: 12.5, color: GR });
+    txt(s, "À la fin de la leçon, je suis capable de…", { x: 0.6, y: 2.25, w: 5.4, h: 0.3, fontSize: 13.5, bold: true });
+    const n = o.objectifs.length, pas = n > 4 ? 0.38 : 0.42;
+    o.objectifs.forEach((t, i) => {
+      const y = 2.62 + i * pas;
+      badge(s, 0.6, y + 0.03, String(i + 1), 0.3);
+      s.addText(typeof t === "string" ? [{ text: t }] : t, { x: 1.02, y, w: 5.0, h: pas - 0.04, fontFace: F, fontSize: n > 4 ? 12 : 12.5, color: K, margin: 0, valign: "middle" });
+    });
+    frame(s, 6.15, 0.55, 3.35, 2.6);
+    txt(s, "Question de départ", { x: 6.3, y: 0.63, w: 3.1, h: 0.3, fontSize: 13, bold: true, color: BLUE });
+    txt(s, o.question, { x: 6.3, y: 0.97, w: 3.1, h: 1.6, fontSize: 11.5 });
+    if (o.indice) txt(s, o.indice, { x: 6.3, y: 2.62, w: 3.1, h: 0.42, fontSize: 10, italic: true, color: GR });
+    if (o.dessin) o.dessin(s);
+    card(s, 0.6, 4.5, 8.9, 1.0);
+    const cart = [{ text: `Classe ${CLASSE} · ${ANNEE} · ${MATIERE}` + (DATA.HORS_REFORME ? "" : " · champ "), options: { bold: true } }];
+    if (!DATA.HORS_REFORME) cart.push({ text: CHAMP, options: { bold: true, hyperlink: { url: DATA.EDGE + DATA.FUTUREMEM_CHAMP, tooltip: "Champ d'apprentissage sur FutureMEM" } } });
+    if (o.references && o.references.length) {
+      cart.push({ text: "", options: { breakLine: true } }, { text: "Références : ", options: { color: K } });
+      o.references.forEach((r, i) => { if (i) cart.push({ text: " · ", options: { color: K } }); cart.push(r); });
+    } else if (DATA.HORS_REFORME) {
+      cart.push({ text: "", options: { breakLine: true } }, { text: "Cours hors réforme", options: { color: GR, italic: true } });
+    }
+    s.addText(cart, { x: 0.8, y: 4.55, w: 8.5, h: 0.9, fontFace: F, fontSize: 11, color: NAVY, margin: 0, valign: "middle", paraSpaceAfter: 3 });
+    if (o.notes) s.addNotes(o.notes);
+    return s;
+  }
+
   // ---------------------------------------------------------------- équations (REGLES 3.2)
   // eqImg / eqName : une image d'équation (figures.py) qui devient, avec cfg.equations = "omml", une équation PowerPoint
   // éditable ; l'image reste en secours (mc:Fallback) pour les lecteurs qui ne lisent pas les équations (LibreOffice…).
@@ -304,7 +339,7 @@ function creer(cfg) {
     });
   }
 
-  return { pres, DATA, NAVY, BLUE, LBLUE, TINT, K, GR, RED, F, MATIERE, TOPIC, CLASSE, ANNEE, CHAMP, DATE_US, VERSION, LZURL, LOGO_BAND, TY, TYR, TYROWS, squeeze, R, lines, expand, slide, txt, card, frame, badge, img, bullets, life, boxTitle, cell, H, BORDER, LINK, NEXTEC, FLOYDP, FLOYDL, LZL, KSQ, PNGURI, ARROW, exoSlide, pageSlide, videoSlide, nandCEI, tailles, eqImg, eqName, ecrire };
+  return { pres, DATA, NAVY, BLUE, LBLUE, TINT, K, GR, RED, F, MATIERE, TOPIC, CLASSE, ANNEE, CHAMP, DATE_US, VERSION, LZURL, LOGO_BAND, TY, TYR, TYROWS, squeeze, R, lines, expand, slide, txt, card, frame, badge, img, bullets, life, boxTitle, cell, H, BORDER, LINK, NEXTEC, FLOYDP, FLOYDL, LZL, KSQ, PNGURI, ARROW, exoSlide, pageSlide, videoSlide, nandCEI, tailles, eqImg, eqName, titreSlide, ecrire };
 }
 
 module.exports = creer;

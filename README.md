@@ -18,7 +18,7 @@ sortie/        fichiers générés (non versionné)
 
 ## Utilisation
 
-Prérequis : Python 3 (python-docx, openpyxl, matplotlib, Pillow, PyYAML, playwright), Node.js (pptxgenjs, jszip), ffmpeg, LibreOffice (contrôle).
+Prérequis : Python 3 (python-docx, openpyxl, matplotlib, Pillow, PyYAML, playwright), Node.js (pptxgenjs, jszip), ffmpeg, LibreOffice avec son module de formules `libreoffice-math` (contrôle : sans lui, les équations n'apparaissent pas dans le rendu).
 
 ```
 python3 build.py tm1/semaine-1                       # tout : figures, fiches, vidéos, pages, présentations, plan

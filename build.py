@@ -40,7 +40,7 @@ def donnees_js(ctx):
     S = ctx.S
     gates = logique.pour_js()
     for k, g in gates.items():
-        g[11] = S.floyd_url(3, g[10])
+        g[11] = S.floyd_url(3, g[10]) if 3 in S.floyd else None   # lien du chapitre 3 du Floyd, s'il est dans la séance
     return S.pour_js({"GATES": gates, "ORDER": logique.ORDER, "NIV": logique.NIV,
                       "CHRONO_A": logique.CHRONO_A, "CHRONO_B": logique.CHRONO_B})
 

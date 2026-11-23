@@ -1,0 +1,20 @@
+# Séance de test du workflow complet (11/23/2026) : diviseur de tension.
+# Valeurs de test choisies par Gaël : classe TEST, cours hors réforme. Pas de référence validée pour ce sujet
+# (le Floyd et les liens nextecmedia du projet traitent du numérique) : aucun lien inventé.
+
+classe: TEST
+annee: 2026-2027
+matiere: Cours de test
+champ: non                        # hors réforme : pas de champ, pas de LZ, pas de lien FutureMEM (REGLES 2)
+date: 11/23/2026
+editeur: Gaël Lemoine
+
+teams_dossier: "https://eduvaud.sharepoint.com/:{k}:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/TEST/"
+
+fichiers:
+  "100": "100 Diviseur de tension.pptx"
+  "110": "110 EX Diviseur de tension.docx"
+  "110C": "110 EX C Diviseur de tension.docx"
+
+versions:
+  "100": "1.0"

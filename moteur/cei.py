@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Symboles et figures normalisés (CEI 60617), en PNG via matplotlib, aux couleurs ETML (REGLES 3.3) :
 portes logiques (CEI 60617-12 : rectangle + qualificatif, cercle de négation), équations en notation du Floyd,
+résistance, source de tension, masse, nœuds, flèches de tension et de courant (CEI 60617-2 et -4),
 chronogrammes, contact à fermeture (CEI 60617-7), brochage DIP 14.
 Les figures propres à une séance sont dans contenus/<matière>/<semaine>/figures.py et utilisent ces briques.
 ecrire_dans(dossier) fixe le dossier où save() écrit les images."""
@@ -140,3 +141,56 @@ def fig_dip(ref):
         ax.text(W + 0.38, y, lab_r.replace("VCC", "V$_{CC}$"), ha="left", va="center", fontsize=11, fontweight="bold", color=NAVY)
     ax.set_xlim(-1.2, W + 1.2); ax.set_ylim(-0.2, Hh + 0.35)
     save(fig, f"dip_{ref}.png")
+
+
+# ------------------------------------------------------------------ circuits (CEI 60617-2 et -4) : résistance, source, masse, flèches
+# Convention (REGLES 3.3) : la flèche de tension pointe vers le potentiel le plus élevé ; récepteur : courant et tension
+# en sens contraires ; source : même sens (convention générateur).
+def resistance(ax, x, y0, y1, nom=None, valeur=None, lw=2.0, w=0.32, h=0.85, cote="droite", fs=15):
+    """Résistance verticale (rectangle CEI) entre y0 et y1, avec son nom (R_1) et sa valeur (4k7) à côté."""
+    ym = (y0 + y1) / 2
+    line(ax, [(x, y0), (x, ym - h / 2)], lw=lw); line(ax, [(x, ym + h / 2), (x, y1)], lw=lw)
+    ax.add_patch(Rectangle((x - w / 2, ym - h / 2), w, h, fill=True, fc="white", ec=K, lw=lw, zorder=3))
+    s = 1 if cote == "droite" else -1
+    ha = "left" if s > 0 else "right"
+    if nom:
+        ax.text(x + s * (w / 2 + 0.15), ym + 0.17, nom, ha=ha, va="center", fontsize=fs, color=NAVY)
+    if valeur:
+        ax.text(x + s * (w / 2 + 0.15), ym - 0.22, valeur, ha=ha, va="center", fontsize=fs - 2, color=GR)
+
+
+def source_tension(ax, x, y0, y1, r=0.34, lw=2.0):
+    """Source de tension idéale (CEI 60617-2) : cercle traversé par le conducteur, entre y0 (−) et y1 (+)."""
+    ym = (y0 + y1) / 2
+    line(ax, [(x, y0), (x, ym - r)], lw=lw); line(ax, [(x, ym + r), (x, y1)], lw=lw)
+    ax.add_patch(Circle((x, ym), r, fill=True, fc="white", ec=K, lw=lw, zorder=3))
+    line(ax, [(x, ym - r), (x, ym + r)], lw=lw, zorder=4)        # le conducteur traverse le cercle
+
+
+def masse(ax, x, y, lw=2.2):
+    """Masse : trait horizontal et traits décroissants."""
+    for k_, w_ in enumerate((0.3, 0.2, 0.1)):
+        line(ax, [(x - w_, y - 0.1 * k_), (x + w_, y - 0.1 * k_)], lw=lw)
+
+
+def noeud(ax, x, y, r=0.06):
+    ax.add_patch(Circle((x, y), r, color=K, zorder=4))
+
+
+def borne(ax, x, y, r=0.07, lw=1.8):
+    ax.add_patch(Circle((x, y), r, fill=True, fc="white", ec=K, lw=lw, zorder=4))
+
+
+def fleche_tension(ax, x, y_moins, y_plus, nom, couleur=BLUE, fs=15, cote="droite"):
+    """Flèche de tension verticale, pointe vers le potentiel le plus élevé (y_plus)."""
+    ax.annotate("", xy=(x, y_plus), xytext=(x, y_moins),
+                arrowprops=dict(arrowstyle="-|>,head_length=0.6,head_width=0.3", color=couleur, lw=2.0))
+    ax.text(x + (0.12 if cote == "droite" else -0.12), (y_moins + y_plus) / 2, nom, ha="left" if cote == "droite" else "right",
+            va="center", fontsize=fs, color=couleur, fontweight="bold")
+
+
+def fleche_courant(ax, x0, y0, x1, y1, nom, couleur=RED, fs=14, decal=(0.12, 0.0)):
+    """Pointe de flèche de courant posée sur un conducteur, de (x0, y0) vers (x1, y1)."""
+    ax.annotate("", xy=(x1, y1), xytext=(x0, y0),
+                arrowprops=dict(arrowstyle="-|>,head_length=0.7,head_width=0.32", color=couleur, lw=2.0))
+    ax.text((x0 + x1) / 2 + decal[0], (y0 + y1) / 2 + decal[1], nom, ha="left", va="center", fontsize=fs, color=couleur, fontweight="bold")

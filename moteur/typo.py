@@ -4,7 +4,7 @@ Mêmes règles que moteur/typo.js (présentations)."""
 import re
 
 NB, NNB = " ", " "
-UNITES = r"(?:V|mV|mA|A|µA|ns|ms|µs|s|MHz|kHz|Hz|µW|mW|W|pJ|°C|%|min|L|cm|mm|lignes|portes|entrées|broches|bits|bytes|bouteilles|transistors|inverseurs)"
+UNITES = r"(?:V|mV|mA|A|µA|ns|ms|µs|s|MHz|kHz|Hz|µW|mW|W|pJ|°C|%|min|L|cm|mm|Ω|kΩ|MΩ|pF|nF|µF|mF|kV|kW|lignes|portes|entrées|broches|bits|bytes|bouteilles|transistors|inverseurs)"
 
 
 def typo(t):

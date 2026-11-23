@@ -40,9 +40,26 @@ Avec `python3 build.py tm1/semaine-1 --date "11/16/2026 23:04:03"` :
 - Le plan de cours : `moteur/plan.py` met à jour les lignes de la semaine dans un classeur existant (par défaut celui de `reference/`, sinon `--plan`). Les modifications de structure faites une fois en novembre (suppression d'une ligne, colonnes F à L, note) sont déjà dans le classeur.
 - Les images reprises des anciens supports sont dans `contenus/tm1/semaine-1/images/` (provenance : `images/SOURCES.md`).
 
+## Test du workflow complet sur une séance neuve (11/23/2026)
+
+Séance `contenus/test/seance-1/` : diviseur de tension, hors réforme, classe TEST, présentation 100 + fiche 110 EX et corrigé.
+Parcours : seance.yaml → figures.py → 100-diviseur.slides.js → 110-ex.py → verif.py → build.py → controle --rendu → humanizer-fr → vérification visuelle.
+Résultat : 0 erreur, 0 avertissement, recalcul juste du premier coup. Manques du moteur trouvés et corrigés en chemin :
+
+- `build.py` supposait le chapitre 3 du Floyd présent dans toute séance ;
+- pas de brique pour la diapositive de titre : `titreSlide()` dans deck.js (cartouche, cas hors réforme) ;
+- pas de notation ingénieur : `moteur/nombres.py` (`ing`, `ing_eq`, `atelier`) ;
+- pas de symboles de circuit : résistance, source de tension, masse, nœud, borne, flèches de tension et de courant dans `moteur/cei.py` ;
+- unités Ω, kΩ, MΩ, F, kV, kW absentes de la typographie (typo.py et typo.js) ;
+- le rendu LibreOffice n'affichait aucune équation Word faute du module de formules (`libreoffice-math`) : installé, et contrôlé par `controle/` ;
+- LibreOffice n'applique pas la couleur rouge aux équations des corrigés (elle est bien dans le fichier, Word l'affiche).
+
+La semaine 1 reste identique après ces ajouts (vérifié avec controle/comparer.py).
+
 ## Reste à faire
 
 1. **Équations dans PowerPoint** : Gaël ouvre le fichier de test (120 avec `--equations omml`) dans PowerPoint pour Windows. Si les équations s'affichent et se modifient sans message de réparation, passer `--equations` à `omml` par défaut dans `build.py` et régénérer.
 2. Bascule du projet claude.ai (étape 7) : remplacer les instructions du projet par un renvoi au dépôt (REGLES.md, CLAUDE.md) ; ne garder dans le projet que la fiche mémoire, les références et les synthèses ; retirer les générateurs du projet une fois la bascule validée.
-3. Vrai test sur une nouvelle séance (étape 7) : créer `contenus/tm1/semaine-2/` à partir de la semaine 1, avec les informations de REGLES 2 demandées à Gaël.
-4. Typographie des textes écrits par les scripts des pages interactives (leçons animées) : pas encore traitée (seul le texte du gabarit l'est).
+3. Test sur une séance neuve : fait (séance de test ci-dessus). Prochaine vraie séance : `contenus/tm1/semaine-2/`, avec les informations de REGLES 2 demandées à Gaël.
+4. Les présentations 100 et 120 de la semaine 1 pourraient passer à `titreSlide()` (sortie à recomparer).
+5. Typographie des textes écrits par les scripts des pages interactives (leçons animées) : pas encore traitée (seul le texte du gabarit l'est).

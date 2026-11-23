@@ -143,6 +143,12 @@ def conventions(S, chemin):
 
 
 # ---------------------------------------------------------------- 4. rendu
+def module_formules():
+    """LibreOffice sans son module Math (paquet libreoffice-math) n'affiche aucune équation OMML dans le rendu."""
+    return any(os.path.exists(p) for p in ("/etc/libreoffice/registry/math.xcd", "/usr/lib/libreoffice/share/registry/math.xcd",
+                                           "/Applications/LibreOffice.app/Contents/Resources/registry/math.xcd"))
+
+
 def rendu(chemin, dossier):
     os.makedirs(dossier, exist_ok=True)
     subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", dossier, chemin], check=True,
@@ -185,6 +191,8 @@ def main():
                 d = comparer(f, r)
                 print(f"référence · {os.path.basename(f)} : {'identique' if not d else ', '.join(d)}")
     if a.rendu:
+        if not module_formules():
+            A.append("LibreOffice n'a pas son module de formules (paquet libreoffice-math) : les équations manquent dans le rendu")
         dossier = os.path.join(RACINE, "sortie", "_controle", a.seance)
         for f in fichiers:
             if f.endswith((".docx", ".pptx")):
