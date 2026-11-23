@@ -24,9 +24,10 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 
 - Unités SI, symboles des grandeurs selon CEI 60027 / ISO 80000 : variables en italique (U, I, R, t), unités en romain (V, A, Ω, s), indices descriptifs en romain (U_R, R_i, U_ph).
 - Virgule décimale (2,5 V). Espace insécable entre le nombre et l'unité (12 V), et comme séparateur des milliers (10 000).
-- Notation ingénieur : exposants multiples de 3 et préfixes usuels de l'atelier (G, M, k, m, µ, n, p). On écrit 30 mA, pas 0,03 A. Dans un calcul détaillé, l'étape intermédiaire peut garder la puissance de dix (0,6 · 10³ Ω) avant le résultat avec préfixe (600 Ω).
+- Notation ingénieur : exposants multiples de 3 et préfixes usuels de l'atelier (G, M, k, m, µ, n, p). On écrit 30 [mA], pas 0,03 [A]. Dans un calcul détaillé, l'étape intermédiaire peut garder la puissance de dix (0,6 · 10³ [Ω]) avant le résultat avec préfixe (600 [Ω]).
 - Sur les schémas, valeurs normalisées en notation atelier : 2k2, 4k7, 1M5, 100n (le préfixe tient lieu de virgule).
-- Résultats arrondis à 3 chiffres significatifs, sauf consigne contraire de l'exercice (ex. 4 chiffres pour un quantum).
+- Résultats en notation ingénieur, arrondis à 4 chiffres significatifs, sans écrire les zéros de fin : 3,456 [V] · 12,35 [kΩ] · 324 [mA] (et non 0,324 A ni 324,0 mA).
+- Dans un calcul (application numérique et résultat), l'unité s'écrit entre crochets : I = 12 [V] / 37 [Ω] = 324 [mA]. Dans le texte courant, sans crochets (une pile de 1,5 V).
 
 ### 3.2 Formules et calculs
 
