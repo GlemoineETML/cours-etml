@@ -1,0 +1,51 @@
+# TM2, semaine 1, ligne 10 du plan : matériaux semi-conducteurs (100 présentation, 110 EX + 110 EX C).
+# Source : plan de cours « 000_2026-2027_Plan_de_cours_El_Dim_El_DT2_et_NEBA_Local.xlsx » (joint par Gaël le 11/23/2026),
+# onglets PlanDeCours (ligne 10), Export et Couverture ; liens LZ avec ancre : fiche mémoire TM2 du projet claude.ai.
+# Fiche de cadrage validée par Gaël le 11/23/2026. Pas de référence Floyd ni nextecmedia pour cette séance (Gaël, 11/23/2026).
+
+classe: XLO1
+annee: 2026-2027
+matiere: Test et Mesure 2 – El Dim 4
+champ: LFB_El_Dim4
+date: 11/23/2026                  # date de l'édition (MM/DD/YYYY) ; semaine du plan : 08/17/2026
+editeur: Gaël Lemoine
+
+# ---------------------------------------------------------------- FutureMEM
+# Champ : page Semestre 2, onglet « Compétences opérationnelles et critères de performance » (2e bloc : LFB_El_Dim4).
+futuremem_champ: "https://skills.futuremem.swiss/fr/9999_et/2000_lfe_bfs_2/#comp%C3%A9tences-op%C3%A9rationnelles-et-crit%C3%A8res-de-performance_1"
+lz:
+  LZ_1879:
+    niveau: C4
+    texte: "Elles/Ils différencient les conducteurs, les non-conducteurs et les semi-conducteurs."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_03/#F7A27806-6FCA-B847-9199-F9D97780150B"
+  LZ_4066:
+    niveau: C2
+    texte: "Elles/Ils décrivent l'influence extérieure de la chaleur et du champ électrique sur les matériaux semi-conducteurs."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_06/#C6E65704-681C-754A-8ED4-6C34DA59DB22"
+  LZ_4067:
+    niveau: C2
+    texte: "Elles/Ils expliquent les termes tels que monocristal, conduction intrinsèque, dopage de type n et p des matériaux semi-conducteurs."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_06/#4C9E4A21-0C2F-0940-96E2-3142BA31BC4D"
+
+# ---------------------------------------------------------------- Teams : dossier du champ LFB_El_Dim4 (lien du dossier donné par Gaël le 11/23/2026)
+# Sans lien « Copier le lien », un fichier est visé par son chemin : le lien fonctionne une fois le fichier déposé sous ce nom.
+teams_dossier: "https://eduvaud.sharepoint.com/:{k}:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/"
+
+# ---------------------------------------------------------------- fichiers de la séance (REGLES 8)
+fichiers:
+  "100": "100 Semi-conducteurs.pptx"
+  "101": "101 Semi-conducteurs.html"
+  "105": "105 Semi-conducteurs.mp4"
+  "110": "110 EX Semi-conducteurs.docx"
+  "110C": "110 EX C Semi-conducteurs.docx"
+
+versions:
+  "100": "1.0"
+
+# artefact claude.ai de la page interactive (privé tant que Gaël ne le partage pas)
+artefacts:
+  "101": "https://claude.ai/artifact/4Re8L2H2172YpGq7dgu99f"
+
+# vidéo : durée affichée sur la couverture
+videos:
+  "105": "4 min 10"

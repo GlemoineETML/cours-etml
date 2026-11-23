@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>101 Semi-conducteurs</title>
+<style>
+__CSS__
+.mat { font-weight: 700; color: var(--head); }
+.big { font: 700 30px var(--font-body); color: var(--head); font-variant-numeric: tabular-nums; }
+.meter { height: 16px; background: var(--line); border-radius: 8px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--blue); }
+.tf { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; }
+.cases.two { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+</style>
+</head>
+<body>
+<!--GABARIT--><div style="background:#242852;color:#fff;padding:14px 20px;font:700 16px/1.45 Arial,sans-serif">GABARIT du générateur (moteur/page.py), pas la page finale. Ouvre plutôt « sortie/tm2/semaine-1/100-semi-conducteurs/101 Semi-conducteurs.html ».</div><!--/GABARIT-->
+<div id="jsx" class="jsx" role="alert">Cette page a besoin de JavaScript pour afficher les animations et les exercices. Si ce message reste affiché, ouvre la page depuis le lien de l'artefact sur claude.ai, ou ouvre le fichier .html dans Edge, Chrome ou Safari (pas dans un aperçu de fichier).</div>
+<header class="top"><div class="in">
+  <div class="eyebrow">__MATIERE__ · page interactive 101</div>
+  <img src="__LOGO__" alt="ETML">
+  <h1>Semi-conducteurs</h1>
+  <p>Quatre étapes, avec les dessins de la présentation 100 : ranger les matériaux, chauffer le cristal, appliquer un champ électrique, doper le silicium. Chaque étape commence par une animation (« Comprendre »), puis tu t'exerces (« À toi »). Va avec la fiche 110.</p>
+</div></header>
+<div class="bar"><div class="in">
+  <nav aria-label="Étapes"><a href="#ex1">N°1</a><a href="#ex2">N°2</a><a href="#ex3">N°3</a><a href="#ex4">N°4</a></nav>
+  <div class="score">Exercices réussis : <span id="score-n">0</span> / 4
+    <span class="dots"><i data-id="t1"></i><i data-id="t2"></i><i data-id="t3"></i><i data-id="t4"></i></span></div>
+</div></div>
+
+<main>
+<!-- ============================================ N°1 -->
+<section class="ex" id="ex1">
+  <header><span class="num">N°1</span><h2>Range les matériaux sur l'échelle</h2>
+    <span class="refs"><a href="__T100__">Présentation 100, diapos 3 à 5</a><span>Fiche 110, N°1</span><a href="__LZ1879__">LZ_1879</a></span></header>
+  <div class="lesson" id="L1"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Trois familles de matériaux</h3><span class="refs"><a href="__T100__">Présentation 100, diapos 3 et 4</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> sur un circuit imprimé, la plaque est isolante (époxy), les pistes conduisent (cuivre) et les puces sont en silicium.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Au magasin de l'atelier :</b> tu ranges des matériaux pour l'équipement de test de la ligne. Classe chacun.</div>
+  <div class="cases two" id="t1-list"></div>
+  <div class="row"><button class="btn" id="t1-check">Vérifier</button></div>
+  <div class="fb" id="t1-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°2 -->
+<section class="ex" id="ex2">
+  <header><span class="num">N°2</span><h2>Fais chauffer le cristal</h2>
+    <span class="refs"><a href="__T100__">Présentation 100, diapos 6 et 7</a><span>Fiche 110, N°2 et N°3</span><a href="__LZ4067__">LZ_4067</a><a href="__LZ4066__">LZ_4066</a></span></header>
+  <div class="lesson" id="L2"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>La chaleur crée des paires électron-trou</h3><span class="refs"><a href="__T100__">Présentation 100, diapos 6 et 7</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> dans une armoire chaude, une diode au silicium conduit un peu plus tôt. Une thermistance CTN utilise cet effet pour mesurer la température.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Sur la ligne :</b> en été, l'armoire de l'équipement de test chauffe. Essaie, puis réponds.</div>
+  <div class="grid2">
+    <div>
+      <p class="q">a) Essaie : règle la température du silicium.</p>
+      <div class="row"><input type="range" id="t2-th" min="20" max="60" step="10" value="20" aria-label="Température en degrés Celsius"><span class="big" id="t2-thtxt">20 °C</span></div>
+      <p style="margin:6px 0 2px">Porteurs libres, par rapport à 20 °C : <b id="t2-n">× 1</b></p>
+      <div class="meter"><i id="t2-bar"></i></div>
+    </div>
+    <div class="svgbox" id="t2-svg"></div>
+  </div>
+  <div class="cases">
+    <div class="case"><div><b>b)</b> Combien de fois plus de porteurs à 50 °C qu'à 20 °C ?</div>
+      <div class="row"><span>×</span><input type="number" id="t2-a" min="1" step="1" style="width:100px" aria-label="Nombre de fois"><span id="t2-ra"></span></div></div>
+    <div class="case"><div><b>c)</b> Quand le silicium chauffe, sa résistance…</div>
+      <div class="row"><select id="t2-b" aria-label="Résistance du silicium"><option value="">choisir…</option><option value="monte">monte un peu</option><option value="baisse">baisse fortement</option><option value="pareil">ne change pas</option></select><span id="t2-rb"></span></div></div>
+    <div class="case"><div><b>d)</b> Et la résistance d'un fil de cuivre ?</div>
+      <div class="row"><select id="t2-c" aria-label="Résistance du cuivre"><option value="">choisir…</option><option value="monte">monte un peu</option><option value="baisse">baisse fortement</option><option value="pareil">ne change pas</option></select><span id="t2-rc"></span></div></div>
+  </div>
+  <div class="row"><button class="btn" id="t2-check">Vérifier</button></div>
+  <div class="fb" id="t2-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°3 -->
+<section class="ex" id="ex3">
+  <header><span class="num">N°3</span><h2>Applique un champ électrique</h2>
+    <span class="refs"><a href="__T100__">Présentation 100, diapo 8</a><span>Fiche 110, N°4</span><a href="__LZ4066__">LZ_4066</a></span></header>
+  <div class="lesson" id="L3"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Électrons vers le&nbsp;+, trous vers le&nbsp;−</h3><span class="refs"><a href="__T100__">Présentation 100, diapo 8</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> la diode Zener utilise le claquage pour stabiliser une tension ; le transistor à effet de champ (FET) commande sa conduction avec un champ.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Au laboratoire :</b> on branche un barreau de silicium dopé sur une alimentation.</div>
+  <div class="cases two" id="t3-list"></div>
+  <div class="row"><button class="btn" id="t3-check">Vérifier</button></div>
+  <div class="fb" id="t3-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°4 -->
+<section class="ex" id="ex4">
+  <header><span class="num">N°4</span><h2>Dope le silicium : n ou p ?</h2>
+    <span class="refs"><a href="__T100__">Présentation 100, diapo 9</a><span>Fiche 110, N°5</span><a href="__LZ4067__">LZ_4067</a></span></header>
+  <div class="lesson" id="L4"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Un atome de plus ou de moins dans le cristal</h3><span class="refs"><a href="__T100__">Présentation 100, diapo 9</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> un atome de phosphore pour 50 millions d'atomes de silicium suffit : on règle la conduction des zones d'un composant à la fabrication.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>À la fabrication :</b> on ajoute un de ces atomes au silicium. Qu'obtient-on ?</div>
+  <div class="cases" id="t4-list"></div>
+  <div class="case"><div><b>Et pour finir :</b> un morceau de silicium dopé n est…</div>
+    <div class="row"><select id="t4-q" aria-label="Charge du silicium dopé n"><option value="">choisir…</option><option value="neg">chargé négativement</option><option value="neutre">neutre</option><option value="pos">chargé positivement</option></select><span id="t4-rq"></span></div></div>
+  <div class="row"><button class="btn" id="t4-check">Vérifier</button></div>
+  <div class="fb" id="t4-fb" aria-live="polite"></div>
+</section>
+</main>
+<footer>
+  <span>Classe __CLASSE__ · __ANNEE__ · __MATIERE__ · champ <a href="__CHAMP__">__CHAMPNOM__</a></span>
+  <span>Objectifs : <a href="__LZ1879__">LZ_1879</a>, <a href="__LZ4066__">LZ_4066</a>, <a href="__LZ4067__">LZ_4067</a></span>
+  <span><a href="__T100__">Présentation 100 Semi-conducteurs</a> · <a href="__T110__">Fiche 110 EX</a></span>
+</footer>
+<script>
+window.addEventListener("error", (e) => { const b = document.getElementById("jsx"); if (b) { b.hidden = false; b.textContent = "Erreur dans la page : " + e.message + " (ligne " + e.lineno + "). Envoie ce message à l'enseignant."; } });
+__COMMONJS__
+const D = __DATA__;
+const tag = (ok) => ` <span class="tag ${ok ? "ok" : "bad"}">${ok ? "juste" : "à revoir"}</span>`;
+function sel(id, opts, label) {
+  return `<select id="${id}" aria-label="${label}"><option value="">choisir…</option>${opts.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select>`;
+}
+const FAM = [["c", "conducteur"], ["s", "semi-conducteur"], ["i", "isolant"]];
+
+// ---------------------------------------------- N°1 classer
+const MAT = [
+  ["Cuivre", "pistes et fils", "c", "beaucoup d'électrons libres, résistivité très faible"],
+  ["Silicium", "diodes, transistors", "s", "4 électrons de valence, conduction réglable"],
+  ["Porcelaine", "isolateurs", "i", "aucun électron libre"],
+  ["Germanium", "anciennes diodes", "s", "4 électrons de valence, comme le silicium"],
+  ["Aluminium", "câbles, radiateurs", "c", "métal : beaucoup d'électrons libres"],
+  ["PVC", "gaines de câbles", "i", "aucun électron libre"],
+  ["Échantillon X", "R : 10 Ω à 20 °C, 10,8 Ω à 40 °C", "c", "sa résistance monte un peu en chauffant : c'est un métal"],
+  ["Échantillon Y", "R : 1,2 kΩ à 20 °C, 300 Ω à 40 °C", "s", "sa résistance baisse fortement en chauffant"],
+];
+MAT.forEach(([m, u], i) => {
+  const d = document.createElement("div"); d.className = "case";
+  d.innerHTML = `<div><span class="mat">${m}</span> <span class="muted">· ${u}</span></div><div class="row">${sel("t1-s" + i, FAM, "Famille de " + m)}<span id="t1-r${i}"></span></div>`;
+  $("t1-list").appendChild(d);
+});
+$("t1-check").onclick = () => {
+  let ok = 0, empty = 0; const notes = [];
+  MAT.forEach(([m, , r, why], i) => {
+    const v = $("t1-s" + i).value;
+    if (!v) { empty++; $("t1-r" + i).innerHTML = ""; return; }
+    const g = v === r; if (g) ok++; else notes.push(`${m} : ${why}.`);
+    $("t1-r" + i).innerHTML = tag(g);
+  });
+  if (empty) { feedback($("t1-fb"), "info", "Il manque des réponses.", ` ${empty} matériau${empty > 1 ? "x" : ""} à classer.`); return; }
+  if (ok === MAT.length) { feedback($("t1-fb"), "ok", "Tout est juste.", " Pour X et Y, c'est le comportement à la chaleur qui tranche : un métal monte un peu, un semi-conducteur baisse fortement."); markDone("t1", true); }
+  else { feedback($("t1-fb"), "bad", `${ok} sur ${MAT.length}.`, " " + notes.join(" ")); markDone("t1", false); }
+};
+
+// ---------------------------------------------- N°2 chaleur
+function draw2() {
+  const th = +$("t2-th").value, k = Math.pow(2, (th - 20) / 10);
+  $("t2-thtxt").textContent = th + " °C";
+  $("t2-n").textContent = "× " + k;
+  $("t2-bar").style.width = (100 * k / 16).toFixed(0) + "%";
+  $("t2-svg").innerHTML = `<svg viewBox="0 0 440 300" width="440" role="img" aria-label="Cristal de silicium à ${th} °C avec ${Math.round(k)} paire(s) électron-trou">` +
+    latticeG(70, 50, 100, { pairs: Math.min(8, Math.round(k)), jitter: 0 }) + "</svg>";
+}
+$("t2-th").oninput = draw2;
+ready(draw2);
+$("t2-check").onclick = () => {
+  const a = $("t2-a").value, b = $("t2-b").value, c = $("t2-c").value;
+  if (!a || !b || !c) { feedback($("t2-fb"), "info", "Il manque des réponses.", " Réponds aux trois questions."); return; }
+  const ga = +a === 8, gb = b === "baisse", gc = c === "monte";
+  $("t2-ra").innerHTML = tag(ga); $("t2-rb").innerHTML = tag(gb); $("t2-rc").innerHTML = tag(gc);
+  const notes = [];
+  if (!ga) notes.push("De 20 °C à 50 °C, il y a 3 fois 10 °C : 2 · 2 · 2 = 8.");
+  if (!gb) notes.push("Le silicium : la chaleur libère des porteurs, sa résistance baisse fortement.");
+  if (!gc) notes.push("Le cuivre a déjà beaucoup d'électrons libres ; les atomes qui vibrent les freinent : sa résistance monte un peu.");
+  if (ga && gb && gc) { feedback($("t2-fb"), "ok", "Tout est juste.", " C'est la différence qui permet de reconnaître un métal d'un semi-conducteur."); markDone("t2", true); }
+  else { feedback($("t2-fb"), "bad", "À revoir.", " " + notes.join(" ")); markDone("t2", false); }
+};
+
+// ---------------------------------------------- N°3 champ électrique
+const Q3 = [
+  ["Le + est à gauche. Les électrons libres vont…", [["g", "vers la gauche"], ["d", "vers la droite"]], "g", "Les électrons, négatifs, sont attirés par le + : vers la gauche."],
+  ["Le + est à gauche. Les trous vont…", [["g", "vers la gauche"], ["d", "vers la droite"]], "d", "Les trous se comportent comme des charges + : ils vont vers le −, à droite."],
+  ["Le courant des électrons et celui des trous…", [["add", "s'additionnent"], ["ann", "s'annulent"]], "add", "Charges − d'un côté, charges + de l'autre : le courant va dans le même sens, ils s'additionnent."],
+  ["Champ très fort sur une jonction mince : quel composant utilise le claquage ?", [["z", "la diode Zener"], ["led", "la LED"], ["r", "la résistance"]], "z", "La diode Zener utilise le claquage pour stabiliser une tension."],
+  ["Quel transistor est commandé par un champ électrique ?", [["fet", "le FET (effet de champ)"], ["bip", "le transistor bipolaire"]], "fet", "FET veut dire transistor à effet de champ."],
+];
+Q3.forEach(([q, o], i) => {
+  const d = document.createElement("div"); d.className = "case";
+  d.innerHTML = `<div>${q}</div><div class="row">${sel("t3-s" + i, o, q)}<span id="t3-r${i}"></span></div>`;
+  $("t3-list").appendChild(d);
+});
+$("t3-check").onclick = () => {
+  let ok = 0, empty = 0; const notes = [];
+  Q3.forEach(([, , r, why], i) => {
+    const v = $("t3-s" + i).value; if (!v) { empty++; $("t3-r" + i).innerHTML = ""; return; }
+    const g = v === r; if (g) ok++; else notes.push(why); $("t3-r" + i).innerHTML = tag(g);
+  });
+  if (empty) { feedback($("t3-fb"), "info", "Il manque des réponses.", ` ${empty} question${empty > 1 ? "s" : ""} sans réponse.`); return; }
+  if (ok === Q3.length) { feedback($("t3-fb"), "ok", "Tout est juste.", " Électrons vers le +, trous vers le − : les deux portent le courant."); markDone("t3", true); }
+  else { feedback($("t3-fb"), "bad", `${ok} sur ${Q3.length}.`, " " + notes.join(" ")); markDone("t3", false); }
+};
+
+// ---------------------------------------------- N°4 dopage
+const DOP = [["Phosphore P", "5", "n", "e"], ["Bore B", "3", "p", "t"], ["Arsenic As", "5", "n", "e"], ["Gallium Ga", "3", "p", "t"]];
+DOP.forEach(([a], i) => {
+  const d = document.createElement("div"); d.className = "case";
+  d.innerHTML = `<div class="mat">${a}</div><div class="row">` +
+    `<label>Électrons de valence ${sel("t4-v" + i, [["3", "3"], ["4", "4"], ["5", "5"]], "Électrons de valence de " + a)}</label>` +
+    `<label>Type ${sel("t4-t" + i, [["n", "n"], ["p", "p"]], "Type obtenu avec " + a)}</label>` +
+    `<label>Majoritaires ${sel("t4-m" + i, [["e", "électrons"], ["t", "trous"]], "Porteurs majoritaires avec " + a)}</label><span id="t4-r${i}"></span></div>`;
+  $("t4-list").appendChild(d);
+});
+$("t4-check").onclick = () => {
+  let ok = 0, empty = 0;
+  DOP.forEach(([, v, t, m], i) => {
+    const a = [$("t4-v" + i).value, $("t4-t" + i).value, $("t4-m" + i).value];
+    if (a.some((x) => !x)) { empty++; $("t4-r" + i).innerHTML = ""; return; }
+    const g = a[0] === v && a[1] === t && a[2] === m; if (g) ok++; $("t4-r" + i).innerHTML = tag(g);
+  });
+  const q = $("t4-q").value; if (!q) empty++;
+  if (empty) { feedback($("t4-fb"), "info", "Il manque des réponses.", " Complète chaque ligne et la dernière question."); return; }
+  const gq = q === "neutre"; $("t4-rq").innerHTML = tag(gq);
+  if (ok === DOP.length && gq) { feedback($("t4-fb"), "ok", "Tout est juste.", " 5 électrons de valence : type n, électrons majoritaires (donneur). 3 : type p, trous majoritaires (accepteur). Le morceau reste neutre."); markDone("t4", true); }
+  else feedback($("t4-fb"), "bad", "À revoir.", " 5 électrons de valence (P, As) : un électron en trop, type n, électrons majoritaires. 3 (B, Ga) : il manque un électron, type p, trous majoritaires." +
+    (gq ? "" : " Et le morceau reste neutre : l'atome de phosphore a aussi un proton de plus.")), markDone("t4", false);
+};
+
+__LESSONS__
+$("jsx").hidden = true;
+</script>
+</body>
+</html>

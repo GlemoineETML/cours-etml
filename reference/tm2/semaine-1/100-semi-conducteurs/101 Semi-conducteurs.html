@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>101 Semi-conducteurs</title>
+<style>
+:root {
+  /* Charte ETML : marine, bleu, bleu clair. Mise en page : une colonne de fiches d'exercices, chacune avec sa situation réelle. */
+  --navy: #242852; --blue: #297FD5; --light: #ACCBF9; --tint: #E8EFFB;
+  --bg: #F6F8FC; --surface: #FFFFFF; --ink: #1D2140; --muted: #5A6478; --line: #C9D2E3;
+  --ok: #1E8C46; --ok-bg: #E2F4E8; --bad: #C81E1E; --bad-bg: #FBE4E4; --warn: #C86A10; --warn-bg: #FDF0E0;
+  --one: #297FD5; --zero: #242852; --head: #242852;
+  --font-body: Arial, "Liberation Sans", Helvetica, sans-serif;
+  --font-mono: "IBM Plex Mono", "Liberation Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11132A; --surface: #1A1D3A; --ink: #E6EAF6; --muted: #A3ACC4; --line: #343A66; --tint: #232852;
+    --ok: #4CC27A; --ok-bg: #173A27; --bad: #F06A6A; --bad-bg: #3D1C24; --warn: #F0A050; --warn-bg: #3A2A18;
+    --one: #5AA2EA; --zero: #ACCBF9; --head: #ACCBF9; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11132A; --surface: #1A1D3A; --ink: #E6EAF6; --muted: #A3ACC4; --line: #343A66; --tint: #232852;
+  --ok: #4CC27A; --ok-bg: #173A27; --bad: #F06A6A; --bad-bg: #3D1C24; --warn: #F0A050; --warn-bg: #3A2A18;
+  --one: #5AA2EA; --zero: #ACCBF9; --head: #ACCBF9; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--font-body); }
+a { color: var(--blue); }
+a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--light); outline-offset: 2px; }
+.top { background: #242852; color: #fff; }
+.top .in { max-width: 1060px; margin: 0 auto; padding: 18px 20px 20px; display: grid; grid-template-columns: 1fr auto; gap: 8px 24px; align-items: center; }
+.top img { height: 30px; grid-column: 2; grid-row: 1 / span 2; }
+.top .eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #ACCBF9; font-weight: 700; }
+.top h1 { margin: 2px 0 0; font-size: clamp(24px, 3.4vw, 34px); line-height: 1.15; text-wrap: balance; }
+.top p { grid-column: 1 / -1; margin: 6px 0 0; color: #D7E2F8; max-width: 70ch; }
+.bar { position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.bar .in { max-width: 1060px; margin: 0 auto; padding: 10px 20px; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 14px; }
+.bar nav { display: flex; flex-wrap: wrap; gap: 6px; }
+.bar nav a { text-decoration: none; padding: 3px 10px; border-radius: 999px; background: var(--tint); color: var(--head); font-weight: 700; }
+.score { margin-left: auto; font-weight: 700; color: var(--head); font-variant-numeric: tabular-nums; }
+.score .dots { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle; }
+.score .dots i { width: 12px; height: 12px; border-radius: 50%; background: var(--line); display: inline-block; }
+.score .dots i.on { background: var(--ok); }
+main { max-width: 1060px; margin: 0 auto; padding: 20px 20px 40px; display: grid; gap: 22px; }
+.ex { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: grid; gap: 14px; scroll-margin-top: 60px; }
+.ex > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.ex h2 { margin: 0; font-size: 22px; color: var(--head); text-wrap: balance; }
+.num { display: inline-grid; place-items: center; min-width: 38px; height: 30px; padding: 0 8px; border-radius: 8px; background: #242852; color: #fff; font-weight: 700; font-size: 15px; }
+.refs { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.situ { border-left: 5px solid var(--blue); background: var(--tint); padding: 10px 14px; border-radius: 0 10px 10px 0; max-width: 78ch; }
+.situ b { color: var(--head); }
+.q { margin: 0; font-weight: 700; max-width: 78ch; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; align-items: start; }
+.panel { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--bg); }
+.panel h3 { margin: 0 0 8px; font-size: 15px; color: var(--head); text-transform: uppercase; letter-spacing: .05em; }
+button { font: inherit; cursor: pointer; }
+.btn { border: 0; border-radius: 10px; padding: 9px 16px; font-weight: 700; background: var(--blue); color: #fff; }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 2px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 5px 12px; font-weight: 700; font-size: 14px; }
+.chip[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+select, input[type="number"] { max-width: 100%; font: inherit; padding: 6px 8px; border-radius: 8px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); }
+.fb { border-radius: 10px; padding: 10px 14px; display: none; max-width: 80ch; }
+.fb.ok { display: block; background: var(--ok-bg); border: 2px solid var(--ok); }
+.fb.bad { display: block; background: var(--bad-bg); border: 2px solid var(--bad); }
+.fb.info { display: block; background: var(--tint); border: 2px solid var(--blue); }
+.fb b:first-child { display: block; margin-bottom: 2px; }
+.fb.ok b:first-child { color: var(--ok); } .fb.bad b:first-child { color: var(--bad); }
+table.tdv { border-collapse: collapse; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+table.tdv th, table.tdv td { border: 1px solid var(--line); padding: 4px 0; width: 54px; text-align: center; font-size: 18px; }
+table.tdv th { background: var(--light); color: #242852; font-family: var(--font-body); }
+table.tdv td.out, table.tdv th.out { border-left: 3px solid var(--head); }
+table.tdv tr.hl td { background: var(--tint); outline: 2px solid var(--blue); outline-offset: -2px; }
+table.tdv td.one { color: var(--one); font-weight: 700; }
+table.tdv td button { width: 42px; height: 30px; border-radius: 6px; border: 2px dashed var(--line); background: var(--surface); color: var(--ink); font: 700 18px var(--font-mono); }
+table.tdv td button.set { border-style: solid; border-color: var(--blue); }
+table.tdv td.wrong button { border-color: var(--bad); background: var(--bad-bg); }
+.bit { display: inline-grid; place-items: center; width: 44px; height: 38px; border-radius: 8px; border: 2px solid var(--head); font: 700 20px var(--font-mono); background: var(--surface); color: var(--ink); }
+.bit.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.eq { font: 700 22px var(--font-body); color: var(--head); }
+.ov { text-decoration: overline; text-decoration-thickness: 2px; }
+.muted { color: var(--muted); font-size: 14px; }
+.life { font-size: 15px; }
+.life b { color: var(--blue); }
+svg text { font-family: var(--font-body); }
+.svgbox { overflow-x: auto; }
+.svgbox svg { max-width: 100%; height: auto; }
+main > *, .ex > *, .grid2 > *, .sim > * { min-width: 0; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; }
+.tag { display: inline-block; padding: 2px 9px; border-radius: 999px; font-weight: 700; font-size: 14px; }
+.tag.ok { background: var(--ok-bg); color: var(--ok); } .tag.bad { background: var(--bad-bg); color: var(--bad); } .tag.warn { background: var(--warn-bg); color: var(--warn); }
+.cases { display: grid; gap: 10px; }
+.case { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 8px; background: var(--surface); }
+.case .row label { font-weight: 700; }
+footer { max-width: 1060px; margin: 0 auto; padding: 0 20px 30px; color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+input[type="range"] { width: 100%; accent-color: var(--blue); }
+/* leçon animée (« Comprendre ») avant chaque exercice, puis « À toi » */
+.lesson { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: 14px 16px; display: grid; gap: 10px; }
+.ls-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.ls-tag { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--blue); padding: 2px 8px; border-radius: 6px; }
+.ls-tag.alt { background: #242852; }
+.ls-head h3 { margin: 0; font-size: 18px; color: var(--head); }
+.ls-body { display: grid; gap: 8px; min-width: 0; }
+.ls-stage { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.ls-stage svg { width: 100%; height: auto; display: block; }
+.ls-cap { min-height: 3.1em; font-size: 16.5px; max-width: 82ch; }
+.ls-cap b { color: var(--blue); }
+.ls-ctrl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ls-btn { border: 2px solid var(--blue); background: var(--surface); color: var(--blue); border-radius: 8px; padding: 4px 10px; font-weight: 700; font-size: 14px; }
+.ls-steps { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.ls-steps button { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; font-size: 13px; padding: 0; }
+.ls-steps button[aria-current="step"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+.ls-prog { flex: 1 1 100px; min-width: 80px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.ls-prog i { display: block; height: 100%; width: 0; background: var(--blue); }
+.ls-extra { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.ls-extra input[type="range"] { width: 180px; }
+/* bandeau visible tant que le script de la page n'a pas fini de démarrer (aperçu sans JavaScript, erreur) */
+.jsx { background: #FDF0E0; color: #7A3E00; border-bottom: 3px solid #C86A10; padding: 10px 20px; font: 600 15px/1.45 Arial, sans-serif; }
+.todo { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.todo::after { content: ""; flex: 1; border-top: 2px dashed var(--line); }
+@media (max-width: 520px) { .top .in { grid-template-columns: 1fr; } .top img { grid-row: 1; grid-column: 1; justify-self: start; height: 24px; } .ex { padding: 16px; } table.tdv th, table.tdv td { width: 44px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.mat { font-weight: 700; color: var(--head); }
+.big { font: 700 30px var(--font-body); color: var(--head); font-variant-numeric: tabular-nums; }
+.meter { height: 16px; background: var(--line); border-radius: 8px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--blue); }
+.tf { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; }
+.cases.two { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+</style>
+</head>
+<body>
+<div id="jsx" class="jsx" role="alert">Cette page a besoin de JavaScript pour afficher les animations et les exercices. Si ce message reste affiché, ouvre la page depuis le lien de l'artefact sur claude.ai, ou ouvre le fichier .html dans Edge, Chrome ou Safari (pas dans un aperçu de fichier).</div>
+<header class="top"><div class="in">
+  <div class="eyebrow">Test et Mesure 2 – El Dim 4 · page interactive 101</div>
+  <img src="data:image/png;base64,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" alt="ETML">
+  <h1>Semi-conducteurs</h1>
+  <p>Quatre étapes, avec les dessins de la présentation 100 : ranger les matériaux, chauffer le cristal, appliquer un champ électrique, doper le silicium. Chaque étape commence par une animation (« Comprendre »), puis tu t'exerces (« À toi »). Va avec la fiche 110.</p>
+</div></header>
+<div class="bar"><div class="in">
+  <nav aria-label="Étapes"><a href="#ex1">N°1</a><a href="#ex2">N°2</a><a href="#ex3">N°3</a><a href="#ex4">N°4</a></nav>
+  <div class="score">Exercices réussis : <span id="score-n">0</span> / 4
+    <span class="dots"><i data-id="t1"></i><i data-id="t2"></i><i data-id="t3"></i><i data-id="t4"></i></span></div>
+</div></div>
+
+<main>
+<!-- ============================================ N°1 -->
+<section class="ex" id="ex1">
+  <header><span class="num">N°1</span><h2>Range les matériaux sur l'échelle</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/100%20Semi-conducteurs.pptx?csf=1&amp;web=1">Présentation 100, diapos 3 à 5</a><span>Fiche 110, N°1</span><a href="https://skills.futuremem.swiss/fr/data/5000_lze_03/#F7A27806-6FCA-B847-9199-F9D97780150B">LZ_1879</a></span></header>
+  <div class="lesson" id="L1"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Trois familles de matériaux</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/100%20Semi-conducteurs.pptx?csf=1&amp;web=1">Présentation 100, diapos 3 et 4</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> sur un circuit imprimé, la plaque est isolante (époxy), les pistes conduisent (cuivre) et les puces sont en silicium.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Au magasin de l'atelier :</b> tu ranges des matériaux pour l'équipement de test de la ligne. Classe chacun.</div>
+  <div class="cases two" id="t1-list"></div>
+  <div class="row"><button class="btn" id="t1-check">Vérifier</button></div>
+  <div class="fb" id="t1-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°2 -->
+<section class="ex" id="ex2">
+  <header><span class="num">N°2</span><h2>Fais chauffer le cristal</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/100%20Semi-conducteurs.pptx?csf=1&amp;web=1">Présentation 100, diapos 6 et 7</a><span>Fiche 110, N°2 et N°3</span><a href="https://skills.futuremem.swiss/fr/data/5000_lze_06/#4C9E4A21-0C2F-0940-96E2-3142BA31BC4D">LZ_4067</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_06/#C6E65704-681C-754A-8ED4-6C34DA59DB22">LZ_4066</a></span></header>
+  <div class="lesson" id="L2"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>La chaleur crée des paires électron-trou</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/100%20Semi-conducteurs.pptx?csf=1&amp;web=1">Présentation 100, diapos 6 et 7</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> dans une armoire chaude, une diode au silicium conduit un peu plus tôt. Une thermistance CTN utilise cet effet pour mesurer la température.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Sur la ligne :</b> en été, l'armoire de l'équipement de test chauffe. Essaie, puis réponds.</div>
+  <div class="grid2">
+    <div>
+      <p class="q">a) Essaie : règle la température du silicium.</p>
+      <div class="row"><input type="range" id="t2-th" min="20" max="60" step="10" value="20" aria-label="Température en degrés Celsius"><span class="big" id="t2-thtxt">20 °C</span></div>
+      <p style="margin:6px 0 2px">Porteurs libres, par rapport à 20 °C : <b id="t2-n">× 1</b></p>
+      <div class="meter"><i id="t2-bar"></i></div>
+    </div>
+    <div class="svgbox" id="t2-svg"></div>
+  </div>
+  <div class="cases">
+    <div class="case"><div><b>b)</b> Combien de fois plus de porteurs à 50 °C qu'à 20 °C ?</div>
+      <div class="row"><span>×</span><input type="number" id="t2-a" min="1" step="1" style="width:100px" aria-label="Nombre de fois"><span id="t2-ra"></span></div></div>
+    <div class="case"><div><b>c)</b> Quand le silicium chauffe, sa résistance…</div>
+      <div class="row"><select id="t2-b" aria-label="Résistance du silicium"><option value="">choisir…</option><option value="monte">monte un peu</option><option value="baisse">baisse fortement</option><option value="pareil">ne change pas</option></select><span id="t2-rb"></span></div></div>
+    <div class="case"><div><b>d)</b> Et la résistance d'un fil de cuivre ?</div>
+      <div class="row"><select id="t2-c" aria-label="Résistance du cuivre"><option value="">choisir…</option><option value="monte">monte un peu</option><option value="baisse">baisse fortement</option><option value="pareil">ne change pas</option></select><span id="t2-rc"></span></div></div>
+  </div>
+  <div class="row"><button class="btn" id="t2-check">Vérifier</button></div>
+  <div class="fb" id="t2-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°3 -->
+<section class="ex" id="ex3">
+  <header><span class="num">N°3</span><h2>Applique un champ électrique</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/100%20Semi-conducteurs.pptx?csf=1&amp;web=1">Présentation 100, diapo 8</a><span>Fiche 110, N°4</span><a href="https://skills.futuremem.swiss/fr/data/5000_lze_06/#C6E65704-681C-754A-8ED4-6C34DA59DB22">LZ_4066</a></span></header>
+  <div class="lesson" id="L3"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Électrons vers le&nbsp;+, trous vers le&nbsp;−</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/100%20Semi-conducteurs.pptx?csf=1&amp;web=1">Présentation 100, diapo 8</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> la diode Zener utilise le claquage pour stabiliser une tension ; le transistor à effet de champ (FET) commande sa conduction avec un champ.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Au laboratoire :</b> on branche un barreau de silicium dopé sur une alimentation.</div>
+  <div class="cases two" id="t3-list"></div>
+  <div class="row"><button class="btn" id="t3-check">Vérifier</button></div>
+  <div class="fb" id="t3-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°4 -->
+<section class="ex" id="ex4">
+  <header><span class="num">N°4</span><h2>Dope le silicium : n ou p ?</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/100%20Semi-conducteurs.pptx?csf=1&amp;web=1">Présentation 100, diapo 9</a><span>Fiche 110, N°5</span><a href="https://skills.futuremem.swiss/fr/data/5000_lze_06/#4C9E4A21-0C2F-0940-96E2-3142BA31BC4D">LZ_4067</a></span></header>
+  <div class="lesson" id="L4"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Un atome de plus ou de moins dans le cristal</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/100%20Semi-conducteurs.pptx?csf=1&amp;web=1">Présentation 100, diapo 9</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> un atome de phosphore pour 50 millions d'atomes de silicium suffit : on règle la conduction des zones d'un composant à la fabrication.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>À la fabrication :</b> on ajoute un de ces atomes au silicium. Qu'obtient-on ?</div>
+  <div class="cases" id="t4-list"></div>
+  <div class="case"><div><b>Et pour finir :</b> un morceau de silicium dopé n est…</div>
+    <div class="row"><select id="t4-q" aria-label="Charge du silicium dopé n"><option value="">choisir…</option><option value="neg">chargé négativement</option><option value="neutre">neutre</option><option value="pos">chargé positivement</option></select><span id="t4-rq"></span></div></div>
+  <div class="row"><button class="btn" id="t4-check">Vérifier</button></div>
+  <div class="fb" id="t4-fb" aria-live="polite"></div>
+</section>
+</main>
+<footer>
+  <span>Classe XLO1 · 2026-2027 · Test et Mesure 2 – El Dim 4 · champ <a href="https://skills.futuremem.swiss/fr/9999_et/2000_lfe_bfs_2/#comp%C3%A9tences-op%C3%A9rationnelles-et-crit%C3%A8res-de-performance_1">LFB_El_Dim4</a></span>
+  <span>Objectifs : <a href="https://skills.futuremem.swiss/fr/data/5000_lze_03/#F7A27806-6FCA-B847-9199-F9D97780150B">LZ_1879</a>, <a href="https://skills.futuremem.swiss/fr/data/5000_lze_06/#C6E65704-681C-754A-8ED4-6C34DA59DB22">LZ_4066</a>, <a href="https://skills.futuremem.swiss/fr/data/5000_lze_06/#4C9E4A21-0C2F-0940-96E2-3142BA31BC4D">LZ_4067</a></span>
+  <span><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/100%20Semi-conducteurs.pptx?csf=1&amp;web=1">Présentation 100 Semi-conducteurs</a> · <a href="https://eduvaud.sharepoint.com/:w:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/110%20EX%20Semi-conducteurs.docx?csf=1&amp;web=1">Fiche 110 EX</a></span>
+</footer>
+<script>
+window.addEventListener("error", (e) => { const b = document.getElementById("jsx"); if (b) { b.hidden = false; b.textContent = "Erreur dans la page : " + e.message + " (ligne " + e.lineno + "). Envoie ce message à l'enseignant."; } });
+const $ = (id) => document.getElementById(id);
+const FN = {
+  "NON": (a) => 1 - a, "ET": (a, b) => a & b, "OU": (a, b) => a | b, "NON-ET": (a, b) => 1 - (a & b),
+  "NON-OU": (a, b) => 1 - (a | b), "OUX": (a, b) => a ^ b, "NON-OUX": (a, b) => 1 - (a ^ b),
+};
+const QUAL = { "NON": "1", "ET": "&amp;", "OU": "≥1", "NON-ET": "&amp;", "NON-OU": "≥1", "OUX": "=1", "NON-OUX": "=1" };
+const NEG = { "NON": 1, "ET": 0, "OU": 0, "NON-ET": 1, "NON-OU": 1, "OUX": 0, "NON-OUX": 1 };
+const EQH = {
+  "NON": 'Y = <span class="ov">A</span>', "ET": "Y = A · B", "OU": "Y = A + B", "NON-ET": 'Y = <span class="ov">A · B</span>',
+  "NON-OU": 'Y = <span class="ov">A + B</span>', "OUX": "Y = A ⊕ B", "NON-OUX": 'Y = <span class="ov">A ⊕ B</span>',
+};
+// table de vérité, entrées du poids fort au poids faible : [B, A, Y] ou [A, Y]
+function tdv(key) {
+  if (key === "NON") return [[0, 1], [1, 0]];
+  const r = [];
+  for (const b of [0, 1]) for (const a of [0, 1]) r.push([b, a, FN[key](a, b)]);
+  return r;
+}
+const wireStyle = (v) => v === 1 ? "stroke:var(--one);stroke-width:5" : (v === 0 ? "stroke:var(--zero);stroke-width:3" : "stroke:var(--muted);stroke-width:3");
+
+// Symbole CEI 60617-12 : rectangle, qualificatif, cercle de négation
+function gateParts(key, a, b, y, opt = {}) {
+  const n = key === "NON" ? 1 : 2, w = 90, h = n === 1 ? 90 : 116, x0 = 84, y0 = 14, L = 50;
+  const labels = opt.labels || ["A", "B"], out = opt.out != null ? opt.out : "Y";
+  const ys = n === 1 ? [y0 + h / 2] : [y0 + h * 0.28, y0 + h * 0.72];
+  let s = "";
+  const vin = n === 1 ? [a] : [a, b];
+  ys.forEach((yy, i) => {
+    s += `<line x1="${x0 - L}" y1="${yy}" x2="${x0}" y2="${yy}" style="${wireStyle(vin[i])}"/>`;
+    s += `<text x="${x0 - L - 8}" y="${yy + 6}" text-anchor="end" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${labels[i]}</text>`;
+  });
+  s += `<rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="2" style="fill:var(--surface);stroke:var(--ink);stroke-width:3"/>`;
+  s += `<text x="${x0 + w / 2}" y="${y0 + 30}" text-anchor="middle" font-size="24" font-weight="700" style="fill:var(--ink)">${QUAL[key]}</text>`;
+  let xo = x0 + w;
+  if (NEG[key]) { s += `<circle cx="${xo + 7}" cy="${y0 + h / 2}" r="7" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/>`; xo += 14; }
+  s += `<line x1="${xo}" y1="${y0 + h / 2}" x2="${xo + L}" y2="${y0 + h / 2}" style="${wireStyle(y)}"/>`;
+  s += `<text x="${xo + L + 8}" y="${y0 + h / 2 + 6}" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${out}</text>`;
+  return { w: x0 + w + 2 * L + 50, h: h + 2 * y0, body: s, inX: x0 - L, inY: ys, outX: xo + L, outY: y0 + h / 2 };
+}
+function gateSVG(key, a, b, y, opt = {}) {
+  const p = gateParts(key, a, b, y, opt);
+  return `<svg viewBox="0 0 ${p.w} ${p.h}" width="${p.w * (opt.scale || 1)}" role="img" aria-label="Symbole CEI de la porte ${key}">${p.body}</svg>`;
+}
+// porte placée dans un dessin : renvoie le groupe SVG et les points de raccordement (entrées, sortie)
+function gateAt(key, a, b, y, X, Y, s = 1, opt = {}) {
+  const p = gateParts(key, a, b, y, opt);
+  return { svg: `<g transform="translate(${X} ${Y}) scale(${s})">${p.body}</g>`, inX: X + p.inX * s, inY: p.inY.map((v) => Y + v * s), outX: X + p.outX * s, outY: Y + p.outY * s, w: p.w * s, h: p.h * s };
+}
+
+// suivi des exercices réussis (en mémoire seulement)
+const DONE = new Set();
+function markDone(id, ok) {
+  if (ok) DONE.add(id); else DONE.delete(id);
+  const dots = document.querySelectorAll(".score .dots i");
+  dots.forEach((d) => d.classList.toggle("on", DONE.has(d.dataset.id)));
+  $("score-n").textContent = DONE.size;
+}
+function feedback(el, kind, title, html) {
+  el.className = "fb " + kind;
+  el.innerHTML = `<b>${title}</b>${html}`;
+}
+const fmtV = (x) => String(x).replace(".", ",") + " V";
+// liens externes dans un nouvel onglet
+// démarrage : tout de suite si la page est déjà chargée (certains lecteurs injectent la page après DOMContentLoaded)
+const ready = (f) => { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", f); else f(); };
+// liens externes : <a href> simples ; le lecteur d'artefact les ouvre lui-même hors de la page (pas de target="_blank", refusé dans le cadre isolé)
+// typographie française : espaces insécables (avant « : ; ? ! », nombre + unité, « A = 1 », plages « 0 … 70 »)
+const NBSP = "\u00a0";
+function typo(s) {
+  return s
+    .replace(/ ([:;?!»])/g, NBSP + "$1").replace(/« /g, "«" + NBSP)
+    .replace(/ (=|·|×|≥|≤|<|>|→|⊕|…|\+) /g, NBSP + "$1" + NBSP)
+    .replace(/(\d) (ou|à) (?=[\d−])/g, "$1" + NBSP + "$2" + NBSP)
+    .replace(/(\d) (?=(V|mV|mA|ns|ms|µs|s|°C|%|ko|L|[a-zà-ÿ]))/g, "$1" + NBSP)
+    .replace(/\b(p\.|chap\.|diapos?|N°|Floyd|LZ) (?=\d)/g, "$1" + NBSP);
+}
+function typoTree(root) {
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: (n) => /^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  let n; while ((n = w.nextNode())) { const t = typo(n.nodeValue); if (t !== n.nodeValue) n.nodeValue = t; }
+}
+const inStage = (n) => { const e = n.nodeType === 1 ? n : n.parentElement; return !!(e && e.closest && e.closest(".ls-stage, .nt")); };
+ready(() => {
+  typoTree(document.body);
+  new MutationObserver((ms) => ms.forEach((m) => { if (inStage(m.target)) return; m.addedNodes.forEach((x) => { if (x.nodeType === 3) { const t = typo(x.nodeValue); if (t !== x.nodeValue) x.nodeValue = t; } else if (x.nodeType === 1 && !/^(SCRIPT|STYLE)$/.test(x.nodeName)) typoTree(x); }); }))
+    .observe(document.body, { childList: true, subtree: true });
+});
+
+// ---------------------------------------------- outils de dessin des animations
+const REDUCE = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
+const prog = (t, a, b) => ease((t - a) / (b - a));
+const lerp = (a, b, p) => a + (b - a) * p;
+// texte SVG ; o = { size, anchor, bold, italic, mono, color, op }
+const TX = (x, y, s, o = {}) => `<text x="${x}" y="${y}" font-size="${o.size || 16}"${o.anchor ? ` text-anchor="${o.anchor}"` : ""}${o.bold ? ' font-weight="700"' : ""}${o.italic ? ' font-style="italic"' : ""}${o.mono ? ' font-family="IBM Plex Mono, Liberation Mono, monospace"' : ""} style="fill:${o.color || "var(--ink)"}${o.op != null ? ";opacity:" + o.op : ""}">${s}</text>`;
+const SUBV = (i, rest = "") => `V<tspan font-size="0.72em" dy="0.3em">${i}</tspan><tspan dy="-0.3em">${rest}</tspan>`;
+const wireP = (pts, v) => `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" style="${wireStyle(v)};stroke-linejoin:round"/>`;
+const lampG = (x, y, r, on, col = "var(--one)") => (on ? `<circle cx="${x}" cy="${y}" r="${r + 8}" style="fill:${col};opacity:.25"/>` : "") +
+  `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${on ? col : "var(--surface)"};stroke:var(--ink);stroke-width:2.5"/>`;
+const pill = (x, y, v, o = {}) => `<rect x="${x - 15}" y="${y - 15}" width="30" height="30" rx="7" style="fill:${v ? "var(--one)" : "var(--surface)"};stroke:var(--head);stroke-width:2"/>` +
+  TX(x, y + 7, v, { size: 19, bold: true, mono: true, anchor: "middle", color: v ? "#fff" : "var(--ink)" });
+const okMark = (x, y, ok, r = 11) => `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${ok ? "var(--ok)" : "var(--bad)"}"/>` +
+  (ok ? `<path d="M ${x - r * .45} ${y} l ${r * .3} ${r * .35} l ${r * .55} ${-r * .7}" style="fill:none;stroke:#fff;stroke-width:2.6"/>`
+      : `<path d="M ${x - r * .4} ${y - r * .4} l ${r * .8} ${r * .8} M ${x + r * .4} ${y - r * .4} l ${-r * .8} ${r * .8}" style="stroke:#fff;stroke-width:2.6"/>`);
+// boîtier DIP 14 vu de dessus, encoche à gauche : broches 1 à 7 en bas (gauche → droite), 8 à 14 en haut (droite → gauche)
+function dipG(x, y, w, h, label, o = {}) {
+  const n = 7, pw = w / n; let s = "";
+  for (let i = 0; i < n; i++) {
+    const px = x + pw * (i + 0.5) - 6;
+    s += `<rect x="${px}" y="${y - 14}" width="12" height="14" style="fill:#C8CEDA;stroke:#5A6478"/><rect x="${px}" y="${y + h}" width="12" height="14" style="fill:#C8CEDA;stroke:#5A6478"/>`;
+  }
+  s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" style="fill:#3A3F52;stroke:#23263A;stroke-width:2"/>`;
+  s += `<path d="M ${x} ${y + h / 2 - 12} a 12 12 0 0 1 0 24 z" style="fill:#23263A"/><circle cx="${x + 16}" cy="${y + h - 14}" r="5" style="fill:#5A6070"/>`;
+  if (label) s += TX(x + w / 2, y + h / 2 + 8, label, { size: o.fs || 22, bold: true, mono: true, anchor: "middle", color: "#EEF1F7" });
+  if (o.nums) for (let i = 0; i < n; i++) {
+    s += TX(x + pw * (i + 0.5), y + h - 6, i + 1, { size: 11, anchor: "middle", color: "#B8BED0" });
+    s += TX(x + pw * (i + 0.5), y + 14, 14 - i, { size: 11, anchor: "middle", color: "#B8BED0" });
+  }
+  return s;
+}
+const dipPin = (x, y, w, h, k) => k <= 7 ? [x + (w / 7) * (k - 0.5), y + h + 14] : [x + (w / 7) * (14 - k + 0.5), y - 14];
+// chronogramme qui s'écrit au fil du temps : rows = [{ name, f(s) → 0/1, color }], de s = 0 à min(t, tmax)
+function traceG(x, y, w, rows, t, tmax, o = {}) {
+  const rh = o.rh || 34, hi = rh * 0.55, X = (s) => x + w * s / tmax, dt = o.dt || tmax / 400, end = Math.min(t, tmax);
+  let g = "";
+  rows.forEach((r, i) => {
+    const yb = y + i * rh + rh - 6, yh = yb - hi;
+    g += TX(x - 10, yb - 3, r.name, { anchor: "end", bold: true, italic: true, size: o.fs || 15 });
+    g += `<line x1="${x}" y1="${yb}" x2="${x + w}" y2="${yb}" style="stroke:var(--line);stroke-width:1"/>`;
+    if (end <= 0) return;
+    let v = r.f(0), d = `M ${x} ${v ? yh : yb}`;
+    for (let s = dt; s <= end + 1e-9; s += dt) { const nv = r.f(s); if (nv !== v) { d += ` L ${X(s)} ${v ? yh : yb} L ${X(s)} ${nv ? yh : yb}`; v = nv; } }
+    d += ` L ${X(end)} ${v ? yh : yb}`;
+    g += `<path d="${d}" fill="none" style="stroke:${r.color || "var(--ink)"};stroke-width:2.6;stroke-linejoin:round"/>`;
+  });
+  if (o.cursor !== false && t > 0 && t < tmax) g += `<line x1="${X(end)}" y1="${y}" x2="${X(end)}" y2="${y + rows.length * rh}" style="stroke:var(--bad);stroke-width:1.5"/>`;
+  return g;
+}
+
+// ---------------------------------------------- leçons animées : lecture, pause, étapes numérotées, sous-titres
+// L'animation tourne en boucle et s'arrête quand elle sort de l'écran. Avec « réduire les animations », elle démarre en pause.
+const LESSONS = [];
+function lesson(id, cfg) {
+  const root = $(id), body = root.querySelector(".ls-body");
+  body.innerHTML = `<div class="ls-stage"></div><div class="ls-cap"></div>
+    <div class="ls-ctrl"><button class="ls-btn ls-play" type="button"></button><button class="ls-btn ls-back" type="button">↺ Recommencer</button>
+    <span class="ls-steps" role="group" aria-label="Étapes"></span><span class="ls-prog"><i></i></span></div>`;
+  if (cfg.extra) { const e = document.createElement("div"); e.className = "ls-extra"; e.innerHTML = cfg.extra; body.insertBefore(e, body.querySelector(".ls-cap")); }
+  const st = { t: 0, T: 0, playing: !REDUCE, vis: true, last: null, step: -1, dirty: true, cfg };
+  const stage = body.querySelector(".ls-stage"), cap = body.querySelector(".ls-cap"), play = body.querySelector(".ls-play"), bar = body.querySelector(".ls-prog i"), steps = body.querySelector(".ls-steps");
+  stage.setAttribute("role", "img"); stage.setAttribute("aria-label", cfg.label);
+  cfg.steps.forEach(([t0], i) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = i + 1; b.setAttribute("aria-label", "Étape " + (i + 1));
+    b.onclick = () => { st.t = t0 + 0.01; st.dirty = true; }; steps.appendChild(b);
+  });
+  const setPlay = () => { play.textContent = st.playing ? "❚❚ Pause" : "▶ Lecture"; };
+  play.onclick = () => { st.playing = !st.playing; setPlay(); }; setPlay();
+  body.querySelector(".ls-back").onclick = () => { st.t = 0; st.dirty = true; if (!st.playing) { st.playing = true; setPlay(); } };
+  if ("IntersectionObserver" in window) new IntersectionObserver((es) => es.forEach((e) => { st.vis = e.isIntersecting; st.last = null; }), { threshold: 0.1 }).observe(stage);
+  st.render = () => {
+    stage.innerHTML = cfg.draw(st.t, st.T, st);
+    let k = 0; cfg.steps.forEach(([t0], i) => { if (st.t >= t0) k = i; });
+    if (k !== st.step) {
+      st.step = k; cap.innerHTML = `<b>${k + 1}.</b> ${cfg.steps[k][1]}`;
+      steps.querySelectorAll("button").forEach((b, i) => b.setAttribute("aria-current", i === k ? "step" : "false"));
+    }
+    bar.style.width = (100 * st.t / cfg.dur).toFixed(1) + "%";
+  };
+  LESSONS.push(st);
+  try { st.render(); } catch (e) { console.error(e); }   // première image tout de suite, même si l'animation ne démarre pas
+  return st;
+}
+function lessonLoop(ts) {
+  LESSONS.forEach((st) => {
+    if (!st.vis) return;
+    const dt = st.last == null ? 0 : Math.min(0.1, (ts - st.last) / 1000); st.last = ts;
+    if (st.playing) { st.t += dt; st.T += dt; if (st.t >= st.cfg.dur) st.t = 0; st.dirty = true; }
+    if (st.dirty && ts - (st.drawn || 0) > 33) { st.render(); st.drawn = ts; st.dirty = false; }
+  });
+  requestAnimationFrame(lessonLoop);
+}
+ready(() => requestAnimationFrame(lessonLoop));
+
+const D = {"GATES": {"NON": {"nom": "NON", "en": "NOT", "regle": "Y = 1 si A = 0 : la sortie est l'inverse de l'entrée.", "ci74": "74HC04", "ci4000": "4069", "contenu": "6 inverseurs", "sec": "3-1", "page": 112}, "ET": {"nom": "ET", "en": "AND", "regle": "Y = 1 seulement si A = 1 et B = 1.", "ci74": "74HC08", "ci4000": "4081", "contenu": "4 portes ET à 2 entrées", "sec": "3-2", "page": 115}, "OU": {"nom": "OU", "en": "OR", "regle": "Y = 1 si au moins une entrée vaut 1.", "ci74": "74HC32", "ci4000": "4071", "contenu": "4 portes OU à 2 entrées", "sec": "3-3", "page": 122}, "NON-ET": {"nom": "NON-ET", "en": "NAND", "regle": "Y = 0 seulement si A = 1 et B = 1.", "ci74": "74HC00", "ci4000": "4011", "contenu": "4 portes NON-ET à 2 entrées", "sec": "3-4", "page": 126}, "NON-OU": {"nom": "NON-OU", "en": "NOR", "regle": "Y = 1 seulement si A = 0 et B = 0.", "ci74": "74HC02", "ci4000": "4001", "contenu": "4 portes NON-OU à 2 entrées", "sec": "3-5", "page": 131}, "OUX": {"nom": "OU exclusif", "en": "XOR", "regle": "Y = 1 si les deux entrées sont différentes.", "ci74": "74HC86", "ci4000": "4070", "contenu": "4 portes OU exclusif à 2 entrées", "sec": "3-6", "page": 135}, "NON-OUX": {"nom": "NON-OU exclusif", "en": "XNOR", "regle": "Y = 1 si les deux entrées sont égales.", "ci74": "74HC7266", "ci4000": "4077", "contenu": "4 portes NON-OU exclusif à 2 entrées", "sec": "3-6", "page": 135}}, "ORDER": ["NON", "ET", "OU", "NON-ET", "NON-OU", "OUX", "NON-OUX"], "NIV": {"TTL": [0.8, 2.0, 0.4, 2.4], "HC": [1.5, 3.5, 0.33, 4.4], "HCT": [0.8, 2.0, 0.33, 4.4]}, "CHRONO_A": [0, 1, 0, 1, 1, 0, 1, 0], "CHRONO_B": [0, 0, 1, 1, 0, 1, 1, 0]};
+const tag = (ok) => ` <span class="tag ${ok ? "ok" : "bad"}">${ok ? "juste" : "à revoir"}</span>`;
+function sel(id, opts, label) {
+  return `<select id="${id}" aria-label="${label}"><option value="">choisir…</option>${opts.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select>`;
+}
+const FAM = [["c", "conducteur"], ["s", "semi-conducteur"], ["i", "isolant"]];
+
+// ---------------------------------------------- N°1 classer
+const MAT = [
+  ["Cuivre", "pistes et fils", "c", "beaucoup d'électrons libres, résistivité très faible"],
+  ["Silicium", "diodes, transistors", "s", "4 électrons de valence, conduction réglable"],
+  ["Porcelaine", "isolateurs", "i", "aucun électron libre"],
+  ["Germanium", "anciennes diodes", "s", "4 électrons de valence, comme le silicium"],
+  ["Aluminium", "câbles, radiateurs", "c", "métal : beaucoup d'électrons libres"],
+  ["PVC", "gaines de câbles", "i", "aucun électron libre"],
+  ["Échantillon X", "R : 10 Ω à 20 °C, 10,8 Ω à 40 °C", "c", "sa résistance monte un peu en chauffant : c'est un métal"],
+  ["Échantillon Y", "R : 1,2 kΩ à 20 °C, 300 Ω à 40 °C", "s", "sa résistance baisse fortement en chauffant"],
+];
+MAT.forEach(([m, u], i) => {
+  const d = document.createElement("div"); d.className = "case";
+  d.innerHTML = `<div><span class="mat">${m}</span> <span class="muted">· ${u}</span></div><div class="row">${sel("t1-s" + i, FAM, "Famille de " + m)}<span id="t1-r${i}"></span></div>`;
+  $("t1-list").appendChild(d);
+});
+$("t1-check").onclick = () => {
+  let ok = 0, empty = 0; const notes = [];
+  MAT.forEach(([m, , r, why], i) => {
+    const v = $("t1-s" + i).value;
+    if (!v) { empty++; $("t1-r" + i).innerHTML = ""; return; }
+    const g = v === r; if (g) ok++; else notes.push(`${m} : ${why}.`);
+    $("t1-r" + i).innerHTML = tag(g);
+  });
+  if (empty) { feedback($("t1-fb"), "info", "Il manque des réponses.", ` ${empty} matériau${empty > 1 ? "x" : ""} à classer.`); return; }
+  if (ok === MAT.length) { feedback($("t1-fb"), "ok", "Tout est juste.", " Pour X et Y, c'est le comportement à la chaleur qui tranche : un métal monte un peu, un semi-conducteur baisse fortement."); markDone("t1", true); }
+  else { feedback($("t1-fb"), "bad", `${ok} sur ${MAT.length}.`, " " + notes.join(" ")); markDone("t1", false); }
+};
+
+// ---------------------------------------------- N°2 chaleur
+function draw2() {
+  const th = +$("t2-th").value, k = Math.pow(2, (th - 20) / 10);
+  $("t2-thtxt").textContent = th + " °C";
+  $("t2-n").textContent = "× " + k;
+  $("t2-bar").style.width = (100 * k / 16).toFixed(0) + "%";
+  $("t2-svg").innerHTML = `<svg viewBox="0 0 440 300" width="440" role="img" aria-label="Cristal de silicium à ${th} °C avec ${Math.round(k)} paire(s) électron-trou">` +
+    latticeG(70, 50, 100, { pairs: Math.min(8, Math.round(k)), jitter: 0 }) + "</svg>";
+}
+$("t2-th").oninput = draw2;
+ready(draw2);
+$("t2-check").onclick = () => {
+  const a = $("t2-a").value, b = $("t2-b").value, c = $("t2-c").value;
+  if (!a || !b || !c) { feedback($("t2-fb"), "info", "Il manque des réponses.", " Réponds aux trois questions."); return; }
+  const ga = +a === 8, gb = b === "baisse", gc = c === "monte";
+  $("t2-ra").innerHTML = tag(ga); $("t2-rb").innerHTML = tag(gb); $("t2-rc").innerHTML = tag(gc);
+  const notes = [];
+  if (!ga) notes.push("De 20 °C à 50 °C, il y a 3 fois 10 °C : 2 · 2 · 2 = 8.");
+  if (!gb) notes.push("Le silicium : la chaleur libère des porteurs, sa résistance baisse fortement.");
+  if (!gc) notes.push("Le cuivre a déjà beaucoup d'électrons libres ; les atomes qui vibrent les freinent : sa résistance monte un peu.");
+  if (ga && gb && gc) { feedback($("t2-fb"), "ok", "Tout est juste.", " C'est la différence qui permet de reconnaître un métal d'un semi-conducteur."); markDone("t2", true); }
+  else { feedback($("t2-fb"), "bad", "À revoir.", " " + notes.join(" ")); markDone("t2", false); }
+};
+
+// ---------------------------------------------- N°3 champ électrique
+const Q3 = [
+  ["Le + est à gauche. Les électrons libres vont…", [["g", "vers la gauche"], ["d", "vers la droite"]], "g", "Les électrons, négatifs, sont attirés par le + : vers la gauche."],
+  ["Le + est à gauche. Les trous vont…", [["g", "vers la gauche"], ["d", "vers la droite"]], "d", "Les trous se comportent comme des charges + : ils vont vers le −, à droite."],
+  ["Le courant des électrons et celui des trous…", [["add", "s'additionnent"], ["ann", "s'annulent"]], "add", "Charges − d'un côté, charges + de l'autre : le courant va dans le même sens, ils s'additionnent."],
+  ["Champ très fort sur une jonction mince : quel composant utilise le claquage ?", [["z", "la diode Zener"], ["led", "la LED"], ["r", "la résistance"]], "z", "La diode Zener utilise le claquage pour stabiliser une tension."],
+  ["Quel transistor est commandé par un champ électrique ?", [["fet", "le FET (effet de champ)"], ["bip", "le transistor bipolaire"]], "fet", "FET veut dire transistor à effet de champ."],
+];
+Q3.forEach(([q, o], i) => {
+  const d = document.createElement("div"); d.className = "case";
+  d.innerHTML = `<div>${q}</div><div class="row">${sel("t3-s" + i, o, q)}<span id="t3-r${i}"></span></div>`;
+  $("t3-list").appendChild(d);
+});
+$("t3-check").onclick = () => {
+  let ok = 0, empty = 0; const notes = [];
+  Q3.forEach(([, , r, why], i) => {
+    const v = $("t3-s" + i).value; if (!v) { empty++; $("t3-r" + i).innerHTML = ""; return; }
+    const g = v === r; if (g) ok++; else notes.push(why); $("t3-r" + i).innerHTML = tag(g);
+  });
+  if (empty) { feedback($("t3-fb"), "info", "Il manque des réponses.", ` ${empty} question${empty > 1 ? "s" : ""} sans réponse.`); return; }
+  if (ok === Q3.length) { feedback($("t3-fb"), "ok", "Tout est juste.", " Électrons vers le +, trous vers le − : les deux portent le courant."); markDone("t3", true); }
+  else { feedback($("t3-fb"), "bad", `${ok} sur ${Q3.length}.`, " " + notes.join(" ")); markDone("t3", false); }
+};
+
+// ---------------------------------------------- N°4 dopage
+const DOP = [["Phosphore P", "5", "n", "e"], ["Bore B", "3", "p", "t"], ["Arsenic As", "5", "n", "e"], ["Gallium Ga", "3", "p", "t"]];
+DOP.forEach(([a], i) => {
+  const d = document.createElement("div"); d.className = "case";
+  d.innerHTML = `<div class="mat">${a}</div><div class="row">` +
+    `<label>Électrons de valence ${sel("t4-v" + i, [["3", "3"], ["4", "4"], ["5", "5"]], "Électrons de valence de " + a)}</label>` +
+    `<label>Type ${sel("t4-t" + i, [["n", "n"], ["p", "p"]], "Type obtenu avec " + a)}</label>` +
+    `<label>Majoritaires ${sel("t4-m" + i, [["e", "électrons"], ["t", "trous"]], "Porteurs majoritaires avec " + a)}</label><span id="t4-r${i}"></span></div>`;
+  $("t4-list").appendChild(d);
+});
+$("t4-check").onclick = () => {
+  let ok = 0, empty = 0;
+  DOP.forEach(([, v, t, m], i) => {
+    const a = [$("t4-v" + i).value, $("t4-t" + i).value, $("t4-m" + i).value];
+    if (a.some((x) => !x)) { empty++; $("t4-r" + i).innerHTML = ""; return; }
+    const g = a[0] === v && a[1] === t && a[2] === m; if (g) ok++; $("t4-r" + i).innerHTML = tag(g);
+  });
+  const q = $("t4-q").value; if (!q) empty++;
+  if (empty) { feedback($("t4-fb"), "info", "Il manque des réponses.", " Complète chaque ligne et la dernière question."); return; }
+  const gq = q === "neutre"; $("t4-rq").innerHTML = tag(gq);
+  if (ok === DOP.length && gq) { feedback($("t4-fb"), "ok", "Tout est juste.", " 5 électrons de valence : type n, électrons majoritaires (donneur). 3 : type p, trous majoritaires (accepteur). Le morceau reste neutre."); markDone("t4", true); }
+  else feedback($("t4-fb"), "bad", "À revoir.", " 5 électrons de valence (P, As) : un électron en trop, type n, électrons majoritaires. 3 (B, Ga) : il manque un électron, type p, trous majoritaires." +
+    (gq ? "" : " Et le morceau reste neutre : l'atome de phosphore a aussi un proton de plus.")), markDone("t4", false);
+};
+
+// ================================================================ leçons animées de la page 101 (présentation 100 Semi-conducteurs)
+
+// ---------------------------------------------------------------- cristal de silicium à plat (3 × 3 atomes)
+// o = { pairs : liaisons rompues (paires électron-trou), center : "Si" | "P" | "B", t : temps (agitation), field : -1 | 0 | 1 (dérive) }
+const BONDS = [[1, 1, "h"], [0, 0, "v"], [1, 0, "h"], [2, 1, "v"], [0, 2, "h"], [1, 1, "v"], [0, 1, "h"], [2, 0, "v"], [1, 2, "h"], [0, 1, "v"], [0, 0, "h"], [1, 0, "v"]];
+function latticeG(ox, oy, d, o = {}) {
+  const t = o.t || 0, pairs = o.pairs || 0, center = o.center || "Si";
+  const P = (i, j) => [ox + i * d, oy + j * d];
+  let s = "", holes = [], frees = [];
+  const e = (x, y) => `<circle cx="${x}" cy="${y}" r="${d * 0.055}" style="fill:var(--blue)"/>`;
+  const hole = (x, y) => `<circle cx="${x}" cy="${y}" r="${d * 0.07}" style="fill:var(--surface);stroke:var(--bad);stroke-width:2.2"/>` +
+    TX(x, y + d * 0.045, "+", { size: d * 0.12, bold: true, anchor: "middle", color: "var(--bad)" });
+  // liaisons vers l'extérieur
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+    const [x, y] = P(i, j);
+    [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(([dx, dy]) => {
+      const ni = i + dx, nj = j + dy;
+      if (ni >= 0 && ni < 3 && nj >= 0 && nj < 3) return;
+      s += `<line x1="${x}" y1="${y}" x2="${x + dx * d * 0.42}" y2="${y + dy * d * 0.42}" style="stroke:var(--muted);stroke-width:1.5"/>`;
+      s += e(x + dx * d * 0.3 - dy * d * 0.065, y + dy * d * 0.3 + dx * d * 0.065) + e(x + dx * d * 0.3 + dy * d * 0.065, y + dy * d * 0.3 - dx * d * 0.065);
+    });
+  }
+  // liaisons internes : deux électrons, ou une paire rompue
+  const broken = new Set(BONDS.slice(0, pairs).map((b) => b.join(",")));
+  if (center === "B") broken.add("1,1,h");
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) [["h", 1, 0], ["v", 0, 1]].forEach(([k, dx, dy]) => {
+    if (i + dx > 2 || j + dy > 2) return;
+    const [x0, y0] = P(i, j), [x1, y1] = P(i + dx, j + dy), mx = (x0 + x1) / 2, my = (y0 + y1) / 2, nx = -dy * d * 0.065, ny = dx * d * 0.065;
+    s += `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" style="stroke:var(--muted);stroke-width:1.5"/>`;
+    s += e(mx + nx, my + ny);
+    if (broken.has([i, j, k].join(","))) { holes.push([mx - nx, my - ny]); if (!(center === "B" && [i, j, k].join(",") === "1,1,h")) frees.push([mx, my, frees.length]); }
+    else s += e(mx - nx, my - ny);
+  });
+  holes.forEach(([x, y]) => { s += hole(x, y); });
+  // atomes
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+    const [x, y] = P(i, j), sym = i === 1 && j === 1 ? center : "Si";
+    s += `<circle cx="${x}" cy="${y}" r="${d * 0.2}" style="fill:${sym === "Si" ? "#3A428C" : "#297FD5"};stroke:var(--surface);stroke-width:2"/>` +
+      TX(x, y + d * 0.065, sym, { size: d * 0.18, bold: true, anchor: "middle", color: "#fff" });
+  }
+  if (center === "P") frees.push([ox + d * 1.5, oy + d * 0.5, 7]);
+  // électrons libres : ils s'agitent dans les cases vides ; avec un champ, ils dérivent
+  frees.forEach(([x, y, k]) => {
+    const fx = o.field ? ((x - ox + o.field * -1 * t * d * 0.35) % (2 * d) + 2 * d) % (2 * d) + ox : x + Math.sin(t * 2.1 + k) * d * 0.18;
+    const fy = y + Math.cos(t * 1.7 + k * 1.3) * d * 0.14 - (o.field ? 0 : d * 0.2);
+    s += `<circle cx="${fx}" cy="${fy}" r="${d * 0.075}" style="fill:var(--blue);stroke:#242852;stroke-width:2"/>` +
+      TX(fx, fy + d * 0.04, "−", { size: d * 0.12, bold: true, anchor: "middle", color: "#fff" });
+  });
+  return s;
+}
+function thermo(x, y, h, th, tmin = 20, tmax = 60) {
+  const f = clamp((th - tmin) / (tmax - tmin)), r = 16;
+  return `<rect x="${x - 9}" y="${y}" width="18" height="${h}" rx="9" style="fill:var(--surface);stroke:var(--ink);stroke-width:2"/>` +
+    `<rect x="${x - 5}" y="${y + h - h * (0.1 + 0.9 * f)}" width="10" height="${h * (0.1 + 0.9 * f)}" rx="5" style="fill:var(--bad)"/>` +
+    `<circle cx="${x}" cy="${y + h + r - 4}" r="${r}" style="fill:var(--bad);stroke:var(--ink);stroke-width:2"/>` +
+    TX(x + 26, y + h - h * (0.1 + 0.9 * f) + 6, Math.round(th) + " °C", { size: 20, bold: true });
+}
+
+// ---------------------------------------------------------------- L1 trois familles (diapos 3 et 4)
+lesson("L1", {
+  dur: 30, label: "Animation : l'échelle des résistivités, avec les conducteurs, les semi-conducteurs et les isolants, puis les électrons libres de chaque famille",
+  steps: [
+    [0, "La résistivité dit si un matériau conduit bien. L'échelle va de 10<sup>−9</sup> à 10<sup>16</sup> Ω·m : chaque graduation multiplie par 100."],
+    [7, "Le cuivre à gauche, la porcelaine à droite. Le silicium est entre les deux."],
+    [15, "Pourquoi ? Le métal a beaucoup d'électrons libres, le silicium très peu, l'isolant aucun."],
+    [24, "À retenir : un semi-conducteur est un matériau dont on peut régler la conduction."],
+  ],
+  draw(t) {
+    let s = '<svg viewBox="0 0 960 430">';
+    const x0 = 60, x1 = 900, X = (e) => x0 + (x1 - x0) * (e + 9) / 25, y = 90;
+    const z = prog(t, 0.3, 1.5);
+    // couleurs fixes (pas celles du thème) : le texte marine reste lisible sur les trois zones, en clair comme en sombre
+    [[-9, -5, "#ACCBF9", "Conducteurs"], [-5, 8, "#E8EFFB", "Semi-conducteurs"], [8, 16, "#C9D2E3", "Isolants"]].forEach(([a, b, c, n], i) => {
+      // la zone se déroule (opaque), puis son nom apparaît : jamais de texte marine sur un fond à moitié transparent
+      const o = prog(t, 0.5 + i * 0.8, 1.5 + i * 0.8), ol = prog(t, 1.3 + i * 0.8, 1.7 + i * 0.8);
+      if (o > 0) s += `<rect x="${X(a)}" y="${y}" width="${(X(b) - X(a)) * o}" height="46" style="fill:${c}"/>`;
+      if (ol > 0) s += TX((X(a) + X(b)) / 2, y + 30, n, { size: 18, bold: true, anchor: "middle", color: "#242852", op: ol });
+    });
+    s += `<line x1="${x0}" y1="${y + 60}" x2="${x1}" y2="${y + 60}" style="stroke:var(--ink);stroke-width:2;opacity:${z}"/>`;
+    for (let e = -9; e <= 15; e += 4) s += `<line x1="${X(e)}" y1="${y + 56}" x2="${X(e)}" y2="${y + 64}" style="stroke:var(--ink);opacity:${z}"/>` +
+      TX(X(e), y + 84, `10<tspan font-size="11" dy="-7">${e < 0 ? "−" + -e : e}</tspan>`, { size: 15, anchor: "middle", op: z });
+    s += TX((x0 + x1) / 2, y + 108, "résistivité ρ [Ω·m]", { size: 14, anchor: "middle", italic: true, color: "var(--muted)", op: z });
+    [["cuivre", -7.75, 0, 7], ["silicium pur", 3.36, 0, 9], ["porcelaine", 12, 0, 11]].forEach(([n, e, h, t0]) => {
+      const o = prog(t, t0, t0 + 0.8); if (o <= 0) return;
+      const yl = y - 14 - h * 24;
+      s += `<line x1="${X(e)}" y1="${yl + 4}" x2="${X(e)}" y2="${y}" style="stroke:var(--blue);stroke-width:3;opacity:${o}"/>` +
+        TX(X(e), yl, n, { size: 16, bold: true, anchor: "middle", op: o });
+    });
+    const f = prog(t, 15, 16.2);
+    if (f > 0) [["Métal", 30], ["Semi-conducteur", 3], ["Isolant", 0]].forEach(([n, k], i) => {
+      const bx = 60 + i * 290, by = 240;
+      s += `<g style="opacity:${f}"><rect x="${bx}" y="${by}" width="260" height="130" rx="12" style="fill:var(--surface);stroke:var(--line);stroke-width:2"/>` +
+        TX(bx + 14, by + 26, n, { size: 17, bold: true, color: "var(--head)" }) +
+        TX(bx + 246, by + 26, k ? (k > 10 ? "beaucoup" : "très peu") : "aucun", { size: 14, anchor: "end", color: "var(--muted)" });
+      for (let q = 0; q < k; q++) {
+        const ex = bx + 22 + ((q * 67) % 216) + Math.sin(t * 2.3 + q * 1.9) * 9, ey = by + 52 + ((q * 53) % 64) + Math.cos(t * 2.9 + q) * 7;
+        s += `<circle cx="${ex}" cy="${ey}" r="5" style="fill:var(--blue)"/>`;
+      }
+      s += "</g>";
+    });
+    const r = prog(t, 24, 25);
+    if (r > 0) s += `<rect x="60" y="384" width="840" height="40" rx="8" style="fill:#242852;opacity:${r}"/>` +
+      TX(480, 410, "Semi-conducteur : on peut régler sa conduction.", { size: 18, bold: true, anchor: "middle", color: "#fff", op: r });
+    return s + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L2 chaleur (diapos 6 et 7)
+lesson("L2", {
+  dur: 28, label: "Animation : un cristal de silicium qu'on chauffe de 20 à 60 °C ; des liaisons se rompent et des paires électron-trou apparaissent",
+  steps: [
+    [0, "Le cristal de silicium : chaque atome partage ses 4 électrons de valence avec 4 voisins. Tout est rangé : c'est un monocristal."],
+    [4, "On chauffe. Une liaison se rompt : un électron devient libre, il laisse un trou (une place vide, qui se comporte comme une charge +)."],
+    [12, "Plus il fait chaud, plus il y a de paires électron-trou : environ deux fois plus tous les 10 °C. La résistance baisse fortement."],
+    [21, "Le silicium pur conduit par ces paires : c'est la conduction intrinsèque. Dans un métal, c'est l'inverse : la résistance monte un peu."],
+  ],
+  draw(t) {
+    const th = 20 + 40 * prog(t, 4, 20), k = Math.pow(2, (th - 20) / 10);
+    let s = '<svg viewBox="0 0 960 380">' + latticeG(120, 70, 120, { pairs: t < 4 ? 0 : Math.min(8, Math.max(1, Math.floor(k))), t });
+    s += thermo(560, 60, 220, th);
+    s += TX(660, 110, "Porteurs libres", { size: 18, bold: true, color: "var(--head)" }) + TX(660, 150, "× " + (Math.round(k * 10) / 10).toString().replace(".", ","), { size: 34, bold: true, color: "var(--blue)" });
+    s += TX(660, 190, "(par rapport à 20 °C)", { size: 14, color: "var(--muted)" });
+    const R = 1 / k;
+    s += TX(660, 250, "Résistance", { size: 18, bold: true, color: "var(--head)" }) +
+      `<rect x="660" y="262" width="240" height="18" rx="9" style="fill:var(--line)"/><rect x="660" y="262" width="${240 * R}" height="18" rx="9" style="fill:var(--bad)"/>`;
+    const m = prog(t, 21, 22);
+    if (m > 0) s += `<g style="opacity:${m}"><rect x="560" y="310" width="380" height="56" rx="10" style="fill:var(--tint)"/>` +
+      TX(576, 334, "Cuivre (métal) : R monte un peu.", { size: 16, bold: true }) + TX(576, 356, "Silicium : R baisse fortement.", { size: 16, bold: true, color: "var(--blue)" }) + "</g>";
+    return s + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L3 champ électrique (diapo 8)
+lesson("L3", {
+  dur: 26, label: "Animation : un barreau de silicium entre deux électrodes ; avec une tension, les électrons vont vers le plus et les trous vers le moins, puis le claquage",
+  steps: [
+    [0, "Sans tension, les électrons libres et les trous s'agitent dans tous les sens : pas de courant."],
+    [5, "Avec une tension, le champ électrique pousse les électrons vers le + et les trous vers le −. Les deux courants s'additionnent."],
+    [14, "Champ très fort : les liaisons cèdent, les porteurs se multiplient et le courant monte d'un coup. C'est le claquage, utilisé par la diode Zener."],
+    [21, "Un champ peut aussi commander la conduction : c'est le transistor à effet de champ (FET)."],
+  ],
+  draw(t) {
+    const x0 = 140, x1 = 760, y0 = 90, y1 = 250, on = t >= 5, strong = t >= 14 && t < 21;
+    let s = '<svg viewBox="0 0 960 360">';
+    s += `<rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" rx="6" style="fill:var(--tint);stroke:#242852;stroke-width:2"/>`;
+    s += `<rect x="${x0 - 22}" y="${y0 - 14}" width="22" height="${y1 - y0 + 28}" style="fill:var(--muted)"/><rect x="${x1}" y="${y0 - 14}" width="22" height="${y1 - y0 + 28}" style="fill:var(--muted)"/>`;
+    if (on) s += TX(x0 - 11, y0 - 24, "+", { size: 30, bold: true, anchor: "middle", color: "var(--bad)" }) + TX(x1 + 11, y0 - 24, "−", { size: 30, bold: true, anchor: "middle", color: "var(--ink)" });
+    const n = strong ? 14 + Math.min(16, Math.floor((t - 14) * 4)) : 7, W = x1 - x0 - 40;
+    for (let q = 0; q < n; q++) {
+      const base = (q * 97) % W, drift = on ? (strong ? 160 : 55) * (t - 5) : 0, jit = Math.sin(t * 3 + q * 1.7) * 14;
+      const ex = x0 + 20 + (((base - drift + jit) % W) + W) % W, ey = y0 + 30 + (q * 23) % 50 + Math.cos(t * 2.5 + q) * 6;
+      const hx = x0 + 20 + (((base * 1.3 + drift - jit) % W) + W) % W, hy = y0 + 105 + (q * 29) % 40 + Math.sin(t * 2.2 + q) * 6;
+      s += `<circle cx="${ex}" cy="${ey}" r="10" style="fill:var(--blue);stroke:#242852;stroke-width:1.5"/>` + TX(ex, ey + 5, "−", { size: 14, bold: true, anchor: "middle", color: "#fff" });
+      s += `<circle cx="${hx}" cy="${hy}" r="10" style="fill:var(--surface);stroke:var(--bad);stroke-width:2"/>` + TX(hx, hy + 5, "+", { size: 14, bold: true, anchor: "middle", color: "var(--bad)" });
+    }
+    if (on && t < 21) {
+      s += `<line x1="${x0 + 80}" y1="285" x2="${x1 - 80}" y2="285" style="stroke:#242852;stroke-width:3"/><path d="M ${x1 - 80} 285 l -14 -8 v 16 z" style="fill:#242852"/>`;
+      s += TX((x0 + x1) / 2, 312, "champ électrique et sens du courant (du + vers le −)", { size: 15, anchor: "middle", color: "var(--muted)" });
+      s += TX(800, 120, "électrons", { size: 16, bold: true, color: "var(--blue)" }) + TX(800, 140, "vers le +", { size: 16, color: "var(--blue)" });
+      s += TX(800, 200, "trous", { size: 16, bold: true, color: "var(--bad)" }) + TX(800, 220, "vers le −", { size: 16, color: "var(--bad)" });
+      const I = strong ? 1 : 0.25;
+      s += TX(140, 345, "Courant", { size: 16, bold: true }) + `<rect x="230" y="332" width="400" height="16" rx="8" style="fill:var(--line)"/><rect x="230" y="332" width="${400 * I}" height="16" rx="8" style="fill:${strong ? "var(--bad)" : "var(--blue)"}"/>`;
+      if (strong) s += TX(650, 345, "claquage !", { size: 16, bold: true, color: "var(--bad)" });
+    }
+    const f = prog(t, 21, 22);
+    if (f > 0) s += `<g style="opacity:${f}"><rect x="${x0 + 120}" y="40" width="${x1 - x0 - 240}" height="26" rx="4" style="fill:#242852"/>` +
+      TX((x0 + x1) / 2, 59, "grille (électrode isolée) : elle attire les porteurs", { size: 15, bold: true, anchor: "middle", color: "#fff" }) +
+      TX((x0 + x1) / 2, 300, "FET : le champ de la grille commande la conduction", { size: 17, bold: true, anchor: "middle", color: "var(--head)" }) + "</g>";
+    return s + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L4 dopage (diapo 9)
+lesson("L4", {
+  dur: 24, label: "Animation : un atome de silicium remplacé par du phosphore, qui libère un électron, puis par du bore, qui laisse un trou",
+  steps: [
+    [0, "Silicium pur : toutes les liaisons sont complètes. Doper, c'est remplacer très peu d'atomes par un autre élément."],
+    [4, "Phosphore P : 5 électrons de valence. Quatre forment les liaisons, le cinquième devient libre. Type n : électrons majoritaires."],
+    [12, "Bore B : 3 électrons de valence. Il manque un électron pour la 4e liaison : il reste un trou. Type p : trous majoritaires."],
+    [19, "Dans les deux cas, le morceau reste neutre. Une zone p collée à une zone n forme une jonction PN : la diode."],
+  ],
+  draw(t) {
+    const center = t < 4 ? "Si" : t < 12 ? "P" : t < 19 ? "B" : "P";
+    let s = '<svg viewBox="0 0 960 370">';
+    if (t < 19) s += latticeG(130, 70, 115, { center, t });
+    else s += `<g transform="translate(40 70) scale(0.62)">` + latticeG(70, 30, 115, { center: "P", t }) + `</g><g transform="translate(260 70) scale(0.62)">` + latticeG(70, 30, 115, { center: "B", t }) + "</g>";
+    const box = (y, a, b, c) => `<rect x="560" y="${y}" width="380" height="96" rx="12" style="fill:var(--tint)"/>` + TX(578, y + 30, a, { size: 20, bold: true, color: "var(--blue)" }) +
+      TX(578, y + 58, b, { size: 16 }) + TX(578, y + 82, c, { size: 16, bold: true });
+    if (t >= 4) s += `<g style="opacity:${prog(t, 4, 5)}">` + box(60, "Type n (phosphore)", "5 électrons de valence : 1 en trop", "majoritaires : électrons") + "</g>";
+    if (t >= 12) s += `<g style="opacity:${prog(t, 12, 13)}">` + box(170, "Type p (bore)", "3 électrons de valence : 1 trou", "majoritaires : trous") + "</g>";
+    if (t >= 19) s += `<g style="opacity:${prog(t, 19, 20)}"><rect x="40" y="300" width="900" height="46" rx="10" style="fill:#242852"/>` +
+      TX(490, 330, "Les deux restent neutres · zone p + zone n = jonction PN = diode", { size: 18, bold: true, anchor: "middle", color: "#fff" }) +
+      TX(140, 285, "type n", { size: 16, bold: true, anchor: "middle", color: "var(--head)" }) + TX(360, 285, "type p", { size: 16, bold: true, anchor: "middle", color: "var(--head)" }) + "</g>";
+    return s + "</svg>";
+  },
+});
+
+$("jsx").hidden = true;
+</script>
+</body>
+</html>
