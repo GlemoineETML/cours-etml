@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>121 Diode et diode Zener</title>
+<style>
+__CSS__
+.big { font: 700 26px var(--font-body); color: var(--head); font-variant-numeric: tabular-nums; }
+.vals { display: grid; grid-template-columns: auto auto; gap: 2px 14px; align-items: baseline; }
+.vals span { color: var(--muted); }
+.vals b { font-variant-numeric: tabular-nums; color: var(--head); }
+.cases.two { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.etat { font-weight: 700; padding: 4px 10px; border-radius: 8px; display: inline-block; }
+.etat.ok { background: var(--ok-bg); color: var(--ok); }
+.etat.bad { background: var(--bad-bg); color: var(--bad); }
+.etat.info { background: var(--tint); color: var(--head); }
+</style>
+</head>
+<body>
+<!--GABARIT--><div style="background:#242852;color:#fff;padding:14px 20px;font:700 16px/1.45 Arial,sans-serif">GABARIT du générateur (moteur/page.py), pas la page finale. Ouvre plutôt « sortie/tm2/semaine-1/120-diode-zener/121 Diode et diode Zener.html ».</div><!--/GABARIT-->
+<div id="jsx" class="jsx" role="alert">Cette page a besoin de JavaScript pour afficher les animations et les exercices. Si ce message reste affiché, ouvre la page depuis le lien de l'artefact sur claude.ai, ou ouvre le fichier .html dans Edge, Chrome ou Safari (pas dans un aperçu de fichier).</div>
+<header class="top"><div class="in">
+  <div class="eyebrow">__MATIERE__ · page interactive 121</div>
+  <img src="__LOGO__" alt="ETML">
+  <h1>La diode, la diode Zener et la LED</h1>
+  <p>Quatre étapes, avec les dessins de la présentation 120 : polariser la jonction PN, lire la caractéristique de la diode, faire claquer la Zener, allumer une LED sans la détruire. Chaque étape commence par une animation (« Comprendre »), puis tu t'exerces (« À toi »). Va avec la fiche 130.</p>
+</div></header>
+<div class="bar"><div class="in">
+  <nav aria-label="Étapes"><a href="#ex1">N°1</a><a href="#ex2">N°2</a><a href="#ex3">N°3</a><a href="#ex4">N°4</a></nav>
+  <div class="score">Exercices réussis : <span id="score-n">0</span> / 4
+    <span class="dots"><i data-id="t1"></i><i data-id="t2"></i><i data-id="t3"></i><i data-id="t4"></i></span></div>
+</div></div>
+
+<main>
+<!-- ============================================ N°1 -->
+<section class="ex" id="ex1">
+  <header><span class="num">N°1</span><h2>Polarise la jonction PN</h2>
+    <span class="refs"><a href="__T120__">Présentation 120, diapos 3 à 5</a><span>Fiche 130, N°1</span><a href="__LZ5627__">LZ_5627</a></span></header>
+  <div class="lesson" id="L1"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Sens direct, sens inverse</h3><span class="refs"><a href="__T120__">Présentation 120, diapos 3 et 4</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> une diode en série dans l'alimentation 24 V de l'équipement de test protège la carte si quelqu'un branche l'alimentation à l'envers.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Au laboratoire :</b> tu branches une pile réglable sur une jonction PN au silicium. Essaie, puis réponds.</div>
+  <div class="grid2">
+    <div>
+      <p class="q">a) Essaie : règle la tension et le sens de la pile.</p>
+      <div class="row"><input type="range" id="t1-u" min="0" max="1" step="0.1" value="0.3" aria-label="Tension de la pile en volts"><span class="big" id="t1-utxt">0,3 V</span></div>
+      <div class="row"><button class="btn" id="t1-sens" type="button">Retourner la pile</button></div>
+      <p style="margin:8px 0 0"><span class="etat info" id="t1-etat"></span></p>
+    </div>
+    <div class="svgbox" id="t1-svg"></div>
+  </div>
+  <div class="cases two" id="t1-list"></div>
+  <div class="row"><button class="btn" id="t1-check">Vérifier</button></div>
+  <div class="fb" id="t1-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°2 -->
+<section class="ex" id="ex2">
+  <header><span class="num">N°2</span><h2>Lis la caractéristique de la diode</h2>
+    <span class="refs"><a href="__T120__">Présentation 120, diapos 7 à 9</a><span>Fiche 130, N°2</span><a href="__LZ5627__">LZ_5627</a></span></header>
+  <div class="lesson" id="L2"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Le point de fonctionnement monte la courbe</h3><span class="refs"><a href="__T120__">Présentation 120, diapos 7 et 8</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> en TM2-A1-S3, tu relèves cette courbe point par point. Une diode qui conduit affiche presque toujours entre 0,6 et 0,8 V.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Sur l'équipement :</b> la diode au silicium de la fiche 130. Règle la tension et lis le courant.</div>
+  <div class="grid2">
+    <div>
+      <p class="q">Essaie : règle U<sub>F</sub>.</p>
+      <div class="row"><input type="range" id="t2-u" min="0" max="0.85" step="0.01" value="0.6" aria-label="Tension directe en volts"><span class="big" id="t2-utxt"></span></div>
+      <div class="vals"><span>Courant I<sub>F</sub></span><b id="t2-i"></b></div>
+    </div>
+    <div class="svgbox" id="t2-svg"></div>
+  </div>
+  <div class="cases">
+    <div class="case"><div><b>a)</b> Cherche la tension qui donne I<sub>F</sub> ≈ 20 mA. Que vaut U<sub>F</sub> ?</div>
+      <div class="row"><input type="text" inputmode="decimal" id="t2-a" style="width:110px" aria-label="Tension en volts"><span>V</span><span id="t2-ra"></span></div></div>
+    <div class="case"><div><b>b)</b> À U<sub>F</sub> = 0,5 V, le courant est…</div>
+      <div class="row"><select id="t2-b" aria-label="Courant à 0,5 volt"><option value="">choisir…</option><option value="0">moins de 1 mA</option><option value="5">environ 5 mA</option><option value="20">environ 20 mA</option></select><span id="t2-rb"></span></div></div>
+    <div class="case"><div><b>c)</b> Modèle avec seuil : quelle tension U<sub>F</sub> prends-tu pour une diode au silicium qui conduit ?</div>
+      <div class="row"><select id="t2-c" aria-label="Tension du modèle avec seuil"><option value="">choisir…</option><option value="0">0 V</option><option value="0.7">0,7 V</option><option value="1.5">1,5 V</option></select><span id="t2-rc"></span></div></div>
+  </div>
+  <div class="row"><button class="btn" id="t2-check">Vérifier</button></div>
+  <div class="fb" id="t2-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°3 -->
+<section class="ex" id="ex3">
+  <header><span class="num">N°3</span><h2>Fais claquer la Zener</h2>
+    <span class="refs"><a href="__T120__">Présentation 120, diapos 11 à 13</a><span>Fiche 130, N°4 à N°6</span><a href="__LZ5628__">LZ_5628</a></span></header>
+  <div class="lesson" id="L3"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>La sortie suit l'entrée, puis s'arrête à U<sub>Z</sub></h3><span class="refs"><a href="__T120__">Présentation 120, diapos 11 et 13</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> un capteur de la ligne envoie 0 à 24 V ; avec R<sub>1</sub> et une Zener 5V1, l'entrée du contrôleur ne reçoit jamais plus de 5,1 V environ.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Sur l'équipement :</b> la protection d'entrée R<sub>1</sub> = 2k2 et Zener 5V1. Règle la tension du capteur.</div>
+  <div class="grid2">
+    <div>
+      <p class="q">Essaie : règle U<sub>e</sub>.</p>
+      <div class="row"><input type="range" id="t3-u" min="0" max="24" step="1" value="12" aria-label="Tension du capteur en volts"><span class="big" id="t3-utxt"></span></div>
+      <div class="vals"><span>Sortie U<sub>s</sub></span><b id="t3-us"></b><span>Courant I<sub>Z</sub></span><b id="t3-iz"></b><span>État de la Zener</span><b id="t3-et"></b></div>
+    </div>
+    <div class="svgbox" id="t3-svg"></div>
+  </div>
+  <div class="cases">
+    <div class="case"><div><b>a)</b> U<sub>e</sub> = 3 V. Que vaut U<sub>s</sub> ?</div>
+      <div class="row"><input type="text" inputmode="decimal" id="t3-a" style="width:110px" aria-label="Tension de sortie en volts"><span>V</span><span id="t3-ra"></span></div></div>
+    <div class="case"><div><b>b)</b> U<sub>e</sub> = 24 V. Que vaut U<sub>s</sub> (à 0,1 V près) ?</div>
+      <div class="row"><input type="text" inputmode="decimal" id="t3-b" style="width:110px" aria-label="Tension de sortie en volts"><span>V</span><span id="t3-rb"></span></div></div>
+    <div class="case"><div><b>c)</b> U<sub>e</sub> = 24 V. Qui prend la différence de tension ?</div>
+      <div class="row"><select id="t3-c" aria-label="Composant qui prend la différence"><option value="">choisir…</option><option value="r">la résistance R1</option><option value="z">la Zener</option><option value="c">l'entrée du contrôleur</option></select><span id="t3-rc"></span></div></div>
+  </div>
+  <div class="row"><button class="btn" id="t3-check">Vérifier</button></div>
+  <div class="fb" id="t3-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°4 -->
+<section class="ex" id="ex4">
+  <header><span class="num">N°4</span><h2>Allume la LED sans la détruire</h2>
+    <span class="refs"><a href="__T120__">Présentation 120, diapos 14 et 15</a><span>Fiche 130, N°1 et N°6</span><a href="__LZ5628__">LZ_5628</a></span></header>
+  <div class="lesson" id="L4"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Une LED, toujours avec sa résistance</h3><span class="refs"><a href="__T120__">Présentation 120, diapos 14 et 15</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> le voyant « en marche » de l'équipement : une LED rouge et sa résistance sur 24 V. Le calcul de la résistance vient en présentation 140.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Sur l'équipement :</b> tu essaies plusieurs voyants sur l'alimentation 24 V. Valeurs limites de chaque LED : I<sub>F</sub> max 30 mA, U<sub>R</sub> max 5 V.</div>
+  <div class="grid2">
+    <div>
+      <p class="q">Essaie : choisis la LED, la résistance et le sens.</p>
+      <div class="row"><label>LED <select id="t4-led" aria-label="Couleur de la LED"><option value="1.9">rouge (≈ 1,9 V)</option><option value="2.1">jaune (≈ 2,1 V)</option><option value="3.2">bleue (≈ 3,2 V)</option></select></label></div>
+      <div class="row"><label>R<sub>1</sub> <select id="t4-r" aria-label="Résistance série"><option value="0">aucune (0 Ω)</option><option value="470">470 Ω</option><option value="1000">1 kΩ</option><option value="2200" selected>2,2 kΩ</option><option value="4700">4,7 kΩ</option></select></label></div>
+      <div class="row"><button class="btn" id="t4-sens" type="button">Retourner la LED</button></div>
+      <div class="vals"><span>Courant I<sub>F</sub></span><b id="t4-i"></b></div>
+      <p style="margin:8px 0 0"><span class="etat info" id="t4-etat"></span></p>
+    </div>
+    <div class="svgbox" id="t4-svg"></div>
+  </div>
+  <div class="cases" id="t4-list"></div>
+  <div class="row"><button class="btn" id="t4-check">Vérifier</button></div>
+  <div class="fb" id="t4-fb" aria-live="polite"></div>
+</section>
+</main>
+<footer>
+  <span>Classe __CLASSE__ · __ANNEE__ · __MATIERE__ · champ <a href="__CHAMP__">__CHAMPNOM__</a></span>
+  <span>Objectifs : <a href="__LZ5627__">LZ_5627</a>, <a href="__LZ5628__">LZ_5628</a></span>
+  <span><a href="__T120__">Présentation 120 Diode et diode Zener</a> · <a href="__T130__">Fiche 130 EX</a></span>
+</footer>
+<script>
+window.addEventListener("error", (e) => { const b = document.getElementById("jsx"); if (b) { b.hidden = false; b.textContent = "Erreur dans la page : " + e.message + " (ligne " + e.lineno + "). Envoie ce message à l'enseignant."; } });
+__COMMONJS__
+const D = __DATA__;
+const tag = (ok) => ` <span class="tag ${ok ? "ok" : "bad"}">${ok ? "juste" : "à revoir"}</span>`;
+const vir = (x, n = 2) => (+x).toFixed(n).replace(".", ",");
+const num = (id) => { const v = $(id).value.replace(",", "."); return v === "" ? null : +v; };
+function sel(id, opts, label) {
+  return `<select id="${id}" aria-label="${label}"><option value="">choisir…</option>${opts.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select>`;
+}
+function qcm(liste, cible, prefixe) {
+  liste.forEach(([q, o], i) => {
+    const d = document.createElement("div"); d.className = "case";
+    d.innerHTML = `<div>${q}</div><div class="row">${sel(prefixe + i, o, q.replace(/<[^>]+>/g, ""))}<span id="${prefixe}r${i}"></span></div>`;
+    $(cible).appendChild(d);
+  });
+}
+function corrige(liste, prefixe, fb, id, bravo) {
+  let ok = 0, vide = 0; const notes = [];
+  liste.forEach(([, , r, why], i) => {
+    const v = $(prefixe + i).value; if (!v) { vide++; $(prefixe + "r" + i).innerHTML = ""; return; }
+    const g = v === r; if (g) ok++; else notes.push(why); $(prefixe + "r" + i).innerHTML = tag(g);
+  });
+  if (vide) { feedback($(fb), "info", "Il manque des réponses.", ` ${vide} question${vide > 1 ? "s" : ""} sans réponse.`); return; }
+  if (ok === liste.length) { feedback($(fb), "ok", "Tout est juste.", " " + bravo); markDone(id, true); }
+  else { feedback($(fb), "bad", `${ok} sur ${liste.length}.`, " " + notes.join(" ")); markDone(id, false); }
+}
+
+// ---------------------------------------------- N°1 jonction
+let t1direct = true;
+function draw1() {
+  const u = +$("t1-u").value;
+  $("t1-utxt").textContent = vir(u, 1) + " V";
+  const i = t1direct ? iDiode(u) : 0;
+  $("t1-etat").className = "etat " + (i > 1e-3 ? "ok" : "info");
+  $("t1-etat").textContent = !t1direct ? "Sens inverse : zone large, pas de courant" :
+    (i > 1e-3 ? "Sens direct : la diode conduit (" + vir(i * 1e3, 1) + " mA)" : "Sens direct, mais sous le seuil : presque pas de courant");
+  $("t1-svg").innerHTML = `<svg viewBox="0 0 460 260" width="460" role="img" aria-label="Jonction PN, pile ${t1direct ? "dans le sens direct" : "dans le sens inverse"}, ${vir(u, 1)} volt">` +
+    jonctionG(20, 30, 420, 130, t1direct ? 1 - 0.7 * clamp(u / 0.7) : 1 + 1.2 * clamp(u), 0, i > 1e-3 ? 1 : 0) + pileG(230, 220, t1direct) + "</svg>";
+}
+$("t1-u").oninput = draw1;
+$("t1-sens").onclick = () => { t1direct = !t1direct; draw1(); };
+ready(draw1);
+const Q1 = [
+  ["Le + de la pile sur la zone p (anode), U = 0,3 V. La diode…", [["c", "conduit nettement"], ["p", "ne conduit pas encore"], ["k", "claque"]], "p", "À 0,3 V, on est sous le seuil du silicium (≈ 0,6 à 0,7 V) : presque pas de courant."],
+  ["Le + sur la zone p, U = 0,8 V. La diode…", [["c", "conduit"], ["b", "bloque"]], "c", "Le + est sur l'anode et la tension dépasse le seuil : la diode conduit."],
+  ["Le + sur la zone n (cathode), U = 0,8 V. La diode…", [["c", "conduit"], ["b", "bloque"]], "b", "Le + est sur la cathode : c'est le sens inverse, la diode bloque."],
+  ["En sens inverse, la zone de déplétion devient…", [["l", "plus large"], ["m", "plus mince"]], "l", "En inverse, les porteurs sont tirés loin de la frontière : la zone s'élargit."],
+];
+qcm(Q1, "t1-list", "t1-s");
+$("t1-check").onclick = () => corrige(Q1, "t1-s", "t1-fb", "t1", "Le + sur l'anode et plus de 0,7 V : la diode conduit. Le + sur la cathode : elle bloque.");
+
+// ---------------------------------------------- N°2 caractéristique
+function draw2() {
+  const u = +$("t2-u").value, i = iDiode(u);
+  $("t2-utxt").textContent = vir(u, 2) + " V";
+  $("t2-i").textContent = i < 1e-4 ? "≈ 0 mA" : vir(i * 1e3, 1) + " mA";
+  $("t2-svg").innerHTML = `<svg viewBox="0 0 460 320" width="460" role="img" aria-label="Caractéristique de la diode, point de fonctionnement à ${vir(u, 2)} volt">` + caracG(50, 20, 380, 250, u) + "</svg>";
+}
+$("t2-u").oninput = draw2;
+ready(draw2);
+$("t2-check").onclick = () => {
+  const a = num("t2-a"), b = $("t2-b").value, c = $("t2-c").value;
+  if (a === null || !b || !c) { feedback($("t2-fb"), "info", "Il manque des réponses.", " Réponds aux trois questions."); return; }
+  const ua = uDiode(20e-3), ga = Math.abs(a - ua) <= 0.03, gb = b === "0", gc = c === "0.7";
+  $("t2-ra").innerHTML = tag(ga); $("t2-rb").innerHTML = tag(gb); $("t2-rc").innerHTML = tag(gc);
+  const notes = [];
+  if (!ga) notes.push(`À 20 mA, la courbe donne U_F ≈ ${vir(ua, 2)} V : déplace le curseur jusqu'à lire 20 mA.`);
+  if (!gb) notes.push("À 0,5 V, on est sous le seuil : le courant reste sous 1 mA.");
+  if (!gc) notes.push("Modèle avec seuil d'une diode au silicium : U_F = 0,7 V dès qu'elle conduit.");
+  if (ga && gb && gc) { feedback($("t2-fb"), "ok", "Tout est juste.", " Au-dessus du seuil, la tension change peu quand le courant varie beaucoup : d'où le modèle U<sub>F</sub> = 0,7 V."); markDone("t2", true); }
+  else { feedback($("t2-fb"), "bad", "À revoir.", " " + notes.map((n) => n.replace("U_F", "U<sub>F</sub>")).join(" ")); markDone("t2", false); }
+};
+
+// ---------------------------------------------- N°3 Zener
+function draw3() {
+  const ue = +$("t3-u").value, iz = iZener(ue, 2200), us = iz > 0 ? uZener(iz) : ue;
+  $("t3-utxt").textContent = ue + " V";
+  $("t3-us").textContent = vir(us, 2) + " V";
+  $("t3-iz").textContent = iz < 5e-5 ? "≈ 0 mA" : vir(iz * 1e3, 2) + " mA";
+  $("t3-et").textContent = iz < 5e-5 ? "bloquée" : "elle conduit (claquage)";
+  $("t3-svg").innerHTML = `<svg viewBox="0 0 460 300" width="460" role="img" aria-label="Protection d'entrée : ${ue} volt à l'entrée, ${vir(us, 1)} volt à la sortie">` + zenerG(20, 20, ue, us, iz) + "</svg>";
+}
+$("t3-u").oninput = draw3;
+ready(draw3);
+$("t3-check").onclick = () => {
+  const a = num("t3-a"), b = num("t3-b"), c = $("t3-c").value;
+  if (a === null || b === null || !c) { feedback($("t3-fb"), "info", "Il manque des réponses.", " Réponds aux trois questions."); return; }
+  const ub = uZener(iZener(24, 2200));
+  const ga = Math.abs(a - 3) <= 0.05, gb = Math.abs(b - ub) <= 0.1, gc = c === "r";
+  $("t3-ra").innerHTML = tag(ga); $("t3-rb").innerHTML = tag(gb); $("t3-rc").innerHTML = tag(gc);
+  const notes = [];
+  if (!ga) notes.push("À 3 V, la Zener est bloquée : aucun courant, R<sub>1</sub> ne prend aucune tension, U<sub>s</sub> = U<sub>e</sub> = 3 V.");
+  if (!gb) notes.push(`À 24 V, la Zener conduit : U<sub>s</sub> ≈ ${vir(ub, 2)} V, à peine plus que sa tension U<sub>Z</sub> = 5,1 V.`);
+  if (!gc) notes.push("C'est R<sub>1</sub> qui prend la différence (environ 24 − 5,1 = 18,9 V) et limite le courant de la Zener.");
+  if (ga && gb && gc) { feedback($("t3-fb"), "ok", "Tout est juste.", " Sous U<sub>Z</sub>, la sortie suit l'entrée ; au-dessus, la Zener la tient à U<sub>Z</sub> et R<sub>1</sub> prend le reste."); markDone("t3", true); }
+  else { feedback($("t3-fb"), "bad", "À revoir.", " " + notes.join(" ")); markDone("t3", false); }
+};
+
+// ---------------------------------------------- N°4 LED
+let t4direct = true;
+function etatLED() {
+  const uf = +$("t4-led").value, r = +$("t4-r").value;
+  if (!t4direct) return { i: 0, msg: "LED à l'envers : elle reçoit 24 V en inverse, bien plus que 5 V. Elle peut claquer.", kind: "bad", casse: true, mot: "claquage" };
+  if (r === 0) return { i: Infinity, msg: "Sans résistance : le courant n'est plus limité. LED détruite.", kind: "bad", casse: true };
+  const i = (24 - uf) / r;
+  if (i > 0.03) return { i, msg: "Trop de courant (plus de 30 mA) : la LED chauffe et sera détruite.", kind: "bad", casse: true };
+  return { i, msg: i < 0.006 ? "La LED éclaire faiblement : courant faible." : "La LED éclaire normalement.", kind: "ok", casse: false };
+}
+function draw4() {
+  const e = etatLED(), col = { "1.9": "#E53935", "2.1": "#F2B705", "3.2": "#2F6FE4" }[$("t4-led").value];
+  $("t4-i").textContent = e.i === Infinity ? "très grand" : (e.i === 0 ? "0 mA" : vir(e.i * 1e3, 1) + " mA");
+  $("t4-etat").className = "etat " + e.kind; $("t4-etat").textContent = e.msg;
+  $("t4-svg").innerHTML = `<svg viewBox="0 0 460 300" width="460" role="img" aria-label="${e.msg}">` + ledCircuitG(20, 20, +$("t4-r").value, t4direct, e, col) + "</svg>";
+}
+["t4-led", "t4-r"].forEach((k) => { $(k).onchange = draw4; });
+$("t4-sens").onclick = () => { t4direct = !t4direct; draw4(); };
+ready(draw4);
+const Q4 = [
+  ["Sans résistance en série sur 24 V, la LED…", [["d", "est détruite"], ["f", "éclaire très fort, sans risque"], ["e", "reste éteinte"]], "d", "Sans résistance, rien ne limite le courant : la LED est détruite."],
+  ["Branchée à l'envers sur 24 V, la LED…", [["k", "peut claquer"], ["s", "ne risque rien, elle bloque"]], "k", "Elle bloque, mais elle reçoit 24 V en inverse : bien plus que ses 5 V, elle peut claquer."],
+  ["Avec la même résistance, une LED bleue à la place de la rouge : le courant est…", [["m", "un peu plus faible"], ["p", "un peu plus fort"], ["s", "le même"]], "m", "La LED bleue a une tension U<sub>F</sub> plus grande (≈ 3,2 V) : il reste moins de tension pour la résistance, donc un peu moins de courant."],
+];
+qcm(Q4, "t4-list", "t4-s");
+$("t4-check").onclick = () => corrige(Q4, "t4-s", "t4-fb", "t4", "Une LED a toujours une résistance en série, et sa tension inverse maximale est petite.");
+
+__LESSONS__
+$("jsx").hidden = true;
+</script>
+</body>
+</html>

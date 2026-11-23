@@ -197,9 +197,21 @@ function creer(cfg) {
     EQS.push({ src, sz: sz || 2400, color: color || NAVY });
     return "EQ:" + (EQS.length - 1);
   }
+  // PowerPoint affiche l'équation éditable à sa taille de police, centrée, sans la réduire au cadre (contrairement à l'image
+  // de secours, seule visible dans LibreOffice). On borne donc le corps au cadre : une fraction occupe ≈ 2,6 corps en hauteur.
+  function eqTaille(src, sz, w, h) {
+    const fr = (src.match(/\\f\{/g) || []).length;
+    const car = src.replace(/\\(?:f|u|cdot|Delta|approx|Omega|mu|times|bar|sqrt)\b/g, "X").replace(/\\[a-zA-Z]+/g, "").replace(/[{}_^\s]/g, "").length;
+    const maxH = Math.floor(h * 72 / (fr ? 2.6 : 1.3) * 100);
+    const maxW = Math.floor(w * KSQ * 72 / (0.55 * car * (fr ? 0.6 : 1)) * 100);
+    const ok = Math.min(sz || 2400, maxH, maxW);
+    if (ok < (sz || 2400)) console.log(`équation ramenée à ${ok / 100} pt pour tenir dans son cadre : ${src.slice(0, 40)}`);
+    return ok;
+  }
   function eqImg(s, file, src, x, y, w, maxH, sz, color) {
     let h = w * RATIO[file];
     if (maxH && h > maxH) { w = maxH / RATIO[file]; h = maxH; }
+    sz = eqTaille(src, sz, w, h);
     const o = { path: file, x, y, w, h }, nm = eqName(src, sz, color);
     if (nm) o.objectName = nm;
     s.addImage(o);

@@ -1,0 +1,48 @@
+# TM2, semaine 1, ligne 11 du plan : la diode et la diode Zener (120 présentation, 130 EX + 130 EX C).
+# Source : plan de cours « 000_2026-2027_Plan_de_cours_El_Dim_El_DT2_et_NEBA_Local.xlsx » (joint par Gaël le 11/23/2026),
+# onglets PlanDeCours (ligne 11 : 4 périodes, LZ_5627 et LZ_5628), Export et Couverture (les deux LZ « Couvert » en pratique :
+# A1-S2, A1-S3, A2-S1 à S3) ; liens LZ avec ancre : fiche mémoire TM2 du projet claude.ai.
+# Cadrage validé par Gaël le 11/23/2026 : la LED entre dans la séance (LZ_5628) ; nom des fichiers du plan inchangé ;
+# pas de calcul de résistance série (ligne 12, présentation 140) ; calculs : r_Z et P_Z seulement.
+# Pas de référence Floyd ni nextecmedia pour cette séance (Gaël, 11/23/2026).
+
+classe: XLO1
+annee: 2026-2027
+matiere: Test et Mesure 2 – El Dim 4
+champ: LFB_El_Dim4
+date: 11/23/2026                  # date de l'édition (MM/DD/YYYY) ; semaine du plan : 08/17/2026
+editeur: Gaël Lemoine
+
+# ---------------------------------------------------------------- FutureMEM
+futuremem_champ: "https://skills.futuremem.swiss/fr/9999_et/2000_lfe_bfs_2/#comp%C3%A9tences-op%C3%A9rationnelles-et-crit%C3%A8res-de-performance_1"
+lz:
+  LZ_5627:
+    niveau: C2
+    texte: "Elles/Ils expliquent le fonctionnement de la diode."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_07/#54206F31-B8AD-944A-B3DF-EA1AAF8DF388"
+  LZ_5628:
+    niveau: C2
+    texte: "Elles/Ils expliquent le principe de fonctionnement et les applications des diodes Zener, des diodes électroluminescentes et des transistors de commutation."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_07/#30CE4A6D-E46E-2340-AD9E-06A2E28FA7BA"
+
+# ---------------------------------------------------------------- Teams : dossier du champ LFB_El_Dim4 (même dossier que la séance 100)
+teams_dossier: "https://eduvaud.sharepoint.com/:{k}:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/LFB_El_Dim4/"
+
+# ---------------------------------------------------------------- fichiers de la séance (REGLES 8, colonne Ressources du plan)
+fichiers:
+  "120": "120 Diode et diode Zener.pptx"
+  "121": "121 Diode et diode Zener.html"
+  "125": "125 Diode et diode Zener.mp4"
+  "130": "130 EX Diode et Zener.docx"
+  "130C": "130 EX C Diode et Zener.docx"
+
+versions:
+  "120": "1.0"
+
+# artefact claude.ai de la page interactive (privé tant que Gaël ne le partage pas), publié le 11/23/2026
+artefacts:
+  "121": "https://claude.ai/artifact/8P8MjKkKCVVQ2HBivcLUKr"
+
+# vidéo : durée affichée sur la couverture
+videos:
+  "125": "3 min 36"

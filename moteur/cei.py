@@ -22,13 +22,98 @@ DPI = 220
 _DOSSIER = "."
 
 
+AVERTISSEMENTS = "avertissements_figures.txt"     # lu par controle/controler.py
+TAILLES = "tailles_figures.json"                 # {figure : [largeur enregistrée en pouces, plus petit corps en pt, texte]}
+
+
 def ecrire_dans(dossier):
     global _DOSSIER
     os.makedirs(dossier, exist_ok=True)
     _DOSSIER = dossier
+    open(os.path.join(dossier, AVERTISSEMENTS), "w", encoding="utf-8").close()
+    open(os.path.join(dossier, TAILLES), "w", encoding="utf-8").write("{}")
+
+
+def textes_sur_courbes(fig):
+    """Textes posés sur une courbe ou un trait de repère, dans les graphiques (axes visibles).
+    Le contrôle de la présentation et des fiches ne voit pas l'intérieur des images : on vérifie ici, à l'enregistrement."""
+    import numpy as np
+    r = fig.canvas.get_renderer()
+    out = []
+    for ax in fig.axes:
+        if not ax.axison:
+            continue                                   # schémas : textes et fils sont placés à la main
+        for t in ax.texts:
+            if not t.get_visible() or not t.get_text().strip():
+                continue
+            bb = t.get_window_extent(r).expanded(1.0, 1.0)
+            x0, y0, x1, y1 = bb.x0 + 1, bb.y0 + 1, bb.x1 - 1, bb.y1 - 1
+            for ln in ax.lines:
+                if not ln.get_visible() or ln.get_linewidth() < 1.0:
+                    continue
+                xy = ln.get_transform().transform(np.column_stack(ln.get_data()).astype(float))
+                pts = [xy[0]]
+                for a, b in zip(xy[:-1], xy[1:]):            # segments échantillonnés tous les ~2 px
+                    n = max(1, int(np.hypot(*(b - a)) / 2))
+                    pts += [a + (b - a) * k / n for k in range(1, n + 1)]
+                if any(x0 < px < x1 and y0 < py < y1 for px, py in pts):
+                    out.append(f"texte « {t.get_text().strip()[:40]} » posé sur une courbe ou un trait")
+                    break
+    from matplotlib.text import Annotation
+    for ax in fig.axes:                                 # texte sur la pointe d'une flèche (annotate) : graphiques et schémas
+        fl = [a.arrow_patch for a in ax.texts if isinstance(a, Annotation) and a.arrow_patch is not None]
+        for t in [t for t in ax.texts if t.get_visible() and t.get_text().strip()]:
+            bt = t.get_window_extent(r)
+            y0, y1 = bt.y0 + 0.1 * bt.height, bt.y1 - 0.1 * bt.height      # sans l'interligne
+            for f in fl:
+                bf = f.get_window_extent(r)                  # le tracé d'une flèche est déjà en coordonnées écran
+                if min(bt.x1, bf.x1) - max(bt.x0, bf.x0) > 1 and min(y1, bf.y1) - max(y0, bf.y0) > 0:
+                    out.append(f"texte « {t.get_text().strip()[:40]} » posé sur une flèche")
+                    break
+    for ax in fig.axes:                                 # deux textes qui se chevauchent : graphiques et schémas
+        ts = [t for t in ax.texts if t.get_visible() and t.get_text().strip()]
+        bb = [t.get_window_extent(r) for t in ts]
+        for i in range(len(ts)):
+            for j in range(i + 1, len(ts)):
+                a, b = bb[i], bb[j]
+                lx = min(a.x1, b.x1) - max(a.x0, b.x0); ly = min(a.y1, b.y1) - max(a.y0, b.y0)
+                # les boîtes incluent l'interligne : deux lignes serrées mais lisibles se recouvrent de ≈ 15 % ;
+                # au-delà de 20 % de la plus petite hauteur, les lettres se touchent (étalonné sur R_1 / 1k et Cu / +1)
+                if lx > 2 and ly > 0.2 * min(a.height, b.height):
+                    out.append(f"textes « {ts[i].get_text().strip()[:25]} » et « {ts[j].get_text().strip()[:25]} » se chevauchent")
+    return out
+
+
+def plus_petit_texte(fig):
+    """Plus petit corps (pt, à la taille de la figure) parmi les textes visibles : textes posés, graduations, titres d'axes."""
+    ts = list(fig.texts)
+    for ax in fig.axes:
+        ts += list(ax.texts) + [ax.title, ax.xaxis.label, ax.yaxis.label]
+        if ax.axison:
+            ts += [t for t in ax.get_xticklabels() + ax.get_yticklabels()]
+    ts = [t for t in ts if t.get_visible() and t.get_text().strip() and t.get_text().strip() not in ("+", "−", "-")]   # signes dans les porteurs : pictogrammes
+    if not ts:
+        return None, ""
+    t = min(ts, key=lambda t: t.get_fontsize())
+    return t.get_fontsize(), t.get_text().strip()[:30]
 
 
 def save(fig, name, pad=0.05):
+    import json
+    fig.canvas.draw()
+    av = textes_sur_courbes(fig)
+    pt, quoi = plus_petit_texte(fig)
+    if pt:
+        larg = fig.get_tightbbox(fig.canvas.get_renderer()).width + 2 * pad      # largeur de l'image enregistrée [pouces]
+        ft = os.path.join(_DOSSIER, TAILLES)
+        d = json.load(open(ft, encoding="utf-8")) if os.path.exists(ft) else {}
+        d[name] = [round(larg, 3), pt, quoi]
+        json.dump(d, open(ft, "w", encoding="utf-8"), ensure_ascii=False, indent=0)
+    if av:
+        with open(os.path.join(_DOSSIER, AVERTISSEMENTS), "a", encoding="utf-8") as f:
+            for a in av:
+                f.write(f"{name} : {a}\n")
+                print(f"⚠ figure {name} : {a}")
     fig.savefig(os.path.join(_DOSSIER, name), dpi=DPI, facecolor="white", bbox_inches="tight", pad_inches=pad)
     plt.close(fig)
 
@@ -157,9 +242,9 @@ def resistance(ax, x, y0, y1, nom=None, valeur=None, lw=2.0, w=0.32, h=0.85, cot
     s = 1 if cote == "droite" else -1
     ha = "left" if s > 0 else "right"
     if nom:
-        ax.text(x + s * (w / 2 + 0.15), ym + 0.17, nom, ha=ha, va="center", fontsize=fs, color=NAVY)
+        ax.text(x + s * (w / 2 + 0.15), ym + 0.17 + 0.03 * (fs - 15), nom, ha=ha, va="center", fontsize=fs, color=NAVY)
     if valeur:
-        ax.text(x + s * (w / 2 + 0.15), ym - 0.22, valeur, ha=ha, va="center", fontsize=fs - 2, color=GR)
+        ax.text(x + s * (w / 2 + 0.15), ym - 0.22 - 0.045 * (fs - 15), valeur, ha=ha, va="center", fontsize=fs - 2, color=GR)
 
 
 def source_tension(ax, x, y0, y1, valeur=None, r=0.34, lw=2.0, fs=13):
@@ -210,3 +295,32 @@ def fleche_courant(ax, x0, y0, x1, y1, nom, couleur=RED, fs=14, decal=(0.12, 0.0
     ax.annotate("", xy=(x1, y1), xytext=(x0, y0),
                 arrowprops=dict(arrowstyle="-|>,head_length=0.7,head_width=0.32", color=couleur, lw=2.0))
     ax.text((x0 + x1) / 2 + decal[0], (y0 + y1) / 2 + decal[1], nom, ha="left", va="center", fontsize=fs, color=couleur, fontweight="bold")
+
+
+# ------------------------------------------------------------------ diodes (CEI 60617-5) : diode, diode Zener, LED
+def diode(ax, x, y0, y1, sens="bas", genre="diode", nom=None, valeur=None, lw=2.0, t=0.30, fs=15, ym=None):
+    """Diode verticale entre y0 et y1 (y0 < y1), à l'axe x.
+    sens « bas » : anode en haut, cathode en bas (le courant direct descend) ; « haut » : l'inverse.
+    genre : « diode » (CEI 05-03-01, triangle ouvert traversé par le conducteur), « zener » (05-03-06, trait de cathode
+    avec un retour), « led » (05-03-02, deux flèches de rayonnement sortantes).
+    Nom et valeur à gauche du symbole (la droite est réservée à la flèche de tension, REGLES 3.3).
+    Retourne (y_anode, y_cathode) du symbole."""
+    ym = (y0 + y1) / 2 if ym is None else ym
+    s = -1 if sens == "bas" else 1                    # direction anode → cathode
+    ya, yk = ym - s * t, ym + s * t                   # base du triangle (anode), pointe et trait (cathode)
+    line(ax, [(x, y0), (x, y1)], lw=lw)
+    ax.add_patch(Polygon([(x - t, ya), (x + t, ya), (x, yk)], closed=True, fill=True, fc="white", ec=K, lw=lw, zorder=3))
+    line(ax, [(x, ya), (x, yk)], lw=lw, zorder=4)
+    line(ax, [(x - t, yk), (x + t, yk)], lw=lw + 0.4, zorder=4)
+    if genre == "zener":
+        line(ax, [(x + t, yk), (x + t, yk - s * 0.16)], lw=lw + 0.4, zorder=4)
+    if genre == "led":
+        for dy in (0.02, -0.22):
+            x0_, y0_ = x + 0.30, ym + dy + 0.10
+            ax.annotate("", xy=(x0_ + 0.42, y0_ + 0.30), xytext=(x0_, y0_),
+                        arrowprops=dict(arrowstyle="-|>,head_length=0.45,head_width=0.22", color=K, lw=1.5), zorder=4)
+    if nom:
+        ax.text(x - t - 0.15, ym + 0.17 + 0.03 * (fs - 15), nom, ha="right", va="center", fontsize=fs, color=NAVY)
+    if valeur:
+        ax.text(x - t - 0.15, ym - 0.22 - 0.045 * (fs - 15), valeur, ha="right", va="center", fontsize=fs - 2, color=GR)
+    return ya, yk
