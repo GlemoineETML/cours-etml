@@ -7,7 +7,7 @@ Usage :
   python3 build.py tm1/semaine-1 --date "11/16/2026 23:04:03"   date figée (pied de page Word), pour comparer avec reference/
   python3 build.py tm1/semaine-1 --plan chemin.xlsx     classeur du plan de cours à mettre à jour (sinon : celui de reference/)
   python3 build.py tm1/semaine-1 --videos reference     reprend les vidéos de reference/ au lieu de les recalculer (3 min)
-  python3 build.py tm1/semaine-1 --equations omml       équations éditables dans les présentations (image en secours)
+  python3 build.py tm1/semaine-1 --equations image      équations en image dans les présentations (par défaut : éditables, image en secours)
 
 Sorties : sortie/<matière>/<semaine>/ ; fichiers intermédiaires (figures, logos, captures) : sortie/_travail/<matière>/<semaine>/.
 Ordre : charte → figures → fiches → animations → couvertures → pages → captures → présentations → plan.
@@ -96,8 +96,8 @@ def main():
     ap.add_argument("--date")
     ap.add_argument("--plan")
     ap.add_argument("--videos", choices=["calculer", "reference"], default="calculer")
-    ap.add_argument("--equations", choices=["image", "omml"], default="image",
-                    help="équations des présentations : image (actuel) ou omml (éditables, image en secours ; à valider dans PowerPoint)")
+    ap.add_argument("--equations", choices=["image", "omml"], default="omml",
+                    help="équations des présentations : omml (éditables, image en secours ; validé dans PowerPoint le 11/23/2026) ou image")
     a = ap.parse_args()
     etapes = a.seulement.split(",")
     dossier = os.path.join(RACINE, "contenus", a.seance)

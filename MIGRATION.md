@@ -27,7 +27,7 @@ Avec `python3 build.py tm1/semaine-1 --date "11/16/2026 23:04:03"` :
 - 110 EX C : grille d'auto-évaluation retirée du corrigé (REGLES 4 : fiche élève seulement).
 - Présentations : ligne « Gaël Lemoine · date · version » au bas de la diapositive de titre (REGLES 5) ; titres de diapositive et NON‑ET avec la typographie de `typo.py`.
 - Pages interactives : typographie française sur le texte affiché du gabarit.
-- Équations éditables dans les présentations : prêtes (`--equations omml`), mais **pas encore par défaut** : à ouvrir dans PowerPoint pour valider (voir ci-dessous).
+- Équations éditables dans les présentations, image en secours : par défaut depuis la validation de Gaël (11/23/2026).
 
 `python3 controle/controler.py tm1/semaine-1` : 0 erreur, 0 avertissement.
 
@@ -58,7 +58,7 @@ La semaine 1 reste identique après ces ajouts (vérifié avec controle/comparer
 
 ## Reste à faire
 
-1. **Équations dans PowerPoint** : Gaël ouvre le fichier de test (120 avec `--equations omml`) dans PowerPoint pour Windows. Si les équations s'affichent et se modifient sans message de réparation, passer `--equations` à `omml` par défaut dans `build.py` et régénérer.
+1. Équations dans PowerPoint : fichier de test validé par Gaël le 11/23/2026, équations éditables par défaut (`--equations omml`).
 2. Bascule du projet claude.ai (étape 7) : remplacer les instructions du projet par un renvoi au dépôt (REGLES.md, CLAUDE.md) ; ne garder dans le projet que la fiche mémoire, les références et les synthèses ; retirer les générateurs du projet une fois la bascule validée.
 3. Test sur une séance neuve : fait (séance de test ci-dessus). Prochaine vraie séance : `contenus/tm1/semaine-2/`, avec les informations de REGLES 2 demandées à Gaël.
 4. Les présentations 100 et 120 de la semaine 1 pourraient passer à `titreSlide()` (sortie à recomparer).
