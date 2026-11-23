@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>201 Algèbre de Boole</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Charte ETML : marine, bleu, bleu clair. Mise en page : une colonne de fiches d'exercices, chacune avec sa situation réelle. */
+  --navy: #242852; --blue: #297FD5; --light: #ACCBF9; --tint: #E8EFFB;
+  --bg: #F6F8FC; --surface: #FFFFFF; --ink: #1D2140; --muted: #5A6478; --line: #C9D2E3;
+  --ok: #1E8C46; --ok-bg: #E2F4E8; --bad: #C81E1E; --bad-bg: #FBE4E4; --warn: #C86A10; --warn-bg: #FDF0E0;
+  --one: #297FD5; --zero: #242852; --head: #242852;
+  --font-body: Arial, "Liberation Sans", Helvetica, sans-serif;
+  --font-mono: "IBM Plex Mono", "Liberation Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11132A; --surface: #1A1D3A; --ink: #E6EAF6; --muted: #A3ACC4; --line: #343A66; --tint: #232852;
+    --ok: #4CC27A; --ok-bg: #173A27; --bad: #F06A6A; --bad-bg: #3D1C24; --warn: #F0A050; --warn-bg: #3A2A18;
+    --one: #5AA2EA; --zero: #ACCBF9; --head: #ACCBF9; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11132A; --surface: #1A1D3A; --ink: #E6EAF6; --muted: #A3ACC4; --line: #343A66; --tint: #232852;
+  --ok: #4CC27A; --ok-bg: #173A27; --bad: #F06A6A; --bad-bg: #3D1C24; --warn: #F0A050; --warn-bg: #3A2A18;
+  --one: #5AA2EA; --zero: #ACCBF9; --head: #ACCBF9; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--font-body); }
+a { color: var(--blue); }
+a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--light); outline-offset: 2px; }
+.top { background: #242852; color: #fff; }
+.top .in { max-width: 1060px; margin: 0 auto; padding: 18px 20px 20px; display: grid; grid-template-columns: 1fr auto; gap: 8px 24px; align-items: center; }
+.top img { height: 30px; grid-column: 2; grid-row: 1 / span 2; }
+.top .eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #ACCBF9; font-weight: 700; }
+.top h1 { margin: 2px 0 0; font-size: clamp(24px, 3.4vw, 34px); line-height: 1.15; text-wrap: balance; }
+.top p { grid-column: 1 / -1; margin: 6px 0 0; color: #D7E2F8; max-width: 70ch; }
+.bar { position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.bar .in { max-width: 1060px; margin: 0 auto; padding: 10px 20px; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 14px; }
+.bar nav { display: flex; flex-wrap: wrap; gap: 6px; }
+.bar nav a { text-decoration: none; padding: 3px 10px; border-radius: 999px; background: var(--tint); color: var(--head); font-weight: 700; }
+.score { margin-left: auto; font-weight: 700; color: var(--head); font-variant-numeric: tabular-nums; }
+.score .dots { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle; }
+.score .dots i { width: 12px; height: 12px; border-radius: 50%; background: var(--line); display: inline-block; }
+.score .dots i.on { background: var(--ok); }
+main { max-width: 1060px; margin: 0 auto; padding: 20px 20px 40px; display: grid; gap: 22px; }
+.ex { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: grid; gap: 14px; scroll-margin-top: 60px; }
+.ex > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.ex h2 { margin: 0; font-size: 22px; color: var(--head); text-wrap: balance; }
+.num { display: inline-grid; place-items: center; min-width: 38px; height: 30px; padding: 0 8px; border-radius: 8px; background: #242852; color: #fff; font-weight: 700; font-size: 15px; }
+.refs { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.situ { border-left: 5px solid var(--blue); background: var(--tint); padding: 10px 14px; border-radius: 0 10px 10px 0; max-width: 78ch; }
+.situ b { color: var(--head); }
+.q { margin: 0; font-weight: 700; max-width: 78ch; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; align-items: start; }
+.panel { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--bg); }
+.panel h3 { margin: 0 0 8px; font-size: 15px; color: var(--head); text-transform: uppercase; letter-spacing: .05em; }
+button { font: inherit; cursor: pointer; }
+.btn { border: 0; border-radius: 10px; padding: 9px 16px; font-weight: 700; background: var(--blue); color: #fff; }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 2px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 5px 12px; font-weight: 700; font-size: 14px; }
+.chip[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+select, input[type="number"] { max-width: 100%; font: inherit; padding: 6px 8px; border-radius: 8px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); }
+.fb { border-radius: 10px; padding: 10px 14px; display: none; max-width: 80ch; }
+.fb.ok { display: block; background: var(--ok-bg); border: 2px solid var(--ok); }
+.fb.bad { display: block; background: var(--bad-bg); border: 2px solid var(--bad); }
+.fb.info { display: block; background: var(--tint); border: 2px solid var(--blue); }
+.fb b:first-child { display: block; margin-bottom: 2px; }
+.fb.ok b:first-child { color: var(--ok); } .fb.bad b:first-child { color: var(--bad); }
+table.tdv { border-collapse: collapse; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+table.tdv th, table.tdv td { border: 1px solid var(--line); padding: 4px 0; width: 54px; text-align: center; font-size: 18px; }
+table.tdv th { background: var(--light); color: #242852; font-family: var(--font-body); }
+table.tdv td.out, table.tdv th.out { border-left: 3px solid var(--head); }
+table.tdv tr.hl td { background: var(--tint); outline: 2px solid var(--blue); outline-offset: -2px; }
+table.tdv td.one { color: var(--one); font-weight: 700; }
+table.tdv td button { width: 42px; height: 30px; border-radius: 6px; border: 2px dashed var(--line); background: var(--surface); color: var(--ink); font: 700 18px var(--font-mono); }
+table.tdv td button.set { border-style: solid; border-color: var(--blue); }
+table.tdv td.wrong button { border-color: var(--bad); background: var(--bad-bg); }
+.bit { display: inline-grid; place-items: center; width: 44px; height: 38px; border-radius: 8px; border: 2px solid var(--head); font: 700 20px var(--font-mono); background: var(--surface); color: var(--ink); }
+.bit.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.eq { font: 700 22px var(--font-body); color: var(--head); }
+.ov { text-decoration: overline; text-decoration-thickness: 2px; }
+.muted { color: var(--muted); font-size: 14px; }
+.life { font-size: 15px; }
+.life b { color: var(--blue); }
+svg text { font-family: var(--font-body); }
+.svgbox { overflow-x: auto; }
+.svgbox svg { max-width: 100%; height: auto; }
+main > *, .ex > *, .grid2 > *, .sim > * { min-width: 0; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; }
+.tag { display: inline-block; padding: 2px 9px; border-radius: 999px; font-weight: 700; font-size: 14px; }
+.tag.ok { background: var(--ok-bg); color: var(--ok); } .tag.bad { background: var(--bad-bg); color: var(--bad); } .tag.warn { background: var(--warn-bg); color: var(--warn); }
+.cases { display: grid; gap: 10px; }
+.case { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 8px; background: var(--surface); }
+.case .row label { font-weight: 700; }
+footer { max-width: 1060px; margin: 0 auto; padding: 0 20px 30px; color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+input[type="range"] { width: 100%; accent-color: var(--blue); }
+/* leçon animée (« Comprendre ») avant chaque exercice, puis « À toi » */
+.lesson { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: 14px 16px; display: grid; gap: 10px; }
+.ls-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.ls-tag { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--blue); padding: 2px 8px; border-radius: 6px; }
+.ls-tag.alt { background: #242852; }
+.ls-head h3 { margin: 0; font-size: 18px; color: var(--head); }
+.ls-body { display: grid; gap: 8px; min-width: 0; }
+.ls-stage { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.ls-stage svg { width: 100%; height: auto; display: block; }
+.ls-cap { min-height: 3.1em; font-size: 16.5px; max-width: 82ch; }
+.ls-cap b { color: var(--blue); }
+.ls-ctrl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ls-btn { border: 2px solid var(--blue); background: var(--surface); color: var(--blue); border-radius: 8px; padding: 4px 10px; font-weight: 700; font-size: 14px; }
+.ls-steps { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.ls-steps button { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; font-size: 13px; padding: 0; }
+.ls-steps button[aria-current="step"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+.ls-prog { flex: 1 1 100px; min-width: 80px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.ls-prog i { display: block; height: 100%; width: 0; background: var(--blue); }
+.ls-extra { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.ls-extra input[type="range"] { width: 180px; }
+/* bandeau visible tant que le script de la page n'a pas fini de démarrer (aperçu sans JavaScript, erreur) */
+.jsx { background: #FDF0E0; color: #7A3E00; border-bottom: 3px solid #C86A10; padding: 10px 20px; font: 600 15px/1.45 Arial, sans-serif; }
+.todo { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.todo::after { content: ""; flex: 1; border-top: 2px dashed var(--line); }
+@media (max-width: 520px) { .top .in { grid-template-columns: 1fr; } .top img { grid-row: 1; grid-column: 1; justify-self: start; height: 24px; } .ex { padding: 16px; } table.tdv th, table.tdv td { width: 44px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.rules .case { grid-template-columns: auto 1fr; align-items: center; }
+.rules .case .eq { font-size: 20px; }
+table.tdv td button { min-width: 38px; }
+.steps { display: grid; gap: 6px; margin: 6px 0; }
+.steps .eq { font-size: 20px; }
+.steps .why { color: var(--blue); font-weight: 700; font-size: 14px; margin-left: 10px; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.prob { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--surface); display: grid; gap: 8px; }
+.prob.done { border-color: var(--ok); }
+table.tdv td.out.wrong { background: var(--bad-bg); color: var(--bad); font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="jsx" class="jsx" role="alert">Cette page a besoin de JavaScript pour afficher les animations et les exercices. Si ce message reste affiché, ouvre la page depuis le lien de l'artefact sur claude.ai, ou ouvre le fichier .html dans Edge, Chrome ou Safari (pas dans un aperçu de fichier).</div>
+<header class="top"><div class="in">
+  <div class="eyebrow">Test et Mesure 1 – El DT 1 · page interactive 201</div>
+  <img src="data:image/png;base64,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" alt="ETML">
+  <h1>Algèbre de Boole</h1>
+  <p>Cinq exercices pour s'entraîner à simplifier une équation et à la contrôler. Les animations « Comprendre » reprennent la présentation 200 ; ensuite, à toi. La sortie s'appelle toujours S, les entrées A, B, C. Va avec l'animation 205 et la fiche 210 EX.</p>
+</div></header>
+<div class="bar"><div class="in">
+  <nav aria-label="Exercices"><a href="#ex1">N°1</a><a href="#ex2">N°2</a><a href="#ex3">N°3</a><a href="#ex4">N°4</a><a href="#ex5">N°5</a></nav>
+  <div class="score">Exercices réussis : <span id="score-n">0</span> / 5
+    <span class="dots"><i data-id="t1"></i><i data-id="t2"></i><i data-id="t3"></i><i data-id="t4"></i><i data-id="t5"></i></span></div>
+</div></div>
+
+<main>
+<!-- ============================================ N°1 -->
+<section class="ex" id="ex1">
+  <header><span class="num">N°1</span><h2>Les règles, vues sur une porte</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/200%20Alg%C3%A8bre%20de%20Boole.pptx?csf=1&amp;web=1">Présentation 200, diapos 6 et 7</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4">LZ_2225</a></span></header>
+  <div class="lesson" id="L1"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Une entrée à 0, à 1, ou reliée à A</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/200%20Alg%C3%A8bre%20de%20Boole.pptx?csf=1&amp;web=1">Présentation 200, diapos 6 et 7</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> une entrée inutilisée d'un CI se relie à VCC sur un ET et à GND sur un OU. La porte garde ainsi sa fonction (règles 4 et 1).</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Les huit premières règles :</b> pour chaque expression, choisis le résultat. A vaut 0 ou 1 : en cas de doute, essaie les deux valeurs.</div>
+  <div class="rules" id="t1-list"></div>
+  <div class="row"><button class="btn" id="t1-check">Vérifier</button></div>
+  <div class="fb" id="t1-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°2 -->
+<section class="ex" id="ex2">
+  <header><span class="num">N°2</span><h2>Vérifie la règle 11 avec la table de vérité</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/200%20Alg%C3%A8bre%20de%20Boole.pptx?csf=1&amp;web=1">Présentation 200, diapos 5 et 8</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4">LZ_2225</a></span></header>
+  <div class="lesson" id="L2"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Une colonne par morceau, puis on compare</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/200%20Alg%C3%A8bre%20de%20Boole.pptx?csf=1&amp;web=1">Présentation 200, diapo 5</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> la table de vérité sert de contrôle après chaque simplification. Un logiciel de synthèse (CPLD, FPGA) fait la même vérification avant de programmer la puce.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Règle 11 :</b> A + <span class="ov">A</span> · B = A + B. Complète les trois colonnes, puis compare les deux dernières. Clique sur une case pour écrire 0 ou 1.</div>
+  <table class="tdv" id="t2-tab"></table>
+  <div class="row"><button class="btn" id="t2-check">Vérifier</button><button class="btn ghost" id="t2-reset">Effacer</button></div>
+  <div class="fb" id="t2-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°3 -->
+<section class="ex" id="ex3">
+  <header><span class="num">N°3</span><h2>Simplifie pas à pas : choisis la règle</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/200%20Alg%C3%A8bre%20de%20Boole.pptx?csf=1&amp;web=1">Présentation 200, diapos 9, 10 et 14</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4">LZ_2225</a></span></header>
+  <div class="lesson" id="L3"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Le convoyeur de sortie : de 4 portes à 2</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/200%20Alg%C3%A8bre%20de%20Boole.pptx?csf=1&amp;web=1">Présentation 200, diapos 14 et 15</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> S : convoyeur, A : machine en marche, B : bouteille pleine, C : vidange. Le résultat se relit en français : le convoyeur tourne en marche, s'il y a une bouteille pleine ou une vidange.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Trois équations à simplifier :</b> à chaque étape, choisis la loi ou la règle qui permet d'avancer. La nouvelle ligne s'écrit quand ton choix est juste.</div>
+  <div class="cases" id="t3-list"></div>
+  <div class="fb" id="t3-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°4 -->
+<section class="ex" id="ex4">
+  <header><span class="num">N°4</span><h2>De Morgan : casse la barre</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/200%20Alg%C3%A8bre%20de%20Boole.pptx?csf=1&amp;web=1">Présentation 200, diapos 11 à 13</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4">LZ_2225</a></span></header>
+  <div class="lesson" id="L4"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Casse la barre, change le signe</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/200%20Alg%C3%A8bre%20de%20Boole.pptx?csf=1&amp;web=1">Présentation 200, diapos 11 et 12</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> les arrêts d'urgence A et B de la ligne. « Ni A ni B » se câble avec une NON‑OU (74HC02), ou avec un ET dont les entrées sont inversées : c'est la même porte.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Quatre expressions :</b> applique De Morgan (et la règle 9 si deux barres se superposent), puis choisis le résultat.</div>
+  <div class="cases" id="t4-list"></div>
+  <div class="row"><button class="btn" id="t4-check">Vérifier</button></div>
+  <div class="fb" id="t4-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°5 -->
+<section class="ex" id="ex5">
+  <header><span class="num">N°5</span><h2>Contrôle le travail d'un collègue</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/200%20Alg%C3%A8bre%20de%20Boole.pptx?csf=1&amp;web=1">Présentation 200, diapos 5 et 14</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4">LZ_2225</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#1CA6E18D-0C33-AB41-AC90-A700A525DE38">LZ_2226</a></span></header>
+  <div class="situ"><b>À l'atelier :</b> un collègue a simplifié quatre commandes de la ligne avant de les câbler. Pour chacune, dis si la simplification est juste. Après la vérification, la page affiche les deux tables de vérité.</div>
+  <div class="cases" id="t5-list"></div>
+  <div class="row"><button class="btn" id="t5-check">Vérifier</button></div>
+  <div class="fb" id="t5-fb" aria-live="polite"></div>
+</section>
+</main>
+
+<footer>
+  <span>Classe XLO1 · 2026-2027 · Test et Mesure 1 – El DT 1 · champ <a href="https://skills.futuremem.swiss/fr/9999_et/2000_lfe_bfs_1/#comp%C3%A9tences-op%C3%A9rationnelles-et-crit%C3%A8res-de-performance">LFB_El_DT1</a></span>
+  <span>Objectifs : <a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4">LZ_2225</a>, <a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#1CA6E18D-0C33-AB41-AC90-A700A525DE38">LZ_2226</a></span>
+  <span><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/200%20Alg%C3%A8bre%20de%20Boole.pptx?csf=1&amp;web=1">Présentation 200</a> · <a href="https://eduvaud.sharepoint.com/:w:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/210%20EX%20Alg%C3%A8bre%20de%20Boole.docx?csf=1&amp;web=1">Fiche 210 EX</a></span>
+</footer>
+
+<script>
+window.addEventListener("error", (e) => { const b = document.getElementById("jsx"); if (b) { b.hidden = false; b.textContent = "Erreur dans la page : " + e.message + " (ligne " + e.lineno + "). Envoie ce message à l'enseignant."; } });
+const $ = (id) => document.getElementById(id);
+const FN = {
+  "NON": (a) => 1 - a, "ET": (a, b) => a & b, "OU": (a, b) => a | b, "NON-ET": (a, b) => 1 - (a & b),
+  "NON-OU": (a, b) => 1 - (a | b), "OUX": (a, b) => a ^ b, "NON-OUX": (a, b) => 1 - (a ^ b),
+};
+const QUAL = { "NON": "1", "ET": "&amp;", "OU": "≥1", "NON-ET": "&amp;", "NON-OU": "≥1", "OUX": "=1", "NON-OUX": "=1" };
+const NEG = { "NON": 1, "ET": 0, "OU": 0, "NON-ET": 1, "NON-OU": 1, "OUX": 0, "NON-OUX": 1 };
+const EQH = {
+  "NON": 'Y = <span class="ov">A</span>', "ET": "Y = A · B", "OU": "Y = A + B", "NON-ET": 'Y = <span class="ov">A · B</span>',
+  "NON-OU": 'Y = <span class="ov">A + B</span>', "OUX": "Y = A ⊕ B", "NON-OUX": 'Y = <span class="ov">A ⊕ B</span>',
+};
+// table de vérité, entrées du poids fort au poids faible : [B, A, Y] ou [A, Y]
+function tdv(key) {
+  if (key === "NON") return [[0, 1], [1, 0]];
+  const r = [];
+  for (const b of [0, 1]) for (const a of [0, 1]) r.push([b, a, FN[key](a, b)]);
+  return r;
+}
+const wireStyle = (v) => v === 1 ? "stroke:var(--one);stroke-width:5" : (v === 0 ? "stroke:var(--zero);stroke-width:3" : "stroke:var(--muted);stroke-width:3");
+
+// Symbole CEI 60617-12 : rectangle, qualificatif, cercle de négation
+function gateParts(key, a, b, y, opt = {}) {
+  const n = key === "NON" ? 1 : 2, w = 90, h = n === 1 ? 90 : 116, x0 = 84, y0 = 14, L = 50;
+  const labels = opt.labels || ["A", "B"], out = opt.out != null ? opt.out : "Y";
+  const ys = n === 1 ? [y0 + h / 2] : [y0 + h * 0.28, y0 + h * 0.72];
+  let s = "";
+  const vin = n === 1 ? [a] : [a, b];
+  ys.forEach((yy, i) => {
+    s += `<line x1="${x0 - L}" y1="${yy}" x2="${x0}" y2="${yy}" style="${wireStyle(vin[i])}"/>`;
+    s += `<text x="${x0 - L - 8}" y="${yy + 6}" text-anchor="end" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${labels[i]}</text>`;
+  });
+  s += `<rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="2" style="fill:var(--surface);stroke:var(--ink);stroke-width:3"/>`;
+  s += `<text x="${x0 + w / 2}" y="${y0 + 30}" text-anchor="middle" font-size="24" font-weight="700" style="fill:var(--ink)">${QUAL[key]}</text>`;
+  let xo = x0 + w;
+  if (NEG[key]) { s += `<circle cx="${xo + 7}" cy="${y0 + h / 2}" r="7" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/>`; xo += 14; }
+  s += `<line x1="${xo}" y1="${y0 + h / 2}" x2="${xo + L}" y2="${y0 + h / 2}" style="${wireStyle(y)}"/>`;
+  s += `<text x="${xo + L + 8}" y="${y0 + h / 2 + 6}" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${out}</text>`;
+  return { w: x0 + w + 2 * L + 50, h: h + 2 * y0, body: s, inX: x0 - L, inY: ys, outX: xo + L, outY: y0 + h / 2 };
+}
+function gateSVG(key, a, b, y, opt = {}) {
+  const p = gateParts(key, a, b, y, opt);
+  return `<svg viewBox="0 0 ${p.w} ${p.h}" width="${p.w * (opt.scale || 1)}" role="img" aria-label="Symbole CEI de la porte ${key}">${p.body}</svg>`;
+}
+// porte placée dans un dessin : renvoie le groupe SVG et les points de raccordement (entrées, sortie)
+function gateAt(key, a, b, y, X, Y, s = 1, opt = {}) {
+  const p = gateParts(key, a, b, y, opt);
+  return { svg: `<g transform="translate(${X} ${Y}) scale(${s})">${p.body}</g>`, inX: X + p.inX * s, inY: p.inY.map((v) => Y + v * s), outX: X + p.outX * s, outY: Y + p.outY * s, w: p.w * s, h: p.h * s };
+}
+
+// suivi des exercices réussis (en mémoire seulement)
+const DONE = new Set();
+function markDone(id, ok) {
+  if (ok) DONE.add(id); else DONE.delete(id);
+  const dots = document.querySelectorAll(".score .dots i");
+  dots.forEach((d) => d.classList.toggle("on", DONE.has(d.dataset.id)));
+  $("score-n").textContent = DONE.size;
+}
+function feedback(el, kind, title, html) {
+  el.className = "fb " + kind;
+  el.innerHTML = `<b>${title}</b>${html}`;
+}
+const fmtV = (x) => String(x).replace(".", ",") + " V";
+// liens externes dans un nouvel onglet
+// démarrage : tout de suite si la page est déjà chargée (certains lecteurs injectent la page après DOMContentLoaded)
+const ready = (f) => { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", f); else f(); };
+// liens externes : <a href> simples ; le lecteur d'artefact les ouvre lui-même hors de la page (pas de target="_blank", refusé dans le cadre isolé)
+// typographie française : espaces insécables (avant « : ; ? ! », nombre + unité, « A = 1 », plages « 0 … 70 »)
+const NBSP = "\u00a0";
+function typo(s) {
+  return s
+    .replace(/ ([:;?!»])/g, NBSP + "$1").replace(/« /g, "«" + NBSP)
+    .replace(/ (=|·|×|≥|≤|<|>|→|⊕|…|\+) /g, NBSP + "$1" + NBSP)
+    .replace(/(\d) (ou|à) (?=[\d−])/g, "$1" + NBSP + "$2" + NBSP)
+    .replace(/(\d) (?=(V|mV|mA|ns|ms|µs|s|°C|%|ko|L|[a-zà-ÿ]))/g, "$1" + NBSP)
+    .replace(/\b(p\.|chap\.|diapos?|N°|Floyd|LZ) (?=\d)/g, "$1" + NBSP);
+}
+function typoTree(root) {
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: (n) => /^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  let n; while ((n = w.nextNode())) { const t = typo(n.nodeValue); if (t !== n.nodeValue) n.nodeValue = t; }
+}
+const inStage = (n) => { const e = n.nodeType === 1 ? n : n.parentElement; return !!(e && e.closest && e.closest(".ls-stage, .nt")); };
+ready(() => {
+  typoTree(document.body);
+  new MutationObserver((ms) => ms.forEach((m) => { if (inStage(m.target)) return; m.addedNodes.forEach((x) => { if (x.nodeType === 3) { const t = typo(x.nodeValue); if (t !== x.nodeValue) x.nodeValue = t; } else if (x.nodeType === 1 && !/^(SCRIPT|STYLE)$/.test(x.nodeName)) typoTree(x); }); }))
+    .observe(document.body, { childList: true, subtree: true });
+});
+
+// ---------------------------------------------- outils de dessin des animations
+const REDUCE = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
+const prog = (t, a, b) => ease((t - a) / (b - a));
+const lerp = (a, b, p) => a + (b - a) * p;
+// texte SVG ; o = { size, anchor, bold, italic, mono, color, op }
+const TX = (x, y, s, o = {}) => `<text x="${x}" y="${y}" font-size="${o.size || 16}"${o.anchor ? ` text-anchor="${o.anchor}"` : ""}${o.bold ? ' font-weight="700"' : ""}${o.italic ? ' font-style="italic"' : ""}${o.mono ? ' font-family="IBM Plex Mono, Liberation Mono, monospace"' : ""} style="fill:${o.color || "var(--ink)"}${o.op != null ? ";opacity:" + o.op : ""}">${s}</text>`;
+const SUBV = (i, rest = "") => `V<tspan font-size="0.72em" dy="0.3em">${i}</tspan><tspan dy="-0.3em">${rest}</tspan>`;
+const wireP = (pts, v) => `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" style="${wireStyle(v)};stroke-linejoin:round"/>`;
+const lampG = (x, y, r, on, col = "var(--one)") => (on ? `<circle cx="${x}" cy="${y}" r="${r + 8}" style="fill:${col};opacity:.25"/>` : "") +
+  `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${on ? col : "var(--surface)"};stroke:var(--ink);stroke-width:2.5"/>`;
+const pill = (x, y, v, o = {}) => `<rect x="${x - 15}" y="${y - 15}" width="30" height="30" rx="7" style="fill:${v ? "var(--one)" : "var(--surface)"};stroke:var(--head);stroke-width:2"/>` +
+  TX(x, y + 7, v, { size: 19, bold: true, mono: true, anchor: "middle", color: v ? "#fff" : "var(--ink)" });
+const okMark = (x, y, ok, r = 11) => `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${ok ? "var(--ok)" : "var(--bad)"}"/>` +
+  (ok ? `<path d="M ${x - r * .45} ${y} l ${r * .3} ${r * .35} l ${r * .55} ${-r * .7}" style="fill:none;stroke:#fff;stroke-width:2.6"/>`
+      : `<path d="M ${x - r * .4} ${y - r * .4} l ${r * .8} ${r * .8} M ${x + r * .4} ${y - r * .4} l ${-r * .8} ${r * .8}" style="stroke:#fff;stroke-width:2.6"/>`);
+// boîtier DIP 14 vu de dessus, encoche à gauche : broches 1 à 7 en bas (gauche → droite), 8 à 14 en haut (droite → gauche)
+function dipG(x, y, w, h, label, o = {}) {
+  const n = 7, pw = w / n; let s = "";
+  for (let i = 0; i < n; i++) {
+    const px = x + pw * (i + 0.5) - 6;
+    s += `<rect x="${px}" y="${y - 14}" width="12" height="14" style="fill:#C8CEDA;stroke:#5A6478"/><rect x="${px}" y="${y + h}" width="12" height="14" style="fill:#C8CEDA;stroke:#5A6478"/>`;
+  }
+  s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" style="fill:#3A3F52;stroke:#23263A;stroke-width:2"/>`;
+  s += `<path d="M ${x} ${y + h / 2 - 12} a 12 12 0 0 1 0 24 z" style="fill:#23263A"/><circle cx="${x + 16}" cy="${y + h - 14}" r="5" style="fill:#5A6070"/>`;
+  if (label) s += TX(x + w / 2, y + h / 2 + 8, label, { size: o.fs || 22, bold: true, mono: true, anchor: "middle", color: "#EEF1F7" });
+  if (o.nums) for (let i = 0; i < n; i++) {
+    s += TX(x + pw * (i + 0.5), y + h - 6, i + 1, { size: 11, anchor: "middle", color: "#B8BED0" });
+    s += TX(x + pw * (i + 0.5), y + 14, 14 - i, { size: 11, anchor: "middle", color: "#B8BED0" });
+  }
+  return s;
+}
+const dipPin = (x, y, w, h, k) => k <= 7 ? [x + (w / 7) * (k - 0.5), y + h + 14] : [x + (w / 7) * (14 - k + 0.5), y - 14];
+// chronogramme qui s'écrit au fil du temps : rows = [{ name, f(s) → 0/1, color }], de s = 0 à min(t, tmax)
+function traceG(x, y, w, rows, t, tmax, o = {}) {
+  const rh = o.rh || 34, hi = rh * 0.55, X = (s) => x + w * s / tmax, dt = o.dt || tmax / 400, end = Math.min(t, tmax);
+  let g = "";
+  rows.forEach((r, i) => {
+    const yb = y + i * rh + rh - 6, yh = yb - hi;
+    g += TX(x - 10, yb - 3, r.name, { anchor: "end", bold: true, italic: true, size: o.fs || 15 });
+    g += `<line x1="${x}" y1="${yb}" x2="${x + w}" y2="${yb}" style="stroke:var(--line);stroke-width:1"/>`;
+    if (end <= 0) return;
+    let v = r.f(0), d = `M ${x} ${v ? yh : yb}`;
+    for (let s = dt; s <= end + 1e-9; s += dt) { const nv = r.f(s); if (nv !== v) { d += ` L ${X(s)} ${v ? yh : yb} L ${X(s)} ${nv ? yh : yb}`; v = nv; } }
+    d += ` L ${X(end)} ${v ? yh : yb}`;
+    g += `<path d="${d}" fill="none" style="stroke:${r.color || "var(--ink)"};stroke-width:2.6;stroke-linejoin:round"/>`;
+  });
+  if (o.cursor !== false && t > 0 && t < tmax) g += `<line x1="${X(end)}" y1="${y}" x2="${X(end)}" y2="${y + rows.length * rh}" style="stroke:var(--bad);stroke-width:1.5"/>`;
+  return g;
+}
+
+// ---------------------------------------------- leçons animées : lecture, pause, étapes numérotées, sous-titres
+// L'animation tourne en boucle et s'arrête quand elle sort de l'écran. Avec « réduire les animations », elle démarre en pause.
+const LESSONS = [];
+function lesson(id, cfg) {
+  const root = $(id), body = root.querySelector(".ls-body");
+  body.innerHTML = `<div class="ls-stage"></div><div class="ls-cap"></div>
+    <div class="ls-ctrl"><button class="ls-btn ls-play" type="button"></button><button class="ls-btn ls-back" type="button">↺ Recommencer</button>
+    <span class="ls-steps" role="group" aria-label="Étapes"></span><span class="ls-prog"><i></i></span></div>`;
+  if (cfg.extra) { const e = document.createElement("div"); e.className = "ls-extra"; e.innerHTML = cfg.extra; body.insertBefore(e, body.querySelector(".ls-cap")); }
+  const st = { t: 0, T: 0, playing: !REDUCE, vis: true, last: null, step: -1, dirty: true, cfg };
+  const stage = body.querySelector(".ls-stage"), cap = body.querySelector(".ls-cap"), play = body.querySelector(".ls-play"), bar = body.querySelector(".ls-prog i"), steps = body.querySelector(".ls-steps");
+  stage.setAttribute("role", "img"); stage.setAttribute("aria-label", cfg.label);
+  cfg.steps.forEach(([t0], i) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = i + 1; b.setAttribute("aria-label", "Étape " + (i + 1));
+    b.onclick = () => { st.t = t0 + 0.01; st.dirty = true; }; steps.appendChild(b);
+  });
+  const setPlay = () => { play.textContent = st.playing ? "❚❚ Pause" : "▶ Lecture"; };
+  play.onclick = () => { st.playing = !st.playing; setPlay(); }; setPlay();
+  body.querySelector(".ls-back").onclick = () => { st.t = 0; st.dirty = true; if (!st.playing) { st.playing = true; setPlay(); } };
+  if ("IntersectionObserver" in window) new IntersectionObserver((es) => es.forEach((e) => { st.vis = e.isIntersecting; st.last = null; }), { threshold: 0.1 }).observe(stage);
+  st.render = () => {
+    stage.innerHTML = cfg.draw(st.t, st.T, st);
+    let k = 0; cfg.steps.forEach(([t0], i) => { if (st.t >= t0) k = i; });
+    if (k !== st.step) {
+      st.step = k; cap.innerHTML = `<b>${k + 1}.</b> ${cfg.steps[k][1]}`;
+      steps.querySelectorAll("button").forEach((b, i) => b.setAttribute("aria-current", i === k ? "step" : "false"));
+    }
+    bar.style.width = (100 * st.t / cfg.dur).toFixed(1) + "%";
+  };
+  LESSONS.push(st);
+  try { st.render(); } catch (e) { console.error(e); }   // première image tout de suite, même si l'animation ne démarre pas
+  return st;
+}
+function lessonLoop(ts) {
+  LESSONS.forEach((st) => {
+    if (!st.vis) return;
+    const dt = st.last == null ? 0 : Math.min(0.1, (ts - st.last) / 1000); st.last = ts;
+    if (st.playing) { st.t += dt; st.T += dt; if (st.t >= st.cfg.dur) st.t = 0; st.dirty = true; }
+    if (st.dirty && ts - (st.drawn || 0) > 33) { st.render(); st.drawn = ts; st.dirty = false; }
+  });
+  requestAnimationFrame(lessonLoop);
+}
+ready(() => requestAnimationFrame(lessonLoop));
+
+const O = (s) => `<span class="ov">${s}</span>`;          // barre de négation
+const bits = (n) => Array.from({ length: 1 << n }, (_, i) => Array.from({ length: n }, (_, j) => (i >> (n - 1 - j)) & 1));   // poids fort à gauche
+const NOT = (x) => 1 - x;
+
+// ---------------------------------------------- N°1 règles 1 à 8
+const R18 = [["A + 0", "A"], ["A + 1", "1"], ["A · 0", "0"], ["A · 1", "A"], ["A + A", "A"], [`A + ${O("A")}`, "1"], ["A · A", "A"], [`A · ${O("A")}`, "0"]];
+R18.forEach(([e], i) => {
+  const d = document.createElement("div"); d.className = "case";
+  d.innerHTML = `<span class="eq">${e} =</span><span class="row"><select id="t1-s${i}" aria-label="Résultat de la règle ${i + 1}"><option value="">…</option><option>0</option><option>1</option><option>A</option></select><span id="t1-r${i}"></span></span>`;
+  $("t1-list").appendChild(d);
+});
+$("t1-check").onclick = () => {
+  let ok = 0, vide = 0;
+  R18.forEach(([, r], i) => {
+    const v = $(`t1-s${i}`).value; if (!v) vide++;
+    const good = v === r; if (good) ok++;
+    $(`t1-r${i}`).innerHTML = v ? `<span class="tag ${good ? "ok" : "bad"}">${good ? "juste" : "à revoir"}</span>` : "";
+  });
+  if (vide) { feedback($("t1-fb"), "info", "Il manque des réponses.", " Choisis un résultat pour chaque règle."); return; }
+  if (ok === 8) { feedback($("t1-fb"), "ok", "Les huit sont justes.", " Pour le OU, une entrée à 1 force la sortie à 1 ; pour le ET, une entrée à 0 force la sortie à 0. A et son inverse ne valent jamais 1 en même temps."); markDone("t1", true); }
+  else { feedback($("t1-fb"), "bad", `${ok} sur 8.`, " Pour une règle en rouge, remplace A par 0, puis par 1, et calcule les deux fois avec la table du OU ou du ET."); markDone("t1", false); }
+};
+
+// ---------------------------------------------- N°2 table de la règle 11
+const T2COLS = [[`${O("A")} · B`, (b, a) => NOT(a) & b], [`A + ${O("A")} · B`, (b, a) => a | (NOT(a) & b)], ["A + B", (b, a) => a | b]];
+let t2 = [];
+function renderT2(wrong = []) {
+  let h = '<tr><th>B</th><th>A</th>' + T2COLS.map(([c]) => `<th class="out">${c}</th>`).join("") + "</tr>";
+  bits(2).forEach(([b, a], r) => {
+    h += `<tr><td>${b}</td><td>${a}</td>` + T2COLS.map((_, c) => {
+      const v = t2[r][c];
+      return `<td class="out ${wrong.includes(r * 3 + c) ? "wrong" : ""}"><button data-r="${r}" data-c="${c}" class="${v === null ? "" : "set"}" aria-label="ligne ${r + 1}, colonne ${c + 1}">${v === null ? "?" : v}</button></td>`;
+    }).join("") + "</tr>";
+  });
+  $("t2-tab").innerHTML = h;
+  $("t2-tab").querySelectorAll("button").forEach((x) => x.onclick = () => { const r = +x.dataset.r, c = +x.dataset.c; t2[r][c] = t2[r][c] === null ? 0 : (t2[r][c] === 0 ? 1 : null); renderT2(); });
+}
+const resetT2 = () => { t2 = bits(2).map(() => [null, null, null]); renderT2(); $("t2-fb").className = "fb"; };
+$("t2-reset").onclick = resetT2;
+$("t2-check").onclick = () => {
+  if (t2.some((r) => r.includes(null))) { feedback($("t2-fb"), "info", "Il manque des cases.", " Écris un 0 ou un 1 dans chaque case des trois colonnes."); return; }
+  const wrong = [];
+  bits(2).forEach(([b, a], r) => T2COLS.forEach(([, f], c) => { if (f(b, a) !== t2[r][c]) wrong.push(r * 3 + c); }));
+  renderT2(wrong);
+  if (!wrong.length) { feedback($("t2-fb"), "ok", "Juste.", " Les deux dernières colonnes sont identiques sur les 4 lignes : la règle 11 est vérifiée. Quand A = 1, la sortie vaut 1 de toute façon ; quand A = 0, il reste B."); markDone("t2", true); }
+  else { feedback($("t2-fb"), "bad", `${wrong.length} case${wrong.length > 1 ? "s" : ""} à revoir (en rouge).`, " Calcule d'abord la barre sur A, puis le ET avec B, et seulement ensuite le OU (ordre NON, ET, OU)."); markDone("t2", false); }
+};
+resetT2();
+
+// ---------------------------------------------- N°3 simplification pas à pas
+const REGLES = ["distributivité", "règle 4", "règle 6", "règle 9", "règle 10", "règle 11", "De Morgan"];
+const PROB = [
+  { start: `S = A · B + A · ${O("B")}`, steps: [["distributivité", `S = A · (B + ${O("B")})`], ["règle 6", "S = A · 1"], ["règle 4", "S = A"]] },
+  { start: `S = ${O("B")} + B · C`, steps: [["règle 11", `S = ${O("B")} + C`]],
+    hint: { "règle 10": "La règle 10 demande la même variable dans les deux termes (A + A · B). Ici, le second terme contient B et non B barré." } },
+  { start: `S = A · ${O("B")} + A · B · ${O("C")}`, steps: [["distributivité", `S = A · (${O("B")} + B · ${O("C")})`], ["règle 11", `S = A · (${O("B")} + ${O("C")})`], ["De Morgan", `S = A · ${O("B · C")}`]] },
+];
+const t3 = PROB.map(() => ({ k: 0, faux: 0 }));
+function renderT3() {
+  $("t3-list").innerHTML = "";
+  PROB.forEach((p, i) => {
+    const st = t3[i], fini = st.k === p.steps.length;
+    const d = document.createElement("div"); d.className = "prob" + (fini ? " done" : "");
+    let h = `<b>Équation ${i + 1}</b><div class="steps"><div><span class="eq">${p.start}</span></div>`;
+    for (let j = 0; j < st.k; j++) h += `<div><span class="eq">${p.steps[j][1]}</span><span class="why">${p.steps[j][0]}</span></div>`;
+    h += "</div>";
+    h += fini ? `<span class="tag ok">simplifiée</span>` : `<div class="muted">Étape suivante : quelle loi ou quelle règle ?</div><div class="opts">${REGLES.map((r) => `<button class="chip" data-p="${i}" data-r="${r}">${r}</button>`).join("")}</div>`;
+    d.innerHTML = h; $("t3-list").appendChild(d);
+  });
+  $("t3-list").querySelectorAll("button.chip").forEach((b) => b.onclick = () => {
+    const i = +b.dataset.p, p = PROB[i], st = t3[i], r = b.dataset.r, bon = p.steps[st.k][0];
+    if (r === bon) { st.k++; renderT3(); }
+    else {
+      st.faux++;
+      const aide = (p.hint && p.hint[r]) || (bon === "distributivité" ? " Une variable est commune aux deux termes : mets-la en évidence." :
+        bon === "De Morgan" ? " La barre couvre deux variables séparées : casse la barre et change le signe." :
+        bon === "règle 11" ? ` Cherche la forme A + ${O("A")} · B, où A peut être n'importe quelle expression.` : " Regarde ce qui reste dans la parenthèse : une variable avec 1, ou une variable avec son inverse ?");
+      feedback($("t3-fb"), "bad", `Équation ${i + 1} : pas cette fois.`, aide);
+    }
+    const tout = t3.every((s, j) => s.k === PROB[j].steps.length);
+    if (tout) { const f = t3.reduce((a, s) => a + s.faux, 0); feedback($("t3-fb"), "ok", "Les trois équations sont simplifiées.", f ? ` Avec ${f} essai${f > 1 ? "s" : ""} de trop : refais l'exercice pour t'entraîner.` : " Sans aucune erreur."); markDone("t3", true); }
+  });
+}
+renderT3();
+
+// ---------------------------------------------- N°4 De Morgan
+const DM = [
+  { e: O("A · B · C"), opts: [`${O("A")} + ${O("B")} + ${O("C")}`, `${O("A")} · ${O("B")} · ${O("C")}`, "A + B + C"], ok: 0 },
+  { e: O("A + B + C"), opts: [`${O("A")} + ${O("B")} + ${O("C")}`, `${O("A")} · ${O("B")} · ${O("C")}`, "A · B · C"], ok: 1 },
+  { e: O(`${O("A")} + B`), opts: [`A · ${O("B")}`, `A + ${O("B")}`, `${O("A")} · ${O("B")}`], ok: 0 },
+  { e: O(`${O("A")} · ${O("B")}`), opts: ["A · B", "A + B", `${O("A")} + ${O("B")}`], ok: 1 },
+];
+DM.forEach((q, i) => {
+  const d = document.createElement("div"); d.className = "case";
+  d.innerHTML = `<div class="row"><span class="eq">S = ${q.e}</span><span class="muted">=</span><span class="opts" role="radiogroup" aria-label="Résultat ${i + 1}">${q.opts.map((o, j) => `<button class="chip" role="radio" aria-checked="false" data-q="${i}" data-o="${j}"><span class="eq" style="font-size:18px">${o}</span></button>`).join("")}</span><span id="t4-r${i}"></span></div>`;
+  $("t4-list").appendChild(d);
+});
+const t4 = DM.map(() => null);
+$("t4-list").querySelectorAll("button.chip").forEach((b) => b.onclick = () => {
+  const i = +b.dataset.q; t4[i] = +b.dataset.o;
+  $("t4-list").querySelectorAll(`button.chip[data-q="${i}"]`).forEach((c) => { const on = +c.dataset.o === t4[i]; c.setAttribute("aria-pressed", on ? "true" : "false"); c.setAttribute("aria-checked", on ? "true" : "false"); });
+});
+$("t4-check").onclick = () => {
+  if (t4.includes(null)) { feedback($("t4-fb"), "info", "Il manque des réponses.", " Choisis un résultat pour chaque expression."); return; }
+  let ok = 0;
+  DM.forEach((q, i) => { const g = t4[i] === q.ok; if (g) ok++; $(`t4-r${i}`).innerHTML = `<span class="tag ${g ? "ok" : "bad"}">${g ? "juste" : "à revoir"}</span>`; });
+  if (ok === 4) { feedback($("t4-fb"), "ok", "Les quatre sont justes.", " Le · devient +, le + devient ·, chaque variable garde sa barre, et deux barres superposées s'annulent (règle 9)."); markDone("t4", true); }
+  else { feedback($("t4-fb"), "bad", `${ok} sur 4.`, " Casse la grande barre : chaque variable reçoit sa barre et le signe change. Une variable qui avait déjà une barre en reçoit une deuxième, qui l'annule."); markDone("t4", false); }
+};
+
+// ---------------------------------------------- N°5 contrôler une simplification
+const COLL = [
+  { nom: "Convoyeur de sortie", av: `S = A · B + A · ${O("B")} · C`, ap: "S = A · (B + C)", f: (c, b, a) => (a & b) | (a & NOT(b) & c), g: (c, b, a) => a & (b | c) },
+  { nom: "Voyant de marche", av: "S = A + A · B", ap: "S = A · B", f: (c, b, a) => a | (a & b), g: (c, b, a) => a & b },
+  { nom: "Autorisation (arrêts d'urgence)", av: `S = ${O("A + B")}`, ap: `S = ${O("A")} + ${O("B")}`, f: (c, b, a) => NOT(a | b), g: (c, b, a) => NOT(a) | NOT(b) },
+  { nom: "Voyant « défaut remplissage »", av: `S = A · ${O("B")} + A · B · ${O("C")}`, ap: `S = A · ${O("B · C")}`, f: (c, b, a) => (a & NOT(b)) | (a & b & NOT(c)), g: (c, b, a) => a & NOT(b & c) },
+];
+COLL.forEach((q, i) => {
+  q.juste = bits(3).every(([c, b, a]) => q.f(c, b, a) === q.g(c, b, a));
+  const d = document.createElement("div"); d.className = "case";
+  d.innerHTML = `<div><b>${q.nom}</b></div><div class="row"><span class="eq" style="font-size:19px">${q.av}</span><span class="muted">devient</span><span class="eq" style="font-size:19px">${q.ap}</span></div>
+    <div class="row"><label for="t5-s${i}">La simplification est</label><select id="t5-s${i}"><option value="">…</option><option value="1">juste</option><option value="0">fausse</option></select><span id="t5-r${i}"></span></div><div id="t5-t${i}"></div>`;
+  $("t5-list").appendChild(d);
+});
+function tableT5(q) {
+  let h = '<table class="tdv"><tr><th>C</th><th>B</th><th>A</th><th class="out">avant</th><th class="out">après</th></tr>';
+  bits(3).forEach(([c, b, a]) => { const x = q.f(c, b, a), y = q.g(c, b, a); h += `<tr><td>${c}</td><td>${b}</td><td>${a}</td><td class="out ${x ? "one" : ""}">${x}</td><td class="out ${x !== y ? "wrong" : ""} ${y ? "one" : ""}">${y}</td></tr>`; });
+  return h + "</table>";
+}
+$("t5-check").onclick = () => {
+  if (COLL.some((_, i) => !$(`t5-s${i}`).value)) { feedback($("t5-fb"), "info", "Il manque des réponses.", " Dis pour chaque commande si la simplification est juste ou fausse."); return; }
+  let ok = 0;
+  COLL.forEach((q, i) => {
+    const g = (+$(`t5-s${i}`).value === 1) === q.juste; if (g) ok++;
+    $(`t5-r${i}`).innerHTML = `<span class="tag ${g ? "ok" : "bad"}">${g ? "juste" : "à revoir"}</span>`;
+    $(`t5-t${i}`).innerHTML = tableT5(q);
+  });
+  if (ok === 4) { feedback($("t5-fb"), "ok", "Les quatre sont justes.", " Deux simplifications sont fausses : A + A · B vaut A (règle 10), et la barre de A + B devient un ET (De Morgan). Les lignes en rouge montrent où la sortie change."); markDone("t5", true); }
+  else { feedback($("t5-fb"), "bad", `${ok} sur 4.`, " Regarde les tables affichées : une seule ligne en rouge suffit pour que la simplification soit fausse."); markDone("t5", false); }
+};
+// ================================================================ leçons animées de la page 201 (présentation 200)
+// Sortie S, entrées A, B, C (REGLES 3.4). Briques : moteur/pages/common.js (lesson, gateAt, TX, pill, ease, prog…).
+
+// barre de négation au-dessus d'un texte SVG centré en x (largeur w), à la hauteur y
+const BAR = (x, y, w, o = {}) => `<line x1="${x - w / 2}" y1="${y}" x2="${x + w / 2}" y2="${y}" style="stroke:${o.color || "var(--ink)"};stroke-width:${o.sw || 3};opacity:${o.op != null ? o.op : 1}"/>`;
+// cercle de négation sur une entrée de porte placée par gateAt (le rectangle commence 50 unités après inX)
+const NEGIN = (g, i, s) => `<circle cx="${g.inX + 50 * s - 7 * s}" cy="${g.inY[i]}" r="${7 * s}" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/>`;
+
+// ---------------------------------------------------------------- L1 règles 1 à 8 sur une porte (diapos 6 et 7)
+const L1R = [   // [porte, entrée 2 : "0", "1", "A" ou "nA", résultat affiché, équation]
+  ["OU", "0", "A", "A + 0 = A"], ["OU", "1", "1", "A + 1 = 1"], ["ET", "0", "0", "A · 0 = 0"], ["ET", "1", "A", "A · 1 = A"],
+  ["OU", "A", "A", "A + A = A"], ["OU", "nA", "1", "A + Ā = 1"], ["ET", "A", "A", "A · A = A"], ["ET", "nA", "0", "A · Ā = 0"],
+];
+lesson("L1", {
+  dur: 40, label: "Animation : une porte OU puis une porte ET reçoivent A sur une entrée et 0, 1, A ou l'inverse de A sur l'autre ; la sortie illustre les règles 1 à 8",
+  steps: [
+    [0, "Règle 1 : un OU avec une entrée à 0. Quand A change, S suit A : l'entrée à 0 ne change rien."],
+    [5, "Règle 2 : un OU avec une entrée à 1. La sortie reste à 1, quelle que soit A."],
+    [10, "Règle 3 : un ET avec une entrée à 0. La sortie reste bloquée à 0."],
+    [15, "Règle 4 : un ET avec une entrée à 1. La porte laisse passer A : c'est un signal de validation."],
+    [20, "Règles 5 et 7 : A sur les deux entrées. Le OU et le ET redonnent simplement A."],
+    [30, "Règles 6 et 8 : A et son inverse. Le OU donne toujours 1, le ET toujours 0 : l'un des deux vaut toujours 1, jamais les deux."],
+  ],
+  draw(t) {
+    const k = Math.min(7, Math.floor(t / 5)), u = t - 5 * k, a = u < 2.5 ? 0 : 1;
+    const [key, e2, res, eq] = L1R[k];
+    const b = e2 === "0" ? 0 : e2 === "1" ? 1 : e2 === "A" ? a : 1 - a;
+    const s = FN[key](a, b);
+    const lab2 = e2 === "nA" ? "Ā" : e2;
+    let h = '<svg viewBox="0 0 960 360">';
+    const g = gateAt(key, a, b, s, 120, 60, 1.7, { labels: ["A", lab2], out: "S" });
+    h += g.svg;
+    h += TX(140, 40, "règle " + (k + 1), { size: 22, bold: true, color: "var(--muted)" });
+    h += pill(60, g.inY[0], a) + pill(60, g.inY[1], b);
+    h += TX(620, 120, eq, { size: 40, bold: true, color: "var(--head)" });
+    h += TX(620, 180, `A = ${a}  →  S = ${s}`, { size: 26, mono: true });
+    h += TX(620, 230, res === "A" ? "S suit A : l'entrée 2 ne change rien." : `S reste à ${res}, quelle que soit A.`, { size: 20, color: "var(--muted)" });
+    // petite frise des 8 règles
+    for (let i = 0; i < 8; i++) h += `<rect x="${100 + i * 95}" y="310" width="85" height="30" rx="6" style="fill:${i === k ? "var(--one)" : "var(--surface)"};stroke:var(--line);stroke-width:2"/>` +
+      TX(142 + i * 95, 331, String(i + 1), { size: 16, anchor: "middle", bold: true, color: i === k ? "#fff" : "var(--muted)" });
+    return h + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L2 vérifier la distributivité par la table (diapo 5)
+const L2C = [["C", (c, b, a) => c], ["B", (c, b, a) => b], ["A", (c, b, a) => a], ["B + C", (c, b, a) => b | c], ["A · (B + C)", (c, b, a) => a & (b | c)],
+  ["A · B", (c, b, a) => a & b], ["A · C", (c, b, a) => a & c], ["A · B + A · C", (c, b, a) => (a & b) | (a & c)]];
+const L2W = [50, 50, 50, 100, 140, 90, 90, 160];
+lesson("L2", {
+  dur: 26, label: "Animation : la table de vérité de la distributivité se remplit ligne par ligne, puis les deux colonnes finales sont comparées",
+  steps: [
+    [0, "Pour vérifier A · (B + C) = A · B + A · C, on écrit toutes les combinaisons de C, B et A : 8 lignes, dans l'ordre du comptage binaire."],
+    [3, "Une colonne par morceau de l'équation : d'abord B + C, puis A · (B + C), puis A · B, A · C et leur somme."],
+    [19, "On compare les deux colonnes finales, ligne par ligne : elles sont identiques. La loi est vérifiée."],
+  ],
+  draw(t) {
+    const rows = bits(3), x0 = 70, y0 = 30, rh = 34, nl = clamp(Math.floor((t - 3) / 2) + 1, 0, 8);
+    let h = '<svg viewBox="0 0 960 400">', x = x0;
+    const xs = L2W.map((w) => { const v = x; x += w; return v; });
+    const cmp = t >= 19;
+    L2C.forEach(([nm], j) => {
+      const fin = j === 4 || j === 7;
+      h += `<rect x="${xs[j]}" y="${y0}" width="${L2W[j]}" height="${rh}" style="fill:${fin && cmp ? "var(--one)" : "var(--tint)"};stroke:var(--line);stroke-width:1.5"/>`;
+      h += TX(xs[j] + L2W[j] / 2, y0 + 23, nm, { size: 16, bold: true, anchor: "middle", color: fin && cmp ? "#fff" : "var(--head)" });
+    });
+    rows.forEach(([c, b, a], i) => {
+      const y = y0 + rh * (i + 1);
+      L2C.forEach(([, f], j) => {
+        h += `<rect x="${xs[j]}" y="${y}" width="${L2W[j]}" height="${rh}" style="fill:var(--surface);stroke:var(--line);stroke-width:1.5"/>`;
+        if (j < 3 || i < nl) { const v = f(c, b, a); h += TX(xs[j] + L2W[j] / 2, y + 23, String(v), { size: 17, anchor: "middle", mono: true, bold: j >= 3 && v, color: j >= 3 && v ? "var(--one)" : "var(--ink)" }); }
+      });
+      if (cmp && i < 8) h += okMark(xs[7] + L2W[7] + 26, y + rh / 2, true, 10);
+    });
+    if (cmp) h += TX(x0 + 365, 385, "colonnes identiques sur les 8 lignes : la loi est vraie", { size: 18, bold: true, anchor: "middle", color: "var(--ok)" });
+    return h + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L3 le convoyeur : simplifier, contrôler, dessiner (diapos 14 et 15)
+lesson("L3", {
+  dur: 30, label: "Animation : l'équation du convoyeur S = A · B + A · B barré · C se simplifie en S = A · (B + C), puis passe de quatre portes à deux",
+  steps: [
+    [0, "Le cahier des charges donne deux termes : « en marche et bouteille pleine », ou « en marche, pas de bouteille pleine, et vidange »."],
+    [6, "A est commun aux deux termes : on le met en évidence (distributivité)."],
+    [12, "Dans la parenthèse, on reconnaît la règle 11 : B + B̄ · C = B + C."],
+    [18, "Résultat : S = A · (B + C). Câblé tel quel, il fallait 4 portes sur 4 CI ; il en reste 2."],
+  ],
+  draw(t) {
+    let h = '<svg viewBox="0 0 960 380">';
+    const L = [[0, "S = A · B + A · ", "B", " · C", ""], [6, "S = A · (B + ", "B", " · C)", "distributivité"], [12, "S = A · (B + C)", "", "", "règle 11"]];
+    L.forEach(([t0, s1, sb, s2, why], i) => {
+      const op = prog(t, t0, t0 + 1.2); if (op <= 0) return;
+      const y = 60 + i * 64, fs = 34;
+      h += `<g style="opacity:${op}">` + `<text x="40" y="${y}" font-size="${fs}" font-weight="700" style="fill:var(--head)">${s1}<tspan style="text-decoration:overline">${sb}</tspan>${s2}</text>`;
+      if (why) h += TX(560, y - 6, why, { size: 20, italic: true, color: "var(--blue)" });
+      h += "</g>";
+    });
+    const op = prog(t, 18, 19.5);
+    if (op > 0) {
+      h += `<g style="opacity:${op}">`;
+      h += `<rect x="40" y="230" width="380" height="120" rx="12" style="fill:var(--tint)"/>` + TX(60, 266, "Câblé tel quel", { size: 20, bold: true, color: "var(--muted)" }) +
+        TX(60, 300, "NON, ET, ET à 3 entrées, OU", { size: 18 }) + TX(60, 330, "4 portes · 4 CI", { size: 22, bold: true });
+      const go = gateAt("OU", null, null, null, 470, 230, 0.7, { labels: ["B", "C"], out: "" });
+      const g0 = gateAt("ET", null, null, null, 0, 0, 0.7, { labels: ["A", ""], out: "S" });
+      const ga = gateAt("ET", null, null, null, go.outX - g0.inX, go.outY - g0.inY[1], 0.7, { labels: ["A", ""], out: "S" });
+      h += go.svg + ga.svg;
+      h += TX(700, 345, "2 portes · 2 CI", { size: 22, bold: true, anchor: "middle", color: "var(--one)" });
+      h += "</g>";
+    }
+    return h + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L4 De Morgan (diapos 11 et 12)
+function dmForm(x, y, p, vers) {
+  // vers = "ET" : barre(A · B) → Ā + B̄ ; vers = "OU" : barre(A + B) → Ā · B̄ ; p de 0 à 1
+  const fs = 56, xa = x, xo = x + 70, xb = x + 140;
+  const op1 = vers === "ET" ? "·" : "+", op2 = vers === "ET" ? "+" : "·";
+  let h = TX(x - 170, y, "S =", { size: fs, bold: true, color: "var(--head)" });
+  h += TX(xa, y, "A", { size: fs, bold: true, anchor: "middle", italic: true }) + TX(xb, y, "B", { size: fs, bold: true, anchor: "middle", italic: true });
+  h += TX(xo, y, op1, { size: fs, bold: true, anchor: "middle", op: 1 - prog(p, 0.4, 0.7) });
+  h += TX(xo, y, op2, { size: fs, bold: true, anchor: "middle", color: "var(--one)", op: prog(p, 0.4, 0.7) });
+  // la barre se casse : une seule barre (0) → deux barres sur A et B (1)
+  const q = prog(p, 0, 0.4), yb = y - 50;
+  h += `<line x1="${lerp(xa - 22, xa - 22, q)}" y1="${yb}" x2="${lerp(xb + 22, xa + 22, q)}" y2="${yb}" style="stroke:var(--ink);stroke-width:4"/>`;
+  h += `<line x1="${lerp(xa - 22, xb - 22, q)}" y1="${yb}" x2="${xb + 22}" y2="${yb}" style="stroke:var(--ink);stroke-width:4"/>`;
+  return h;
+}
+lesson("L4", {
+  dur: 24, label: "Animation : la barre au-dessus de A · B se casse en deux barres et le point devient un plus ; même chose pour A + B ; puis les symboles CEI équivalents",
+  steps: [
+    [0, "Première forme : la barre couvre A · B. On la casse : chaque variable garde sa propre barre, et le · devient +."],
+    [8, "Seconde forme : la barre couvre A + B. On la casse, et le + devient ·. « Ni A ni B » : c'est l'autorisation des arrêts d'urgence."],
+    [16, "Sur un schéma, les deux dessins représentent la même porte : un NON-ET est un OU dont les entrées sont inversées."],
+  ],
+  draw(t) {
+    let h = '<svg viewBox="0 0 960 360">';
+    if (t < 16) {
+      const vers = t < 8 ? "ET" : "OU", p = prog(t, vers === "ET" ? 2 : 10, vers === "ET" ? 6 : 14);
+      h += dmForm(380, 170, p, vers);
+      h += TX(480, 290, p > 0.7 ? "casse la barre, change le signe" : "la barre couvre toute l'expression", { size: 24, anchor: "middle", color: p > 0.7 ? "var(--one)" : "var(--muted)", bold: p > 0.7 });
+    } else {
+      const g1 = gateAt("NON-ET", null, null, null, 60, 80, 1.3, { labels: ["A", "B"], out: "S" });
+      const g2 = gateAt("OU", null, null, null, 520, 80, 1.3, { labels: ["A", "B"], out: "S" });
+      h += g1.svg + g2.svg + NEGIN(g2, 0, 1.3) + NEGIN(g2, 1, 1.3);
+      h += TX(470, 180, "=", { size: 60, bold: true, anchor: "middle", color: "var(--one)" });
+      h += TX(480, 330, "NON-ET  =  OU avec les entrées inversées", { size: 24, bold: true, anchor: "middle", color: "var(--head)" });
+    }
+    return h + "</svg>";
+  },
+});
+
+$("jsx").hidden = true;
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+# Semaine 2 TM1, ligne 14 du plan : algèbre de Boole (lois, règles, théorème de De Morgan, du cahier des charges au schéma).
+# Cadrage validé par Gaël le 11/23/2026 : 2 périodes (présentation 200 + fiche 210 EX), pas de lien Floyd ni nextecmedia.
+# Ancien support repris : « Algèbre booléenne.docx » (fiche à trous de 2005) → partie A de 210 EX.
+
+classe: XLO1
+annee: 2026-2027
+matiere: Test et Mesure 1 – El DT 1
+champ: LFB_El_DT1
+date: 11/23/2026
+editeur: Gaël Lemoine
+
+# ---------------------------------------------------------------- FutureMEM
+futuremem_champ: "https://skills.futuremem.swiss/fr/9999_et/2000_lfe_bfs_1/#comp%C3%A9tences-op%C3%A9rationnelles-et-crit%C3%A8res-de-performance"
+# Textes et ancres : page 5000_lze_04 ; niveaux : page du semestre 1 (champ LFB_El_DT1, 25 L pour ce groupe de LZ), lus le 11/23/2026.
+lz:
+  LZ_2225:
+    niveau: C3
+    texte: "Elles/Ils appliquent les lois fondamentales de l'algèbre de Boole."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4"
+  LZ_2226:
+    niveau: C5
+    texte: "Elles/Ils développent et dessinent des circuits logiques."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_04/#1CA6E18D-0C33-AB41-AC90-A700A525DE38"
+
+# Pas de lien Floyd ni nextecmedia pour cette séance (Gaël, 11/23/2026).
+
+# ---------------------------------------------------------------- Teams : dossier du cours (El_DT1/PMT&SBT)
+teams_dossier: "https://eduvaud.sharepoint.com/:{k}:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/"
+
+# ---------------------------------------------------------------- fichiers (REGLES 8)
+fichiers:
+  "200": "200 Algèbre de Boole.pptx"
+  "201": "201 Algèbre de Boole.html"
+  "205": "205 Algèbre de Boole.mp4"
+  "210": "210 EX Algèbre de Boole.docx"
+  "210C": "210 EX C Algèbre de Boole.docx"
+
+# fichiers d'autres séances cités dans les supports (liens Teams par chemin, non produits ici)
+renvois:
+  "120": "120 Portes logiques et tables de vérité.pptx"
+  "130": "130 EX Portes logiques de base.docx"
+
+versions:
+  "200": "1.0"
+
+# vidéos : couverture (image à 7 s, bouton lecture, durée affichée)
+videos:
+  "205": "3 min 52"
+
+# artefact claude.ai de la page interactive (privé tant que Gaël ne le partage pas)
+artefacts:
+  "201": "https://claude.ai/artifact/ThZsK2ZfZeEJ1VH4nZwUR3"

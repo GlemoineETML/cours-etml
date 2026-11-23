@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>201 Algèbre de Boole</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+__CSS__
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.rules .case { grid-template-columns: auto 1fr; align-items: center; }
+.rules .case .eq { font-size: 20px; }
+table.tdv td button { min-width: 38px; }
+.steps { display: grid; gap: 6px; margin: 6px 0; }
+.steps .eq { font-size: 20px; }
+.steps .why { color: var(--blue); font-weight: 700; font-size: 14px; margin-left: 10px; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.prob { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--surface); display: grid; gap: 8px; }
+.prob.done { border-color: var(--ok); }
+table.tdv td.out.wrong { background: var(--bad-bg); color: var(--bad); font-weight: 700; }
+</style>
+</head>
+<body>
+<!--GABARIT--><div style="background:#242852;color:#fff;padding:14px 20px;font:700 16px/1.45 Arial,sans-serif">GABARIT du générateur (moteur/page.py), pas la page finale. Ouvre plutôt « sortie/tm1/semaine-2/200-algebre-boole/201 Algèbre de Boole.html » (python3 build.py tm1/semaine-2/200-algebre-boole), ou l'artefact « 201 Algèbre de Boole ».</div><!--/GABARIT-->
+<div id="jsx" class="jsx" role="alert">Cette page a besoin de JavaScript pour afficher les animations et les exercices. Si ce message reste affiché, ouvre la page depuis le lien de l'artefact sur claude.ai, ou ouvre le fichier .html dans Edge, Chrome ou Safari (pas dans un aperçu de fichier).</div>
+<header class="top"><div class="in">
+  <div class="eyebrow">__MATIERE__ · page interactive 201</div>
+  <img src="__LOGO__" alt="ETML">
+  <h1>Algèbre de Boole</h1>
+  <p>Cinq exercices pour s'entraîner à simplifier une équation et à la contrôler. Les animations « Comprendre » reprennent la présentation 200 ; ensuite, à toi. La sortie s'appelle toujours S, les entrées A, B, C. Va avec l'animation 205 et la fiche 210 EX.</p>
+</div></header>
+<div class="bar"><div class="in">
+  <nav aria-label="Exercices"><a href="#ex1">N°1</a><a href="#ex2">N°2</a><a href="#ex3">N°3</a><a href="#ex4">N°4</a><a href="#ex5">N°5</a></nav>
+  <div class="score">Exercices réussis : <span id="score-n">0</span> / 5
+    <span class="dots"><i data-id="t1"></i><i data-id="t2"></i><i data-id="t3"></i><i data-id="t4"></i><i data-id="t5"></i></span></div>
+</div></div>
+
+<main>
+<!-- ============================================ N°1 -->
+<section class="ex" id="ex1">
+  <header><span class="num">N°1</span><h2>Les règles, vues sur une porte</h2>
+    <span class="refs"><a href="__T200__">Présentation 200, diapos 6 et 7</a><a href="__LZ2225__">LZ_2225</a></span></header>
+  <div class="lesson" id="L1"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Une entrée à 0, à 1, ou reliée à A</h3><span class="refs"><a href="__T200__">Présentation 200, diapos 6 et 7</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> une entrée inutilisée d'un CI se relie à VCC sur un ET et à GND sur un OU. La porte garde ainsi sa fonction (règles 4 et 1).</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Les huit premières règles :</b> pour chaque expression, choisis le résultat. A vaut 0 ou 1 : en cas de doute, essaie les deux valeurs.</div>
+  <div class="rules" id="t1-list"></div>
+  <div class="row"><button class="btn" id="t1-check">Vérifier</button></div>
+  <div class="fb" id="t1-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°2 -->
+<section class="ex" id="ex2">
+  <header><span class="num">N°2</span><h2>Vérifie la règle 11 avec la table de vérité</h2>
+    <span class="refs"><a href="__T200__">Présentation 200, diapos 5 et 8</a><a href="__LZ2225__">LZ_2225</a></span></header>
+  <div class="lesson" id="L2"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Une colonne par morceau, puis on compare</h3><span class="refs"><a href="__T200__">Présentation 200, diapo 5</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> la table de vérité sert de contrôle après chaque simplification. Un logiciel de synthèse (CPLD, FPGA) fait la même vérification avant de programmer la puce.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Règle 11 :</b> A + <span class="ov">A</span> · B = A + B. Complète les trois colonnes, puis compare les deux dernières. Clique sur une case pour écrire 0 ou 1.</div>
+  <table class="tdv" id="t2-tab"></table>
+  <div class="row"><button class="btn" id="t2-check">Vérifier</button><button class="btn ghost" id="t2-reset">Effacer</button></div>
+  <div class="fb" id="t2-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°3 -->
+<section class="ex" id="ex3">
+  <header><span class="num">N°3</span><h2>Simplifie pas à pas : choisis la règle</h2>
+    <span class="refs"><a href="__T200__">Présentation 200, diapos 9, 10 et 14</a><a href="__LZ2225__">LZ_2225</a></span></header>
+  <div class="lesson" id="L3"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Le convoyeur de sortie : de 4 portes à 2</h3><span class="refs"><a href="__T200__">Présentation 200, diapos 14 et 15</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> S : convoyeur, A : machine en marche, B : bouteille pleine, C : vidange. Le résultat se relit en français : le convoyeur tourne en marche, s'il y a une bouteille pleine ou une vidange.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Trois équations à simplifier :</b> à chaque étape, choisis la loi ou la règle qui permet d'avancer. La nouvelle ligne s'écrit quand ton choix est juste.</div>
+  <div class="cases" id="t3-list"></div>
+  <div class="fb" id="t3-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°4 -->
+<section class="ex" id="ex4">
+  <header><span class="num">N°4</span><h2>De Morgan : casse la barre</h2>
+    <span class="refs"><a href="__T200__">Présentation 200, diapos 11 à 13</a><a href="__LZ2225__">LZ_2225</a></span></header>
+  <div class="lesson" id="L4"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Casse la barre, change le signe</h3><span class="refs"><a href="__T200__">Présentation 200, diapos 11 et 12</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> les arrêts d'urgence A et B de la ligne. « Ni A ni B » se câble avec une NON-OU (74HC02), ou avec un ET dont les entrées sont inversées : c'est la même porte.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Quatre expressions :</b> applique De Morgan (et la règle 9 si deux barres se superposent), puis choisis le résultat.</div>
+  <div class="cases" id="t4-list"></div>
+  <div class="row"><button class="btn" id="t4-check">Vérifier</button></div>
+  <div class="fb" id="t4-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°5 -->
+<section class="ex" id="ex5">
+  <header><span class="num">N°5</span><h2>Contrôle le travail d'un collègue</h2>
+    <span class="refs"><a href="__T200__">Présentation 200, diapos 5 et 14</a><a href="__LZ2225__">LZ_2225</a><a href="__LZ2226__">LZ_2226</a></span></header>
+  <div class="situ"><b>À l'atelier :</b> un collègue a simplifié quatre commandes de la ligne avant de les câbler. Pour chacune, dis si la simplification est juste. Après la vérification, la page affiche les deux tables de vérité.</div>
+  <div class="cases" id="t5-list"></div>
+  <div class="row"><button class="btn" id="t5-check">Vérifier</button></div>
+  <div class="fb" id="t5-fb" aria-live="polite"></div>
+</section>
+</main>
+
+<footer>
+  <span>Classe __CLASSE__ · __ANNEE__ · __MATIERE__ · champ <a href="__CHAMP__">__CHAMPNOM__</a></span>
+  <span>Objectifs : <a href="__LZ2225__">LZ_2225</a>, <a href="__LZ2226__">LZ_2226</a></span>
+  <span><a href="__T200__">Présentation 200</a> · <a href="__T210__">Fiche 210 EX</a></span>
+</footer>
+
+<script>
+window.addEventListener("error", (e) => { const b = document.getElementById("jsx"); if (b) { b.hidden = false; b.textContent = "Erreur dans la page : " + e.message + " (ligne " + e.lineno + "). Envoie ce message à l'enseignant."; } });
+__COMMONJS__
+const O = (s) => `<span class="ov">${s}</span>`;          // barre de négation
+const bits = (n) => Array.from({ length: 1 << n }, (_, i) => Array.from({ length: n }, (_, j) => (i >> (n - 1 - j)) & 1));   // poids fort à gauche
+const NOT = (x) => 1 - x;
+
+// ---------------------------------------------- N°1 règles 1 à 8
+const R18 = [["A + 0", "A"], ["A + 1", "1"], ["A · 0", "0"], ["A · 1", "A"], ["A + A", "A"], [`A + ${O("A")}`, "1"], ["A · A", "A"], [`A · ${O("A")}`, "0"]];
+R18.forEach(([e], i) => {
+  const d = document.createElement("div"); d.className = "case";
+  d.innerHTML = `<span class="eq">${e} =</span><span class="row"><select id="t1-s${i}" aria-label="Résultat de la règle ${i + 1}"><option value="">…</option><option>0</option><option>1</option><option>A</option></select><span id="t1-r${i}"></span></span>`;
+  $("t1-list").appendChild(d);
+});
+$("t1-check").onclick = () => {
+  let ok = 0, vide = 0;
+  R18.forEach(([, r], i) => {
+    const v = $(`t1-s${i}`).value; if (!v) vide++;
+    const good = v === r; if (good) ok++;
+    $(`t1-r${i}`).innerHTML = v ? `<span class="tag ${good ? "ok" : "bad"}">${good ? "juste" : "à revoir"}</span>` : "";
+  });
+  if (vide) { feedback($("t1-fb"), "info", "Il manque des réponses.", " Choisis un résultat pour chaque règle."); return; }
+  if (ok === 8) { feedback($("t1-fb"), "ok", "Les huit sont justes.", " Pour le OU, une entrée à 1 force la sortie à 1 ; pour le ET, une entrée à 0 force la sortie à 0. A et son inverse ne valent jamais 1 en même temps."); markDone("t1", true); }
+  else { feedback($("t1-fb"), "bad", `${ok} sur 8.`, " Pour une règle en rouge, remplace A par 0, puis par 1, et calcule les deux fois avec la table du OU ou du ET."); markDone("t1", false); }
+};
+
+// ---------------------------------------------- N°2 table de la règle 11
+const T2COLS = [[`${O("A")} · B`, (b, a) => NOT(a) & b], [`A + ${O("A")} · B`, (b, a) => a | (NOT(a) & b)], ["A + B", (b, a) => a | b]];
+let t2 = [];
+function renderT2(wrong = []) {
+  let h = '<tr><th>B</th><th>A</th>' + T2COLS.map(([c]) => `<th class="out">${c}</th>`).join("") + "</tr>";
+  bits(2).forEach(([b, a], r) => {
+    h += `<tr><td>${b}</td><td>${a}</td>` + T2COLS.map((_, c) => {
+      const v = t2[r][c];
+      return `<td class="out ${wrong.includes(r * 3 + c) ? "wrong" : ""}"><button data-r="${r}" data-c="${c}" class="${v === null ? "" : "set"}" aria-label="ligne ${r + 1}, colonne ${c + 1}">${v === null ? "?" : v}</button></td>`;
+    }).join("") + "</tr>";
+  });
+  $("t2-tab").innerHTML = h;
+  $("t2-tab").querySelectorAll("button").forEach((x) => x.onclick = () => { const r = +x.dataset.r, c = +x.dataset.c; t2[r][c] = t2[r][c] === null ? 0 : (t2[r][c] === 0 ? 1 : null); renderT2(); });
+}
+const resetT2 = () => { t2 = bits(2).map(() => [null, null, null]); renderT2(); $("t2-fb").className = "fb"; };
+$("t2-reset").onclick = resetT2;
+$("t2-check").onclick = () => {
+  if (t2.some((r) => r.includes(null))) { feedback($("t2-fb"), "info", "Il manque des cases.", " Écris un 0 ou un 1 dans chaque case des trois colonnes."); return; }
+  const wrong = [];
+  bits(2).forEach(([b, a], r) => T2COLS.forEach(([, f], c) => { if (f(b, a) !== t2[r][c]) wrong.push(r * 3 + c); }));
+  renderT2(wrong);
+  if (!wrong.length) { feedback($("t2-fb"), "ok", "Juste.", " Les deux dernières colonnes sont identiques sur les 4 lignes : la règle 11 est vérifiée. Quand A = 1, la sortie vaut 1 de toute façon ; quand A = 0, il reste B."); markDone("t2", true); }
+  else { feedback($("t2-fb"), "bad", `${wrong.length} case${wrong.length > 1 ? "s" : ""} à revoir (en rouge).`, " Calcule d'abord la barre sur A, puis le ET avec B, et seulement ensuite le OU (ordre NON, ET, OU)."); markDone("t2", false); }
+};
+resetT2();
+
+// ---------------------------------------------- N°3 simplification pas à pas
+const REGLES = ["distributivité", "règle 4", "règle 6", "règle 9", "règle 10", "règle 11", "De Morgan"];
+const PROB = [
+  { start: `S = A · B + A · ${O("B")}`, steps: [["distributivité", `S = A · (B + ${O("B")})`], ["règle 6", "S = A · 1"], ["règle 4", "S = A"]] },
+  { start: `S = ${O("B")} + B · C`, steps: [["règle 11", `S = ${O("B")} + C`]],
+    hint: { "règle 10": "La règle 10 demande la même variable dans les deux termes (A + A · B). Ici, le second terme contient B et non B barré." } },
+  { start: `S = A · ${O("B")} + A · B · ${O("C")}`, steps: [["distributivité", `S = A · (${O("B")} + B · ${O("C")})`], ["règle 11", `S = A · (${O("B")} + ${O("C")})`], ["De Morgan", `S = A · ${O("B · C")}`]] },
+];
+const t3 = PROB.map(() => ({ k: 0, faux: 0 }));
+function renderT3() {
+  $("t3-list").innerHTML = "";
+  PROB.forEach((p, i) => {
+    const st = t3[i], fini = st.k === p.steps.length;
+    const d = document.createElement("div"); d.className = "prob" + (fini ? " done" : "");
+    let h = `<b>Équation ${i + 1}</b><div class="steps"><div><span class="eq">${p.start}</span></div>`;
+    for (let j = 0; j < st.k; j++) h += `<div><span class="eq">${p.steps[j][1]}</span><span class="why">${p.steps[j][0]}</span></div>`;
+    h += "</div>";
+    h += fini ? `<span class="tag ok">simplifiée</span>` : `<div class="muted">Étape suivante : quelle loi ou quelle règle ?</div><div class="opts">${REGLES.map((r) => `<button class="chip" data-p="${i}" data-r="${r}">${r}</button>`).join("")}</div>`;
+    d.innerHTML = h; $("t3-list").appendChild(d);
+  });
+  $("t3-list").querySelectorAll("button.chip").forEach((b) => b.onclick = () => {
+    const i = +b.dataset.p, p = PROB[i], st = t3[i], r = b.dataset.r, bon = p.steps[st.k][0];
+    if (r === bon) { st.k++; renderT3(); }
+    else {
+      st.faux++;
+      const aide = (p.hint && p.hint[r]) || (bon === "distributivité" ? " Une variable est commune aux deux termes : mets-la en évidence." :
+        bon === "De Morgan" ? " La barre couvre deux variables séparées : casse la barre et change le signe." :
+        bon === "règle 11" ? ` Cherche la forme A + ${O("A")} · B, où A peut être n'importe quelle expression.` : " Regarde ce qui reste dans la parenthèse : une variable avec 1, ou une variable avec son inverse ?");
+      feedback($("t3-fb"), "bad", `Équation ${i + 1} : pas cette fois.`, aide);
+    }
+    const tout = t3.every((s, j) => s.k === PROB[j].steps.length);
+    if (tout) { const f = t3.reduce((a, s) => a + s.faux, 0); feedback($("t3-fb"), "ok", "Les trois équations sont simplifiées.", f ? ` Avec ${f} essai${f > 1 ? "s" : ""} de trop : refais l'exercice pour t'entraîner.` : " Sans aucune erreur."); markDone("t3", true); }
+  });
+}
+renderT3();
+
+// ---------------------------------------------- N°4 De Morgan
+const DM = [
+  { e: O("A · B · C"), opts: [`${O("A")} + ${O("B")} + ${O("C")}`, `${O("A")} · ${O("B")} · ${O("C")}`, "A + B + C"], ok: 0 },
+  { e: O("A + B + C"), opts: [`${O("A")} + ${O("B")} + ${O("C")}`, `${O("A")} · ${O("B")} · ${O("C")}`, "A · B · C"], ok: 1 },
+  { e: O(`${O("A")} + B`), opts: [`A · ${O("B")}`, `A + ${O("B")}`, `${O("A")} · ${O("B")}`], ok: 0 },
+  { e: O(`${O("A")} · ${O("B")}`), opts: ["A · B", "A + B", `${O("A")} + ${O("B")}`], ok: 1 },
+];
+DM.forEach((q, i) => {
+  const d = document.createElement("div"); d.className = "case";
+  d.innerHTML = `<div class="row"><span class="eq">S = ${q.e}</span><span class="muted">=</span><span class="opts" role="radiogroup" aria-label="Résultat ${i + 1}">${q.opts.map((o, j) => `<button class="chip" role="radio" aria-checked="false" data-q="${i}" data-o="${j}"><span class="eq" style="font-size:18px">${o}</span></button>`).join("")}</span><span id="t4-r${i}"></span></div>`;
+  $("t4-list").appendChild(d);
+});
+const t4 = DM.map(() => null);
+$("t4-list").querySelectorAll("button.chip").forEach((b) => b.onclick = () => {
+  const i = +b.dataset.q; t4[i] = +b.dataset.o;
+  $("t4-list").querySelectorAll(`button.chip[data-q="${i}"]`).forEach((c) => { const on = +c.dataset.o === t4[i]; c.setAttribute("aria-pressed", on ? "true" : "false"); c.setAttribute("aria-checked", on ? "true" : "false"); });
+});
+$("t4-check").onclick = () => {
+  if (t4.includes(null)) { feedback($("t4-fb"), "info", "Il manque des réponses.", " Choisis un résultat pour chaque expression."); return; }
+  let ok = 0;
+  DM.forEach((q, i) => { const g = t4[i] === q.ok; if (g) ok++; $(`t4-r${i}`).innerHTML = `<span class="tag ${g ? "ok" : "bad"}">${g ? "juste" : "à revoir"}</span>`; });
+  if (ok === 4) { feedback($("t4-fb"), "ok", "Les quatre sont justes.", " Le · devient +, le + devient ·, chaque variable garde sa barre, et deux barres superposées s'annulent (règle 9)."); markDone("t4", true); }
+  else { feedback($("t4-fb"), "bad", `${ok} sur 4.`, " Casse la grande barre : chaque variable reçoit sa barre et le signe change. Une variable qui avait déjà une barre en reçoit une deuxième, qui l'annule."); markDone("t4", false); }
+};
+
+// ---------------------------------------------- N°5 contrôler une simplification
+const COLL = [
+  { nom: "Convoyeur de sortie", av: `S = A · B + A · ${O("B")} · C`, ap: "S = A · (B + C)", f: (c, b, a) => (a & b) | (a & NOT(b) & c), g: (c, b, a) => a & (b | c) },
+  { nom: "Voyant de marche", av: "S = A + A · B", ap: "S = A · B", f: (c, b, a) => a | (a & b), g: (c, b, a) => a & b },
+  { nom: "Autorisation (arrêts d'urgence)", av: `S = ${O("A + B")}`, ap: `S = ${O("A")} + ${O("B")}`, f: (c, b, a) => NOT(a | b), g: (c, b, a) => NOT(a) | NOT(b) },
+  { nom: "Voyant « défaut remplissage »", av: `S = A · ${O("B")} + A · B · ${O("C")}`, ap: `S = A · ${O("B · C")}`, f: (c, b, a) => (a & NOT(b)) | (a & b & NOT(c)), g: (c, b, a) => a & NOT(b & c) },
+];
+COLL.forEach((q, i) => {
+  q.juste = bits(3).every(([c, b, a]) => q.f(c, b, a) === q.g(c, b, a));
+  const d = document.createElement("div"); d.className = "case";
+  d.innerHTML = `<div><b>${q.nom}</b></div><div class="row"><span class="eq" style="font-size:19px">${q.av}</span><span class="muted">devient</span><span class="eq" style="font-size:19px">${q.ap}</span></div>
+    <div class="row"><label for="t5-s${i}">La simplification est</label><select id="t5-s${i}"><option value="">…</option><option value="1">juste</option><option value="0">fausse</option></select><span id="t5-r${i}"></span></div><div id="t5-t${i}"></div>`;
+  $("t5-list").appendChild(d);
+});
+function tableT5(q) {
+  let h = '<table class="tdv"><tr><th>C</th><th>B</th><th>A</th><th class="out">avant</th><th class="out">après</th></tr>';
+  bits(3).forEach(([c, b, a]) => { const x = q.f(c, b, a), y = q.g(c, b, a); h += `<tr><td>${c}</td><td>${b}</td><td>${a}</td><td class="out ${x ? "one" : ""}">${x}</td><td class="out ${x !== y ? "wrong" : ""} ${y ? "one" : ""}">${y}</td></tr>`; });
+  return h + "</table>";
+}
+$("t5-check").onclick = () => {
+  if (COLL.some((_, i) => !$(`t5-s${i}`).value)) { feedback($("t5-fb"), "info", "Il manque des réponses.", " Dis pour chaque commande si la simplification est juste ou fausse."); return; }
+  let ok = 0;
+  COLL.forEach((q, i) => {
+    const g = (+$(`t5-s${i}`).value === 1) === q.juste; if (g) ok++;
+    $(`t5-r${i}`).innerHTML = `<span class="tag ${g ? "ok" : "bad"}">${g ? "juste" : "à revoir"}</span>`;
+    $(`t5-t${i}`).innerHTML = tableT5(q);
+  });
+  if (ok === 4) { feedback($("t5-fb"), "ok", "Les quatre sont justes.", " Deux simplifications sont fausses : A + A · B vaut A (règle 10), et la barre de A + B devient un ET (De Morgan). Les lignes en rouge montrent où la sortie change."); markDone("t5", true); }
+  else { feedback($("t5-fb"), "bad", `${ok} sur 4.`, " Regarde les tables affichées : une seule ligne en rouge suffit pour que la simplification soit fausse."); markDone("t5", false); }
+};
+__LESSONS__
+$("jsx").hidden = true;
+</script>
+</body>
+</html>

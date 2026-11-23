@@ -324,3 +324,37 @@ def diode(ax, x, y0, y1, sens="bas", genre="diode", nom=None, valeur=None, lw=2.
     if valeur:
         ax.text(x - t - 0.15, ym - 0.22 - 0.045 * (fs - 15), valeur, ha="right", va="center", fontsize=fs - 2, color=GR)
     return ya, yk
+
+
+# ------------------------------------------------------------------ schémas logiques (CEI 60617-12)
+QUAL = {"ET": "&", "OU": "≥1", "NON": "1", "OUX": "=1"}
+
+
+def porte(ax, x, y, fonction, n=2, neg=False, neg_in=(), w=0.9, h=None, lw=1.8, fs=14, pin=0.35, r=0.09):
+    """Porte logique CEI posée avec son coin bas gauche en (x, y) : rectangle + qualificatif (« & », « ≥1 », « 1 », « =1 »),
+    cercle de négation en sortie (neg) et sur les entrées d'indice neg_in (0 = entrée du haut).
+    fonction : « ET », « OU », « NON », « OUX » ou un qualificatif. Retourne (entrées [(x, y)…] du haut vers le bas, sortie (x, y))."""
+    qual = QUAL.get(fonction, fonction)
+    h = h or max(0.9, 0.42 * n + 0.2)
+    ax.add_patch(Rectangle((x, y), w, h, fill=True, fc="white", ec=K, lw=lw, zorder=3))
+    ax.text(x + w / 2, y + h - 0.24, qual, ha="center", va="center", fontsize=fs, color=K, zorder=4)
+    ys = [y + h / 2] if n == 1 else [y + h - (h / n) * (i + 0.5) for i in range(n)]
+    entrees = []
+    for i, yy in enumerate(ys):
+        xb = x
+        if i in neg_in:
+            ax.add_patch(Circle((x - r, yy), r, fill=True, fc="white", ec=K, lw=lw, zorder=4)); xb = x - 2 * r
+        line(ax, [(xb - pin, yy), (xb, yy)], lw=lw)
+        entrees.append((xb - pin, yy))
+    yo, xo = y + h / 2, x + w
+    if neg:
+        ax.add_patch(Circle((xo + r, yo), r, fill=True, fc="white", ec=K, lw=lw, zorder=4)); xo += 2 * r
+    line(ax, [(xo, yo), (xo + pin, yo)], lw=lw)
+    return entrees, (xo + pin, yo)
+
+
+def fil(ax, *pts, lw=1.8, noeuds=()):
+    """Liaison orthogonale passant par les points donnés ; noeuds : points où poser un point de connexion."""
+    line(ax, list(pts), lw=lw)
+    for p in noeuds:
+        noeud(ax, *p)

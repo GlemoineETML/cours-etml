@@ -29,6 +29,7 @@ class Seance:
         self.floyd_note = d.get("floyd_note", "")
         self.nextec = {k: (v["lien"], v["titre"]) for k, v in (d.get("nextec") or {}).items()}
         self.fichiers = {str(k): v for k, v in (d.get("fichiers") or {}).items()}
+        self.renvois = {str(k): v for k, v in (d.get("renvois") or {}).items()}     # fichiers d'autres séances cités (non produits ici)
         self.versions = {str(k): str(v) for k, v in (d.get("versions") or {}).items()}
         self.artefacts = {str(k): v for k, v in (d.get("artefacts") or {}).items()}
         self.videos = {str(k): v for k, v in (d.get("videos") or {}).items()}
@@ -47,7 +48,8 @@ class Seance:
         return sys.modules[cle]
 
     def fichier(self, num):
-        return self.fichiers[str(num)]
+        num = str(num)
+        return self.fichiers[num] if num in self.fichiers else self.renvois[num]
 
     # ---------------------------------------------------------------- liens
     def fm(self, url):
@@ -106,7 +108,7 @@ class Seance:
             "FLOYD_PAGES": {}, "FLOYD_NOTE": self.floyd_note,
             "NEXTEC": {k: list(v) for k, v in self.nextec.items()},
             "FUTUREMEM_CHAMP": self.futuremem_champ, "EDGE": EDGE,
-            "FILES": dict(self.fichiers), "TEAMS": {k: self.teams_url(k) for k in self.fichiers},
+            "FILES": dict(self.renvois, **self.fichiers), "TEAMS": {k: self.teams_url(k) for k in list(self.fichiers) + list(self.renvois)},
             "ART": dict(self.artefacts), "VERSIONS": dict(self.versions),
         }
         if extra:

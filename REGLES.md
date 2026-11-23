@@ -60,7 +60,7 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 
 - Nombres : suffixe à la fin. Binaire `0101b`, décimal `89d`, hexadécimal `59h` (b et h minuscules), BCD `… BCD`.
 - Tables de vérité : entrées du poids fort au poids faible, puis la sortie (C B A Y, B A Y, A Y). A est toujours le poids faible ; lignes dans l'ordre du comptage binaire. Dans une table « cahier des charges », la première variable écrite est le poids fort. Les symboles CEI et les chronogrammes (A en haut, puis B) ne changent pas.
-- Équations logiques en notation Floyd (X = AB, X = A + B, barre = NON), sortie notée Y.
+- Équations logiques en notation Floyd (S = AB, S = A + B, barre = NON). La sortie s'appelle toujours S ; les entrées A, B, C, D… (jamais d'initiales comme M, P, V). Le sens de chaque lettre est donné dans une légende (« A : machine en marche »). Demande de Gaël du 11/23/2026 ; la semaine 1 de TM1, faite avant, garde Y.
 - Niveaux et délais : notation des fiches techniques (V_IH, V_IL, V_OH, V_OL, t_PHL, t_PLH), avec un renvoi à la notation du Floyd (V_EH, V_EB, V_SH, V_SB, t_PHB, t_PBH).
 
 ## 4. Documents Word (fiches, corrigés, tests)
