@@ -136,12 +136,13 @@ def build(corr, out):
     x.ANS("Une entrée CMOS en l'air prend une tension quelconque : la porte peut lire un 0 ou un 1 au hasard, et le CI peut chauffer. "
           "On répare la liaison. Une entrée inutilisée se relie toujours à $V_{CC}$ ou à GND.", 2)
 
-    # ---------------------------------------------------------------- auto-évaluation
-    x.P("**Auto-évaluation**", keep=True, after=1, before=10, color=NAVY)
-    x.P("Après la correction : ✓ je sais seul·e · ~ avec une aide · ✗ à revoir (reprends la diapositive indiquée).", keep=True, size=10)
-    x.TABLE([TW / 5 - 0.01] * 5, [["Lire une référence (N°1, diapo 5)", "Choisir une famille (N°2, diapos 3 et 8)", "Compatibilité des niveaux (N°3, diapo 17)",
-                                   "Fiche technique (N°4, diapos 14 à 18)", "Mesurer un niveau (N°5, diapo 16)"], ["", "", "", "", ""]],
-            height=0.75, size=9, first_left=False)
+    # ---------------------------------------------------------------- auto-évaluation (fiche élève seulement, REGLES 4)
+    if not corr:
+        x.P("**Auto-évaluation**", keep=True, after=1, before=10, color=NAVY)
+        x.P("Après la correction : ✓ je sais seul·e · ~ avec une aide · ✗ à revoir (reprends la diapositive indiquée).", keep=True, size=10)
+        x.TABLE([TW / 5 - 0.01] * 5, [["Lire une référence (N°1, diapo 5)", "Choisir une famille (N°2, diapos 3 et 8)", "Compatibilité des niveaux (N°3, diapo 17)",
+                                       "Fiche technique (N°4, diapos 14 à 18)", "Mesurer un niveau (N°5, diapo 16)"], ["", "", "", "", ""]],
+                height=0.75, size=9, first_left=False)
     x.finish()
 
 

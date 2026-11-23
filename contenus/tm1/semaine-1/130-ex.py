@@ -45,7 +45,7 @@ def gate_block(x, key, idx):
     # titre de la porte
     p = x.d.add_paragraph(); f = p.paragraph_format; f.space_before = Pt(10); f.space_after = Pt(3); f.keep_with_next = True
     f.page_break_before = idx in ((3, 5, 7) if corr else (2, 4, 6))   # deux portes par page ; corrigé : l'encadré enseignant repousse A.1 en page 2
-    r = p.add_run(f"A.{idx} Porte {nom} ({en})"); r.bold = True; r.font.size = Pt(12); r.font.color.rgb = NAVY
+    rich(p, f"A.{idx} Porte {nom} ({en})", bold=True, size=12, color=NAVY)
     q = x.P("", italic=True, size=9, color=GREY, keep=True, after=3)
     hyperlink(q, fl(3, g[13]), f"Floyd {g[12]} p. {g[13]}", size=9); rich(q, " · ", size=9, color=GREY)
     hyperlink(q, T120, f"Présentation 120, diapositive {SLIDE[key]}", size=9)
@@ -81,13 +81,13 @@ def gate_block(x, key, idx):
     x.IMG(f"gate_{key}.png", 3.5, parent=sym, after=0)
     eq.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
     p = eq.paragraphs[0]; p.paragraph_format.space_after = Pt(4); p.paragraph_format.space_before = Pt(2)
-    r = p.add_run("Équation : "); r.bold = True; r.font.size = Pt(10)
+    rich(p, "Équation : ", bold=True, size=10)
     if corr:
         x.EQ(p, g[7], "EE0000", 24)
     else:
         dots(p, weq - 0.4)
     p2 = eq.add_paragraph(); p2.paragraph_format.space_after = Pt(2)
-    r = p2.add_run("Règle : "); r.bold = True; r.font.size = Pt(10)
+    rich(p2, "Règle : ", bold=True, size=10)
     if corr:
         rich(p2, g[8], color=RED, size=10)
     else:
@@ -140,12 +140,12 @@ def build(corr, out):
                                   ("page interactive 121", S.teams_url("121")), (" (Edge ou Chrome) · ", None), ("animation 125", S.teams_url("125"))])])
 
     # ================= PARTIE A
-    h = x.d.add_heading("Partie A : les sept portes de base", level=1); h.paragraph_format.page_break_before = corr
+    x.H1("Partie A : les sept portes de base", page_break=corr)
     for i, k in enumerate(L.ORDER, 1):
         gate_block(x, k, i)
 
     # ================= PARTIE B
-    h = x.d.add_heading("Partie B : exercices sur la ligne de remplissage", level=1); h.paragraph_format.page_break_before = True
+    x.H1("Partie B : exercices sur la ligne de remplissage", page_break=True)
     x.CTX("la ligne de remplissage de boissons de la présentation 120 (diapositive 2). Les capteurs donnent 1 quand ce qu'ils surveillent est vrai ; "
           "un actionneur est en marche quand sa sortie vaut 1.")
     x.IMG("fig_ligne.png", 15.0, after=4)

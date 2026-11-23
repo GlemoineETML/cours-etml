@@ -157,13 +157,18 @@ class Doc:
     def EX(self, n, title, refs=()):
         p = self.d.add_paragraph(); f = p.paragraph_format
         f.space_before = Pt(8); f.space_after = Pt(2); f.keep_with_next = True
-        r = p.add_run(f"N°{n} {title}"); r.bold = True; r.font.size = Pt(12); r.font.color.rgb = NAVY
+        rich(p, f"N°{n} {title}", bold=True, size=12, color=NAVY)
         if refs:
             q = self.P("", italic=True, size=9, color=GREY, keep=True, after=3, align=WD_ALIGN_PARAGRAPH.LEFT)
             for k, (txt, url) in enumerate(refs):
                 if k: rich(q, " · ", italic=True, size=9, color=GREY)
                 if url: hyperlink(q, url, txt, size=9)
                 else: rich(q, txt, italic=True, size=9, color=GREY)
+
+    def H1(self, txt, page_break=False):
+        """Titre 1 du modèle (Arial 14 pt gras numéroté), avec la typographie française."""
+        h = self.d.add_heading(typo(txt), level=1); h.paragraph_format.page_break_before = page_break
+        return h
 
     def HR(self):
         p = self.d.add_paragraph(); p.paragraph_format.space_before = Pt(2); p.paragraph_format.space_after = Pt(2)
@@ -262,6 +267,8 @@ class Doc:
     def finish(self):
         d = self.d
         last = d.paragraphs[-1]
+        if last.text.strip() or last._p.findall(qn("m:oMath")):    # le dernier paragraphe a du contenu : on n'écrase pas son interligne
+            last = d.add_paragraph()
         last.paragraph_format.space_after = Pt(0); last.paragraph_format.space_before = Pt(0); last.paragraph_format.line_spacing = Pt(1)
         last.add_run("").font.size = Pt(1)
         sec2 = d.sections[0]
@@ -281,8 +288,8 @@ class Doc:
         p = d.add_paragraph(); p.paragraph_format.tab_stops.add_tab_stop(Cm(11.5)); p.paragraph_format.space_after = Pt(0)
         r = p.add_run("Corrigé" if self.corr else "Version apprenti·e"); r.bold = True
         if self.corr: r.font.color.rgb = RED
-        p.add_run("\tNom :")
-        p = d.add_paragraph(); p.paragraph_format.tab_stops.add_tab_stop(Cm(11.5)); p.add_run("\tDate :")
+        rich(p, "\tNom :")
+        p = d.add_paragraph(); p.paragraph_format.tab_stops.add_tab_stop(Cm(11.5)); rich(p, "\tDate :")
         p_border(p, ["bottom"], 4)
         self.BOX(minutes_box)
         for c in consignes:

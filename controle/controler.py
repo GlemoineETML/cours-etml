@@ -145,7 +145,7 @@ def rendu(chemin, dossier):
     subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", dossier, chemin], check=True,
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     pdf = os.path.join(dossier, os.path.splitext(os.path.basename(chemin))[0] + ".pdf")
-    subprocess.run(["pdftoppm", "-r", "60", "-png", pdf, pdf[:-4]], check=True)
+    subprocess.run(["pdftoppm", "-r", "60", "-png", pdf, pdf[:-4]], check=True, stderr=subprocess.DEVNULL)
     return sorted(glob.glob(pdf[:-4] + "-*.png"))
 
 

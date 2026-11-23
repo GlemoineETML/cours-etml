@@ -5,7 +5,8 @@ Fusion de mathml.py et mathml_w1.py.
 Syntaxe :
   \\f{num}{den}   fraction            \\sqrt{x}   racine carrée        \\bar{x}   barre de négation (logique)
   x_{i}  indice (en romain : indice descriptif, REGLES 3.1)            x^{2}  exposant
-  \\u{texte}      texte droit (unités, mots)                            \\cdot \\oplus \\approx \\le …  symboles
+  \\u{texte}      texte droit (unités, mots ; ses espaces deviennent insécables)
+  \\cdot \\oplus \\approx \\le …  symboles
 Lettres : une lettre = une variable, en italique (A, B, U, R…). Lettres grecques minuscules en italique (variables), sauf µ et π.
 sin, cos, tan, ln, log, exp : en romain."""
 from html import escape
@@ -81,7 +82,7 @@ def _parse(src, color, sz, up=False):
             i = j; continue
         if src.startswith("\\u{", i):
             txt, j = _brace(src, i + 2)
-            out.append(_run(txt, color, sz, False, nor=True)); i = j; continue
+            out.append(_run(txt.replace(" ", "\u00a0"), color, sz, False, nor=True)); i = j; continue   # \u{ ns} : espace insécable avant l'unité
         hit = None
         for k, v in _SYM_TRIES:
             if src.startswith(k, i): hit = (k, v); break
