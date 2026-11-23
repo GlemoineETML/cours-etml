@@ -12,18 +12,40 @@ Seule référence pour produire les présentations, fiches, corrigés, tests, pa
 
 ## 2. Avant chaque nouvelle édition
 
-Demander, sans exception : la classe, l'année scolaire, le champ d'apprentissage, la matière et les références (liens) à utiliser. Ces informations vont dans l'en-tête du fichier de contenu de la séance.
+Demander, sans exception : la classe, l'année scolaire, le champ d'apprentissage, la matière et les références (liens) à utiliser. Ces informations vont dans l'en-tête du fichier de contenu de la séance. Aucune valeur par défaut : la matière est toujours demandée.
 
-Matière par défaut pour TM1 : « Test et Mesure 1 – El DT 1 ». Ne plus écrire « IntElect » ni « El Dim1 ».
+Si la réponse au champ d'apprentissage est « non », le cours est hors réforme : pas de champ, pas de LZ ni de lien FutureMEM, ni dans le cartouche des présentations, ni dans les fiches, ni dans le plan de cours. Tout le reste des règles s'applique.
+
+Ne plus écrire « IntElect » ni « El Dim1 ».
 
 ## 3. Normes et notations
 
-- Symboles électriques et logiques : norme CEI (CEI 60617). Portes logiques : symboles européens seulement (rectangle + qualificatif, cercle de négation).
+### 3.1 Grandeurs, unités et nombres
+
+- Unités SI, symboles des grandeurs selon CEI 60027 / ISO 80000 : variables en italique (U, I, R, t), unités en romain (V, A, Ω, s), indices descriptifs en romain (U_R, R_i, U_ph).
+- Virgule décimale (2,5 V). Espace insécable entre le nombre et l'unité (12 V), et comme séparateur des milliers (10 000).
+- Notation ingénieur : exposants multiples de 3 et préfixes usuels de l'atelier (G, M, k, m, µ, n, p). On écrit 30 mA, pas 0,03 A. Dans un calcul détaillé, l'étape intermédiaire peut garder la puissance de dix (0,6 · 10³ Ω) avant le résultat avec préfixe (600 Ω).
+- Sur les schémas, valeurs normalisées en notation atelier : 2k2, 4k7, 1M5, 100n (le préfixe tient lieu de virgule).
+- Résultats arrondis à 3 chiffres significatifs, sauf consigne contraire de l'exercice (ex. 4 chiffres pour un quantum).
+
+### 3.2 Formules et calculs
+
+- Toute résolution suit le même ordre : formule littérale, puis application numérique avec les unités, puis résultat avec unité et préfixe, puis contrôle (ordre de grandeur, autre méthode ou vérification inverse). Le contrôle est écrit : c'est une compétence évaluée.
+- Formules dans Word : équations natives OMML (voir section 4). Dans les présentations et les pages : même écriture (italiques, indices, fractions), jamais de « * » ni de « / » à la place d'une fraction dans une formule mise en avant.
+- Multiplication : point médian (U = R · I) ; « × » seulement entre deux nombres (3 × 0,2 V).
+
+### 3.3 Schémas et graphiques
+
+- Symboles électriques et logiques : norme CEI 60617. Résistance en rectangle. Portes logiques : symboles européens seulement (rectangle + qualificatif, cercle de négation).
+- Flèches de tension et de courant selon la convention récepteur, sauf pour les sources (convention générateur).
+- Graphiques : chaque axe porte la grandeur et son unité ; mêmes couleurs ETML que les documents.
+
+### 3.4 Numérique
+
 - Nombres : suffixe à la fin. Binaire `0101b`, décimal `89d`, hexadécimal `59h` (b et h minuscules), BCD `… BCD`.
 - Tables de vérité : entrées du poids fort au poids faible, puis la sortie (C B A Y, B A Y, A Y). A est toujours le poids faible ; lignes dans l'ordre du comptage binaire. Dans une table « cahier des charges », la première variable écrite est le poids fort. Les symboles CEI et les chronogrammes (A en haut, puis B) ne changent pas.
 - Équations logiques en notation Floyd (X = AB, X = A + B, barre = NON), sortie notée Y.
 - Niveaux et délais : notation des fiches techniques (V_IH, V_IL, V_OH, V_OL, t_PHL, t_PLH), avec un renvoi à la notation du Floyd (V_EH, V_EB, V_SH, V_SB, t_PHB, t_PBH).
-- Indices descriptifs en romain (U_R, R_i) ; variables en italique.
 
 ## 4. Documents Word (fiches, corrigés, tests)
 
@@ -42,7 +64,7 @@ Matière par défaut pour TM1 : « Test et Mesure 1 – El DT 1 ». Ne plus écr
 - Même police que le modèle Word (Arial), couleurs ETML, format 16:10 (10 × 6,25 pouces).
 - Bande bleue verticale à droite avec le logo en blanc, « Section électronique » et le numéro de page.
 - Ordre de fin : d'abord les exercices, puis la page interactive, puis la vidéo d'animation.
-- Cartouche des diapositives de titre : classe, année, matière, champ (lien), version. Depuis la génération TM1 semaine 1 (11/16/2026), sans ligne « éditeur · date » sur les diapositives (le pied de page Word garde l'auteur).
+- Cartouche des diapositives de titre : classe, année, matière, champ (lien, sauf cours hors réforme), version. Depuis la génération TM1 semaine 1 (11/16/2026), sans ligne « éditeur · date » sur les diapositives (le pied de page Word garde l'auteur).
 
 ## 6. Liens
 
