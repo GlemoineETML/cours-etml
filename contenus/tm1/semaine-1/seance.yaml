@@ -1,0 +1,150 @@
+# Semaine 1 TM1 : familles de circuits logiques, portes logiques et tables de vérité.
+# Métadonnées de la séance (REGLES 2) : à redemander à Gaël avant chaque nouvelle édition.
+
+classe: XLO1
+annee: 2026-2027
+matiere: Test et Mesure 1 – El DT 1
+champ: LFB_El_DT1                 # « non » pour un cours hors réforme
+date: 11/16/2026                  # date de l'édition (MM/DD/YYYY)
+editeur: Gaël Lemoine
+
+# ---------------------------------------------------------------- FutureMEM
+# Champ : page Semestre 1, onglet « Compétences opérationnelles et critères de performance » (lien donné par Gaël le 11/16/2026).
+futuremem_champ: "https://skills.futuremem.swiss/fr/9999_et/2000_lfe_bfs_1/#comp%C3%A9tences-op%C3%A9rationnelles-et-crit%C3%A8res-de-performance"
+# Chaque LZ a son propre lien, confirmé par Gaël (feuille « Liens FutureMEM à fournir », 11/16/2026).
+lz:
+  LZ_4255:
+    niveau: C2
+    texte: "Elles/Ils expliquent les niveaux numériques des familles de circuits logiques."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_06/#232E8605-34F5-E24F-B206-CD3364F81EDB"
+  LZ_4256:
+    niveau: C1
+    texte: "Elles/Ils citent les principales caractéristiques des familles actuelles de circuits logiques."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_06/#C02F8B2C-E8DE-4B46-AFCF-136FB03F2EA6"
+  LZ_4242:
+    niveau: C3
+    texte: "Elles/Ils dessinent des tables de vérité avec des variables d’entrée et de sortie."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_06/#110D829B-238F-A646-BDF0-DA72F7DA82A6"
+  LZ_2223:
+    niveau: C1
+    texte: "Elles/Ils citent des exemples de circuits intégrés tels que AND, OR, NOT."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_04/#33DAE379-F86D-8949-BD47-E29587F2C195"
+  LZ_130:
+    niveau: C2
+    texte: "Elles/Ils décrivent les portes logiques de base ET, OU, NON, NAND, NOR et connaissent leurs symboles."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_01/#DCBD89FD-6D4A-5441-B4BC-4072FFACB3DC"
+  LZ_27:
+    niveau: C3
+    texte: "Elles/Ils établissent la relation entre l'équation fonctionnelle, le tableau de valeurs et la représentation graphique d’une fonction."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_00/#B73C7F1A-B86E-3C4F-9F00-D542352FC3CA"
+  LZ_29:
+    niveau: C4
+    texte: "Elles/Ils différencient les fonctions logiques de base au moyen du symbole, de la table de vérité, de l'équation logique et du chronogramme."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_00/#D3224C49-3D75-6549-B901-FF9677C3C301"
+
+# ---------------------------------------------------------------- Floyd (liens Teams « Copier le lien » donnés par Gaël le 11/16/2026)
+# decalage : page imprimée du livre − décalage = page du PDF du chapitre.
+floyd:
+  1:
+    lien: "https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2001%20-%20Concepts%20num%C3%A9riques.pdf?d=w098062972a294c8d9838cc4a50cb26fa&csf=1&web=1&e=gBoXeN"
+    decalage: 0
+    titre: "chap. 1 Concepts numériques"
+  2:
+    lien: "https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2002%20-%20Syst%C3%A8mes%20de%20num%C3%A9ration,%20op%C3%A9rations%20et%20codes.pdf?d=w933f2237d1814185b6a6b02be82abe0b&csf=1&web=1&e=eHqofE"
+    decalage: 50
+    titre: "chap. 2 Systèmes de numération, opérations et codes"
+  3:
+    lien: "https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2003%20-%20Portes%20logiques.pdf?d=w0b4d71190cd446b9af28ab8cc4e69272&csf=1&web=1&e=O8tdfS"
+    decalage: 110
+    titre: "chap. 3 Portes logiques"
+floyd_note: "le lien ouvre le chapitre sur Teams ; tape ensuite la page dans le lecteur PDF. Chap. 3 : page du livre − 110 = page du PDF (p. 115 → 5). Chap. 1 : mêmes numéros."
+
+# ---------------------------------------------------------------- nextecmedia
+nextec:
+  intro:
+    lien: "https://app.nextecmedia.ch/resolve?courseProductReference=P108e2&issueProductReference=P108e3&contentType=topic&fileReference=F15610_2&contentId=1.1&contentReference=20992"
+    titre: "nextecmedia, Technique numérique, 1.1 Introduction à la technique numérique"
+  repr:
+    lien: "https://app.nextecmedia.ch/resolve?courseProductReference=P108e2&issueProductReference=P108e3&contentType=topic&fileReference=F15610_4&contentId=1.2.1&contentReference=25454"
+    titre: "nextecmedia, Technique numérique, 1.2.1 Formes de représentation des circuits numériques"
+  fam:
+    lien: "https://app.nextecmedia.ch/resolve?courseProductReference=P108e2&issueProductReference=P108e6&contentType=topic&fileReference=F15613_2&contentId=4.1&contentReference=22831"
+    titre: "nextecmedia, Technique numérique, 4.1 Familles de circuits"
+
+# ---------------------------------------------------------------- Teams : dossier du cours (El_DT1/PMT&SBT)
+# Sans lien « Copier le lien », un fichier est visé par son chemin : le lien fonctionne une fois le fichier déposé sous ce nom.
+# {k} : p (présentation), w (Word), v (vidéo), u (page HTML).
+teams_dossier: "https://eduvaud.sharepoint.com/:{k}:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/"
+teams_liens:
+  "100": "https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/100%20Familles%20de%20circuits%20logiques.pptx?d=w28411bfc763a4e079f3f438436a654a4&csf=1&web=1&e=1m7PWF"
+
+# ---------------------------------------------------------------- fichiers de la séance (REGLES 8)
+fichiers:
+  "100": "100 Familles de circuits logiques.pptx"
+  "101": "101 Familles de circuits logiques.html"
+  "105": "105 Familles de circuits logiques.mp4"
+  "110": "110 EX Familles de circuits logiques.docx"
+  "110C": "110 EX C Familles de circuits logiques.docx"
+  "120": "120 Portes logiques et tables de vérité.pptx"
+  "121": "121 Portes logiques et tables de vérité.html"
+  "125": "125 Portes logiques et tables de vérité.mp4"
+  "130": "130 EX Portes logiques de base.docx"
+  "130C": "130 EX C Portes logiques de base.docx"
+
+# versions des présentations (cartouche de la diapositive de titre)
+versions:
+  "100": "1.3"
+  "120": "1.2"
+
+# artefacts claude.ai des pages interactives (privés tant que Gaël ne les partage pas)
+artefacts:
+  "101": "https://claude.ai/artifact/84x2BeiLvEZuFFMS314SBY"
+  "121": "https://claude.ai/artifact/6TyUyScUooioJZaEkrY1uo"
+
+# vidéos : couverture (image à 7 s, bouton lecture, durée affichée)
+videos:
+  "105": "4 min 48"
+  "125": "5 min 25"
+
+# ---------------------------------------------------------------- plan de cours (onglet PlanDeCours, moteur/plan.py)
+# Liens : « teams:<numéro> », « floyd:<chapitre>:<page> », « nextec:<clé> » ; {fichiers.<numéro>} est remplacé par le nom du fichier.
+# objectifs : un LZ par colonne (H à L) ; remarques : texte libre, lien vers le premier LZ cité.
+plan:
+  fichier: PlanDeCoursTheorie_TM1_Local.xlsx
+  lignes:
+    - ligne: 10
+      programme: "- Niveaux numériques et familles de circuits logiques"
+      ressources: "{fichiers.100} (v1.3, animation 105 intégrée)\n{fichiers.101} (page interactive)"
+      ressources_lien: "teams:100"
+      ressources_bulle: "Présentation 100 sur Teams"
+      remarques: "LZ_4255 p4 + LZ_4256"
+      floyd: ["chap. 3, 3-8 Logique à fonction fixe (p. 146)", "floyd:3:146"]
+      nextec: ["4.1 Familles de circuits", "nextec:fam"]
+      objectifs: [LZ_4255, LZ_4256]
+    - ligne: 11
+      programme: "- Niveaux numériques et familles de circuits logiques : exercices"
+      ressources: "{fichiers.110}\n{fichiers.110C}"
+      ressources_lien: "teams:110"
+      ressources_bulle: "Fiche d'exercices 110 EX sur Teams (dossier El_DT1/PMT&SBT)"
+      remarques: "LZ_4255 p4 + LZ_4256"
+      floyd: ["chap. 3, 3-8 Niveaux logiques (p. 154)", "floyd:3:154"]
+      nextec: ["4.1 Familles de circuits", "nextec:fam"]
+      objectifs: [LZ_4255, LZ_4256]
+    - ligne: 12
+      programme: "- Table de vérité et portes logiques"
+      ressources: "{fichiers.120} (v1.2, animation 125 intégrée)\n{fichiers.121} (page interactive)"
+      ressources_lien: "teams:120"
+      ressources_bulle: "Présentation 120 sur Teams (dossier El_DT1/PMT&SBT)"
+      remarques: "LZ_4242 p8 + LZ_130 + LZ_27 + LZ_29 p20 + LZ_2223 p6"
+      floyd: ["chap. 3, 3-1 à 3-6 Portes logiques (p. 112)", "floyd:3:112"]
+      nextec: ["1.2.1 Formes de représentation", "nextec:repr"]
+      objectifs: [LZ_4242, LZ_130, LZ_27, LZ_29, LZ_2223]
+    - ligne: 13
+      programme: "- Table de vérité et portes logiques : exercices"
+      ressources: "{fichiers.130}\n{fichiers.130C}"
+      ressources_lien: "teams:130"
+      ressources_bulle: "Fiche d'exercices 130 EX sur Teams (dossier El_DT1/PMT&SBT)"
+      remarques: "LZ_4242 p8 + LZ_130 + LZ_27 + LZ_29 p20 + LZ_2223 p6"
+      floyd: ["chap. 3, 3-8 CI de la série 74 (p. 146)", "floyd:3:146"]
+      nextec: ["1.1 Introduction à la technique numérique", "nextec:intro"]
+      objectifs: [LZ_4242, LZ_130, LZ_27, LZ_29, LZ_2223]
