@@ -137,6 +137,9 @@ def main():
         plan.produire(S, source, os.path.join(sortie, S.plan["fichier"]))
     if a.sauver:
         sauver(sortie, reference)
+    else:
+        print("rappel : génération d'essai, gardée dans sortie/ seulement. Version finale ? Demander à Gaël, "
+              "puis relancer avec --sauver et commiter (REGLES 10).")
 
 
 def sauver(sortie, reference):

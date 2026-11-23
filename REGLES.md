@@ -99,4 +99,4 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 - On n'édite jamais un .docx ou un .pptx produit : on modifie le contenu (ou le moteur) et on relance. Si Gaël retouche un fichier livré à la main, on reporte la retouche dans le contenu avant toute nouvelle génération.
 - Une seule version de chaque brique dans `moteur/`. Une amélioration demandée pour une séance profite à toutes : on ne copie jamais un fichier du moteur pour l'adapter.
 - Chaque étape validée se termine par un commit.
-- À chaque livraison, la génération est copiée dans `reference/<matière>/<semaine>/` (`build.py --sauver`) et commitée : GitHub garde la dernière version livrée de chaque séance, qui sert aussi d'étalon pour les comparaisons.
+- Version finale : après chaque génération, on demande à Gaël si c'est la version finale. Seulement s'il le confirme, la génération est copiée dans `reference/<matière>/<semaine>/` (`build.py --sauver`) et commitée : GitHub garde la dernière version finale de chaque séance, qui sert aussi d'étalon pour les comparaisons. Les générations d'essai restent dans `sortie/`, non versionné.

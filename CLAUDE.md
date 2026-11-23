@@ -8,6 +8,6 @@ Générateurs des supports de cours de la section électronique de l'ETML (Gaël
 - `sortie/` n'est pas versionné. `reference/` contient les sorties étalons servant à vérifier qu'une modification du moteur ne change rien d'imprévu.
 - Générer : `python3 build.py <matière>/<semaine>` (voir README.md). Les fichiers sortent dans `sortie/`.
 - Avant de livrer : `python3 controle/controler.py <matière>/<semaine> --rendu`, puis humanizer-fr, puis vérification visuelle de la mise en page (images dans `sortie/_controle/`).
-- Livrer : régénérer avec `--sauver` (copie la génération dans `reference/<séance>/`), commiter et pousser, puis envoyer les fichiers à Gaël. `reference/` garde ainsi la dernière version livrée de chaque séance.
+- Après chaque génération envoyée à Gaël : lui demander si c'est la version finale. Seulement s'il répond oui : régénérer avec `--sauver` (copie dans `reference/<séance>/`), commiter et pousser. Jamais de `--sauver` sans son accord : les essais restent dans `sortie/`.
 - Après une modification du moteur : comparer avec `reference/` (`--reference`) et expliquer chaque différence.
 - Répondre en français.

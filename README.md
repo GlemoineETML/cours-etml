@@ -24,7 +24,7 @@ Prérequis : Python 3 (python-docx, openpyxl, matplotlib, Pillow, PyYAML, playwr
 python3 build.py tm1/semaine-1                       # tout : figures, fiches, vidéos, pages, présentations, plan
 python3 build.py tm1/semaine-1 --seulement fiches    # une partie : figures, fiches, animations, pages, presentations, plan
 python3 build.py tm1/semaine-1 --videos reference    # reprend les vidéos de reference/ (sinon 3 min de calcul)
-python3 build.py tm1/semaine-1 --sauver              # livraison : copie la génération dans reference/ (à commiter)
+python3 build.py tm1/semaine-1 --sauver              # version finale validée par Gaël : copie dans reference/ (à commiter)
 python3 controle/controler.py tm1/semaine-1          # validation, conventions, recalcul (verif.py) ; --rendu, --reference
 python3 controle/comparer.py produit.pptx etalon.pptx --diff
 ```
