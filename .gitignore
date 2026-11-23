@@ -1,0 +1,7 @@
+sortie/
+__pycache__/
+*.pyc
+node_modules/
+*.mp4
+.DS_Store
+~$*
