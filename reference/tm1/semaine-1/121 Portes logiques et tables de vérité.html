@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>121 Portes logiques et tables de vérité</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Charte ETML : marine, bleu, bleu clair. Mise en page : une colonne de fiches d'exercices, chacune avec sa situation réelle. */
+  --navy: #242852; --blue: #297FD5; --light: #ACCBF9; --tint: #E8EFFB;
+  --bg: #F6F8FC; --surface: #FFFFFF; --ink: #1D2140; --muted: #5A6478; --line: #C9D2E3;
+  --ok: #1E8C46; --ok-bg: #E2F4E8; --bad: #C81E1E; --bad-bg: #FBE4E4; --warn: #C86A10; --warn-bg: #FDF0E0;
+  --one: #297FD5; --zero: #242852; --head: #242852;
+  --font-body: Arial, "Liberation Sans", Helvetica, sans-serif;
+  --font-mono: "IBM Plex Mono", "Liberation Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11132A; --surface: #1A1D3A; --ink: #E6EAF6; --muted: #A3ACC4; --line: #343A66; --tint: #232852;
+    --ok: #4CC27A; --ok-bg: #173A27; --bad: #F06A6A; --bad-bg: #3D1C24; --warn: #F0A050; --warn-bg: #3A2A18;
+    --one: #5AA2EA; --zero: #ACCBF9; --head: #ACCBF9; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11132A; --surface: #1A1D3A; --ink: #E6EAF6; --muted: #A3ACC4; --line: #343A66; --tint: #232852;
+  --ok: #4CC27A; --ok-bg: #173A27; --bad: #F06A6A; --bad-bg: #3D1C24; --warn: #F0A050; --warn-bg: #3A2A18;
+  --one: #5AA2EA; --zero: #ACCBF9; --head: #ACCBF9; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--font-body); }
+a { color: var(--blue); }
+a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--light); outline-offset: 2px; }
+.top { background: #242852; color: #fff; }
+.top .in { max-width: 1060px; margin: 0 auto; padding: 18px 20px 20px; display: grid; grid-template-columns: 1fr auto; gap: 8px 24px; align-items: center; }
+.top img { height: 30px; grid-column: 2; grid-row: 1 / span 2; }
+.top .eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #ACCBF9; font-weight: 700; }
+.top h1 { margin: 2px 0 0; font-size: clamp(24px, 3.4vw, 34px); line-height: 1.15; text-wrap: balance; }
+.top p { grid-column: 1 / -1; margin: 6px 0 0; color: #D7E2F8; max-width: 70ch; }
+.bar { position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.bar .in { max-width: 1060px; margin: 0 auto; padding: 10px 20px; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 14px; }
+.bar nav { display: flex; flex-wrap: wrap; gap: 6px; }
+.bar nav a { text-decoration: none; padding: 3px 10px; border-radius: 999px; background: var(--tint); color: var(--head); font-weight: 700; }
+.score { margin-left: auto; font-weight: 700; color: var(--head); font-variant-numeric: tabular-nums; }
+.score .dots { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle; }
+.score .dots i { width: 12px; height: 12px; border-radius: 50%; background: var(--line); display: inline-block; }
+.score .dots i.on { background: var(--ok); }
+main { max-width: 1060px; margin: 0 auto; padding: 20px 20px 40px; display: grid; gap: 22px; }
+.ex { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: grid; gap: 14px; scroll-margin-top: 60px; }
+.ex > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.ex h2 { margin: 0; font-size: 22px; color: var(--head); text-wrap: balance; }
+.num { display: inline-grid; place-items: center; min-width: 38px; height: 30px; padding: 0 8px; border-radius: 8px; background: #242852; color: #fff; font-weight: 700; font-size: 15px; }
+.refs { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.situ { border-left: 5px solid var(--blue); background: var(--tint); padding: 10px 14px; border-radius: 0 10px 10px 0; max-width: 78ch; }
+.situ b { color: var(--head); }
+.q { margin: 0; font-weight: 700; max-width: 78ch; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; align-items: start; }
+.panel { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--bg); }
+.panel h3 { margin: 0 0 8px; font-size: 15px; color: var(--head); text-transform: uppercase; letter-spacing: .05em; }
+button { font: inherit; cursor: pointer; }
+.btn { border: 0; border-radius: 10px; padding: 9px 16px; font-weight: 700; background: var(--blue); color: #fff; }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 2px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 5px 12px; font-weight: 700; font-size: 14px; }
+.chip[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+select, input[type="number"] { max-width: 100%; font: inherit; padding: 6px 8px; border-radius: 8px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); }
+.fb { border-radius: 10px; padding: 10px 14px; display: none; max-width: 80ch; }
+.fb.ok { display: block; background: var(--ok-bg); border: 2px solid var(--ok); }
+.fb.bad { display: block; background: var(--bad-bg); border: 2px solid var(--bad); }
+.fb.info { display: block; background: var(--tint); border: 2px solid var(--blue); }
+.fb b:first-child { display: block; margin-bottom: 2px; }
+.fb.ok b:first-child { color: var(--ok); } .fb.bad b:first-child { color: var(--bad); }
+table.tdv { border-collapse: collapse; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+table.tdv th, table.tdv td { border: 1px solid var(--line); padding: 4px 0; width: 54px; text-align: center; font-size: 18px; }
+table.tdv th { background: var(--light); color: #242852; font-family: var(--font-body); }
+table.tdv td.out, table.tdv th.out { border-left: 3px solid var(--head); }
+table.tdv tr.hl td { background: var(--tint); outline: 2px solid var(--blue); outline-offset: -2px; }
+table.tdv td.one { color: var(--one); font-weight: 700; }
+table.tdv td button { width: 42px; height: 30px; border-radius: 6px; border: 2px dashed var(--line); background: var(--surface); color: var(--ink); font: 700 18px var(--font-mono); }
+table.tdv td button.set { border-style: solid; border-color: var(--blue); }
+table.tdv td.wrong button { border-color: var(--bad); background: var(--bad-bg); }
+.bit { display: inline-grid; place-items: center; width: 44px; height: 38px; border-radius: 8px; border: 2px solid var(--head); font: 700 20px var(--font-mono); background: var(--surface); color: var(--ink); }
+.bit.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.eq { font: 700 22px var(--font-body); color: var(--head); }
+.ov { text-decoration: overline; text-decoration-thickness: 2px; }
+.muted { color: var(--muted); font-size: 14px; }
+.life { font-size: 15px; }
+.life b { color: var(--blue); }
+svg text { font-family: var(--font-body); }
+.svgbox { overflow-x: auto; }
+.svgbox svg { max-width: 100%; height: auto; }
+main > *, .ex > *, .grid2 > *, .sim > * { min-width: 0; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; }
+.tag { display: inline-block; padding: 2px 9px; border-radius: 999px; font-weight: 700; font-size: 14px; }
+.tag.ok { background: var(--ok-bg); color: var(--ok); } .tag.bad { background: var(--bad-bg); color: var(--bad); } .tag.warn { background: var(--warn-bg); color: var(--warn); }
+.cases { display: grid; gap: 10px; }
+.case { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 8px; background: var(--surface); }
+.case .row label { font-weight: 700; }
+footer { max-width: 1060px; margin: 0 auto; padding: 0 20px 30px; color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+input[type="range"] { width: 100%; accent-color: var(--blue); }
+/* leçon animée (« Comprendre ») avant chaque exercice, puis « À toi » */
+.lesson { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: 14px 16px; display: grid; gap: 10px; }
+.ls-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.ls-tag { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--blue); padding: 2px 8px; border-radius: 6px; }
+.ls-tag.alt { background: #242852; }
+.ls-head h3 { margin: 0; font-size: 18px; color: var(--head); }
+.ls-body { display: grid; gap: 8px; min-width: 0; }
+.ls-stage { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.ls-stage svg { width: 100%; height: auto; display: block; }
+.ls-cap { min-height: 3.1em; font-size: 16.5px; max-width: 82ch; }
+.ls-cap b { color: var(--blue); }
+.ls-ctrl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ls-btn { border: 2px solid var(--blue); background: var(--surface); color: var(--blue); border-radius: 8px; padding: 4px 10px; font-weight: 700; font-size: 14px; }
+.ls-steps { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.ls-steps button { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; font-size: 13px; padding: 0; }
+.ls-steps button[aria-current="step"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+.ls-prog { flex: 1 1 100px; min-width: 80px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.ls-prog i { display: block; height: 100%; width: 0; background: var(--blue); }
+.ls-extra { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.ls-extra input[type="range"] { width: 180px; }
+/* bandeau visible tant que le script de la page n'a pas fini de démarrer (aperçu sans JavaScript, erreur) */
+.jsx { background: #FDF0E0; color: #7A3E00; border-bottom: 3px solid #C86A10; padding: 10px 20px; font: 600 15px/1.45 Arial, sans-serif; }
+.todo { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.todo::after { content: ""; flex: 1; border-top: 2px dashed var(--line); }
+@media (max-width: 520px) { .top .in { grid-template-columns: 1fr; } .top img { grid-row: 1; grid-column: 1; justify-self: start; height: 24px; } .ex { padding: 16px; } table.tdv th, table.tdv td { width: 44px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.sim { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; align-items: center; }
+.lamp { width: 46px; height: 46px; border-radius: 50%; border: 3px solid var(--ink); background: var(--surface); display: inline-block; vertical-align: middle; }
+.lamp.on { background: var(--one); box-shadow: 0 0 0 8px color-mix(in srgb, var(--one) 25%, transparent); }
+.inbtn { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.inbtn button { min-width: 84px; padding: 0 10px; white-space: nowrap; height: 50px; border-radius: 10px; border: 2px solid var(--head); font: 700 22px var(--font-mono); background: var(--surface); color: var(--ink); }
+.inbtn button.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.chrono { display: grid; gap: 8px; }
+.pins { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.pins label { display: grid; gap: 4px; font-weight: 700; }
+.pins label span { font-weight: 400; }
+table.tdv { justify-self: start; }
+</style>
+</head>
+<body>
+<div id="jsx" class="jsx" role="alert">Cette page a besoin de JavaScript pour afficher les animations et les exercices. Si ce message reste affiché, ouvre la page depuis le lien de l'artefact sur claude.ai, ou ouvre le fichier .html dans Edge, Chrome ou Safari (pas dans un aperçu de fichier).</div>
+<header class="top"><div class="in">
+  <div class="eyebrow">Test et Mesure 1 – El DT 1 · page interactive 121</div>
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASkAAABICAYAAACqRgPJAAAPX0lEQVR4Xu2deewkVRHHv7UsuIKCEkBFOU0EERBBAS80eIAJKPcR1D8MZjkisgQ80EQwIZKAIn9IuFSIssF1wQsQVBDldFVEiYBCkEMEAYFFDmVZynybqrX5HTPvvZnp7plffZIOu0vP0W/6fbuqXlU9UdULAWwK4HkA8zA3WQlgNQCfE5GrVXWeiHA8VuH/pqpbAzgXgAKQuTlc0/CxeBrAASLyyCxjuJqIrFTVjwM4Alg17l2Av/dyAP8C8HcAdwG4DcBfROShKffCfP7+vJY2v7jqqvE8keMOYAUAfrdePAdgdQCnicjZ/h5tXkc/eEE7Atis34lzhPXtOmcSH/+3tQHsNEfGIxfe7C/p8SIfw03GaAwfVlWK1Y0ArgRwvYg86dfISc4HvIhQqNtiIwBbZn74q3rc652CIsWnH58iYUmhesr0w8cqLKn/42PxlFmY/XjW7jeOd78nf9O42FBQ6VnwwcVjFwCfAXCvql4KYLGIXOvWVMsWCS0o3pcp4+nnpNzrnYA3CH8Id/PmqrvHG5PXnuq+8dwQqekilXr/uADU772uwt+ZAuD3yMYADuehqtcBOAPAEhF5ji4uL2JqqKABcsbTxzz1Xm+d1JsqCOYqnMx06fyB7hYLReudAC4A8FtV3Y/ixMNcwGBIhEgFQR6cMxQsihdjcDy2A/B9Vb1cVbezxQFxyyoYjBCpICiHFlYVODex2g3ADarKVWKu/oVVNQRCpIJgcDiPKFa0qhYA+IpZVRuaVdW1xYGxIkQqCIYHhYqxKq6cuVW1swXVQ6gKCZEKguHCWBUFiULFlcArVXWvEKpyQqSCYDRQqOj+rQngYlXdP4SqjFITlIPfZobtsPHrGdU18X07XXowA7703hWaHEPPOxo0l8iD6uRCVWWKwkWqOp+C1ZWB7TqlIsXBnyR8HNYY0UW5CxCU08YY1isxSr0Ovo7vw++/WFXfLyLXtJyhPlbkipRnWZ8C4GbL0n5RIe6Y4td1vX3/YV2Tv+8DAD5r1hRv1lFZbMPAv98rAHzVVqvazK734u+rAZxTW0UbJnzosiZzXSu23wKojvVq1Rj8Hm5h5eJCxYfgUlXdSUTunqkIO5hOqUhdIiK/ntQBHWKxqE/ux0TkO+M0XqrKWMrJJlJt4oJ+q4gsbuqLqCoFansAe9rBomhCscopoXL4Gr52AwDfU9V38++qTKdqtTi58+SKlLMO/eoRPdXaZOWIbpj5qsr8GcYhxsWSolUxaExmmCywe85XzkYJ74NHAPyMh6p+AcDeAD4FYIeaWOWGPXg+7wF2HjlZRI6xa4r4VA9KRYo/IgsqW++pMyZUuTM2Zp1+cvqTXVW7FujnwPGeo6U78knNcXCLSUSeAHC+qn4XwCcAnABgw8J+WC5Ui1T1RyLyq4hP9aY0GBgEE42VtfjDmHV4VcM+EWFcjNYUm0X66l1OjJHi5xbqN1SV/beq5/1ED+gAhEgFQR9csHiapQ88KCIHAziuFljPESovoXkTO5Raa5eYi7MQAxMEGXjfKLOsTgVwoKUYVBqW81Z2/vEWpGcxclhTMxAiFQSZWN8orsytLiJLABxkguPN8VLw1T6uIh5pCza5gfg5QYhUEBQiIitMqJbaxhLuxqXiHV4Xquo6npKQ+uK5QohUEAxATajOAsDDa/ZS8CTP1wDYJ6ypmQmRCoLBYWoErahF3ALLguk5KRyMZTG1gQyr2mFiCJEKggHxBGAReQbAUZZikOq2+RzcWVW3tG6eMS9rxGAEwRCwDpzMpWKW+o8zrCnvlU43kSU4JOZliFQQjAZLIzip1vkgBbe6dreTw+WrUVoWMxDmv6eaw6NgkHIebw+b0hnAN1zNiU9Mw2783OXpQa7RYfkJj37X6v9/5OUqpdTKXGbD85aKdyM2a2qeiCxT1WttQ1Hv4tALt5x2YM6UbVPf6fKpJmlFpHzX1zFl9YJdd1msW4zFPJoWAE4ctmvJged30lWxMUx6WAzYQsVX7M43kUqBAskHGtMQtgHwywx3ceJpVKRqxasLAbyh1l+pKfjEp0Vyr4icnvmhboLfw91AEs15/7yHSlZtauPFJepjEr+v77T7KIBTuESe+LqpsKiWhbSsLfOmbbPhn/lfAMvtpJzs65HhgqOqWwH4cg+r8H4AVwG4zNIKaBGVuF3+miuAatv5tRIsUeJWN/fwo0i16Wl0ikZFqtam5FAAb21xJP4K4PScXj61FZz7ABxf+t0zW8G4C0KROjbzMx/nNQJgwmGy61C7zn8DODHzM1eReZ2jxCf7qwHs2+eDuDL3B1VlPd2NJd0JbHWO432/qt4EgH2jKECp7jrr+YIaTYuUwwlE9yXFXx8m/nmPlb5pS/Ehjw2RfvEhfyLTkhrImrFeR1k00UalEFqUHEcfn9l4C4BfqOpuInJdoevn7VhuNJFK+R1cTDe3L1ZixU0kbYkUf0Tfqjr1CTMMfHOB4s9sKT5U7++dKlLF1+h0WHBK8DHsJ1IUMrpoF6jqmwE8kWOJTuEW+3uK6+bnbFBzUZMt4Emmk0HOIGgR7/zJdsGHFJaquOXE+CXJESkusjAOGBghUkEwHY8F7mH/K8Vdq+PnP1wwz15qe/UFBYM3048QBJOId898XWUGiSSlLszAfywOlgMNB6a5BDWRSjFFHX9CcCeR6vcrHMkICgbjQOn97TBYT6EiOdZYzrkTD1U7J4/GB48maQnuXt5tP1r8GMGkM6jQzXkoGsyHyYV7h5XgovTDAaywIAjmEBQpZkPn4rkcWXhtE4CfArjO0hByLLkgCOYYXG5lBjVJcb3cdH2jvaYotmRi9TGg2jp7Y0uwK3qvTBgA5XWWBkKDIGgYWjV3ZHymx5S2ZU9mLwHIeL2XDbAu6m+WjfsTK6akYI76YP4JPyO3cDYIgpbghP2zfXZKzpRXa3OHi7ep6pUl1drefVBE7gXwYVV9O4D3AtjM3q9fVnUptNZ4zXfxDTpUXxYEwSxwwt4KVLVsr0yoCyNeVvAREWGNU5Yl5dTapDL3/wYAPIIgCF7EfBF5UFVvB0BrJsWC8Zqw/VSV3QCeLK1t8lYYLTTBG0ZDuCAYZ1Ji0J3AC4zZRXDnhApx4j2Z2friABH5plXLFzdlGyCjNwiCMtYue1nzeByKDbooPilxKRcqKvFxqroGxa3U7QuCoBgPtZTkOm5U/KkN46LEvjf/MJFKSQXwFqlb2BbROU29giAYLv/MeDuf89tYmKbYA2qKeXTVRIRtTpkFTlJEyq0pnvslVd2EvYfYB6epLx4EwSqq1erEKg63vrYEXkjK7vq89b3oCRvHe0/uFPy1bB7/LR+kcPuCoDHcoGA7bO8z3w+KFK0nhmn2tpM7bVwwV2mldQJcZqUqJDUj29uk7qqqbPrP180PoQqCRvAVujuBaiMJ74PVDxelw1S12mijy3PWv6z/99REk7GOdzI8VlUX2e4kIVRBMGKYjGwGxtMAfm/WVEq4hvOdBsXrASy0VKCB202PikqcavGkSwD8zna2SLWmCC+Q539NVY82oeIIdtqMDIIJYOoKfWr+ky9+naiqm5oGdFKo6iLCpu8UmpLtmjx9ga8/zVw/7gRLMzKsqiAYHW45XQrgGSv7ShEqdw1Zx3qhqi6w0E/nhGqVSPkXFJGfA/iBWUc5y5N1oaLrd7mqbk6FNrN0tS77vUEwjpghwHnLOljO3ZwuH+4B7QRgCeNTpgNt7SI1I1PdMfq4FJtF1gzPTcJUfMsoWlS70XVU1U+7SptY0bIKwQqC4eFpBWdkJmV7qIbGyJ6236C7fgzXdMILepFi1lT5HlXltt7n2HJlbmzJFZpFy18H8ElV5X+XiAi3766wmFX9vVPM1FFCF7Xt7xAEWdRiyrSkmJjNErecjXd98etdAJap6ucBnOf7Ls4wTxtlmlnn5p6InKuq7wNwkAlVrglIoeKEp8/MraMpeF9UVbqSDNDfJCLsvpCyGhEEQW+qmLKqngDg8oLB4vymsK0P4FwAR6jqmZyrIvJAm/N0NuGpcqdoAZnAbJOpzI67fxQiChY3XDzaDnZf+BOA24Aqz4N7lD1ZkAIxDDyJdZl1hYidY4OxohZTvkJV2UiS7luONUXqhsX2AM4GsFxVmd7AucoNVB7NyKMcBitmFCmLHXGisg3LPpbkyc0Xci/acZeOYuX9qNhFgccHh3ElQ+JAuqQljfyCoAN4TPkoAO8B8LLE9kt1phoWrCjZ1Y5WmNWFq8Wn7lTVKqgG4OUDCBWhWLlguStYjwHVy3SaxIUzNoUIxpbanL2bC1YAvm1b1pVsNtprnjaB97Z7omecqRafYjBtL0tNYB+aUotqJsXuCjR1i7qMBkFXqM3Z81SVAfSFAwgVccuqaVyk5vddtbOVAwbSrzLXjG0hvGYvCILuwZgy5+iRFkSnJTW2XkJfkaqk9IU2LBSq3wDYBcAfLbOV+RWxZB8EHcLSaDycsj+A64HxFaokkaoJFTNb2RaCQbnFJlTeTjgIgo5gRcPV4heADwFV911aVGNnWCSLlAmVt3VZLiKHADgMwOPm/vnKXRAEHaC2dRwTqLn4xfwnxqHHyrDIEikTqqr3jLWIOAvAjgAurq3cMaie00EhCIIRUROqFSLCvMfDAbATr1eFdD6ZOlukTKiYREWxovt3h4jsy00+LSWfF+9JYWNnWgbBpOE7jdt8ZRY5t6+j+8d56r2laFh0Mr5cJFKOd/U0q4pZru8AqkDdNWZSumlJtaZgeeZ5EAQNwmB6LSv9FhHZHcDBAG42sfIUHM7TTglWbj3eNOobfFo/qqUAlqoqixU/CmAPAK+dsl2WrzxUhlmDv9VsUDy78D164WZ5vw1c6+d1FV6D3wP93A2PdQ7jKZ8aNx3mGNaTlnvdY/67DuM6Z8UNC46/iLCP1EVmWBxqC2J1TWhznvp4PD+wSNWtKv7Z8jPYTYAbjl6rqkz+pGB9wMxMboPFRltdaq41tY1y18jZE9Gvhb2ru4pb2NwMoB9+TknWdB2vdkjxHoY1hvzdFmTsZ0l4/kgfmFMMC+ZPcaV+saqyRpdhG85V/nndDszTtYYmUrOIFQeEKwuX2UER2xjAVgC2BrAZgE2Bqi5wrX536wjxDPrlI/yMQWDHRRZiV8+BPjexl/hwH8V+VkrTuJXwEIDbLcGw3z1I94MCdV/t+kvgUjzH0MenF37OHSUfVONZyylcM+F389+V37ORxEuzqvwBSMvqFgA8TlLVDW2ObmtbX9EbWq9B0fLxeOp/Fj7UQwtffrkAAAAASUVORK5CYII=" alt="ETML">
+  <h1>Portes logiques et tables de vérité</h1>
+  <p>Six exercices tirés de la ligne de remplissage et de l'atelier. Les animations « Comprendre » reprennent la présentation 120 ; ensuite, à toi de jouer. Les tables de vérité vont du poids fort au poids faible : B A, puis la sortie Y. Va avec l'animation 125 et la fiche 130 EX.</p>
+</div></header>
+<div class="bar"><div class="in">
+  <nav aria-label="Exercices"><a href="#ex1">N°1</a><a href="#ex2">N°2</a><a href="#ex3">N°3</a><a href="#ex4">N°4</a><a href="#ex5">N°5</a><a href="#ex6">N°6</a></nav>
+  <div class="score">Exercices réussis : <span id="score-n">0</span> / 5
+    <span class="dots"><i data-id="t2"></i><i data-id="t3"></i><i data-id="t4"></i><i data-id="t5"></i><i data-id="t6"></i></span></div>
+</div></div>
+
+<main>
+<!-- ============================================ N°1 -->
+<section class="ex" id="ex1">
+  <header><span class="num">N°1</span><h2>Essaie chaque porte</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapos 5 à 12</a><a href="https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2003%20-%20Portes%20logiques.pdf?d=w0b4d71190cd446b9af28ab8cc4e69272&amp;csf=1&amp;web=1&amp;e=O8tdfS">Floyd 3-1 à 3-6 p. 112-138</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_01/#DCBD89FD-6D4A-5441-B4BC-4072FFACB3DC">LZ_130</a></span></header>
+  <div class="lesson" id="L1"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Des 0 et des 1 sur la ligne de remplissage</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapo 2</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> dans une installation automatisée, chaque capteur (présence, niveau, fin de course) donne un signal binaire. La commande combine ces signaux avec des portes logiques ou un automate programmable.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Au laboratoire :</b> deux interrupteurs sur les entrées A et B, une LED sur la sortie Y. On fait passer les quatre combinaisons et on note la sortie : c'est ainsi qu'on vérifie un CI avant de le monter.</div>
+  <div class="chips" id="g-chips" role="group" aria-label="Choix de la porte"></div>
+  <div class="sim">
+    <div>
+      <div class="svgbox" id="g-svg"></div>
+      <div class="inbtn" style="margin-top:10px">
+        <span class="muted">Entrées :</span>
+        <button id="g-a" aria-label="Entrée A">A = 0</button>
+        <button id="g-b" aria-label="Entrée B">B = 0</button>
+        <span class="muted">Sortie :</span><span class="lamp" id="g-lamp" aria-live="polite"></span><b id="g-y" class="eq">Y = 0</b>
+      </div>
+    </div>
+    <div class="panel">
+      <h3 id="g-title">Porte</h3>
+      <table class="tdv" id="g-tdv"></table>
+      <p class="eq" id="g-eq" style="margin:10px 0 2px"></p>
+      <p id="g-rule" style="margin:0"></p>
+      <p class="muted" id="g-ci" style="margin:4px 0 0"></p>
+      <p class="life" id="g-life" style="margin:8px 0 0"></p>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="row" style="justify-content:space-between"><h3 style="margin:0">Chronogramme en direct</h3>
+      <span class="row"><button class="ls-btn" type="button" id="g-auto"></button><span class="muted">Clique sur A ou B pour piloter toi-même.</span></span></div>
+    <div class="svgbox nt" id="g-chrono"></div>
+    <p class="muted" style="margin:4px 0 0">Les quatre façons de décrire une porte, en même temps : le symbole, la table, l'équation et le chronogramme (présentation 120, diapo 12).</p>
+  </div>
+</section>
+
+<!-- ============================================ N°2 -->
+<section class="ex" id="ex2">
+  <header><span class="num">N°2</span><h2>Prépare la table de test d'un CI</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapos 3 et 12</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_06/#110D829B-238F-A646-BDF0-DA72F7DA82A6">LZ_4242</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_00/#D3224C49-3D75-6549-B901-FF9677C3C301">LZ_29</a></span></header>
+  <div class="lesson" id="L2"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Construire une table de vérité</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapo 3</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> au contrôle final d'une carte, le banc de test applique toutes les combinaisons dans cet ordre, comme un compteur binaire, et compare chaque sortie à la table de vérité.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Au magasin :</b> un CI arrive avec son bon de livraison. Avant de le monter sur la carte, tu prépares sa table de test, que tu vérifieras ligne par ligne avec deux interrupteurs et une LED.</div>
+  <div class="row"><label for="t2-sel"><b>CI reçu :</b></label><select id="t2-sel"></select></div>
+  <p class="q" id="t2-q"></p>
+  <div class="row" style="align-items:flex-start;gap:24px">
+    <table class="tdv" id="t2-tab"></table>
+    <div class="svgbox" id="t2-svg"></div>
+  </div>
+  <p class="muted">Clique sur une case Y pour écrire 0 ou 1.</p>
+  <div class="row"><button class="btn" id="t2-check">Vérifier</button><button class="btn ghost" id="t2-reset">Effacer</button></div>
+  <div class="fb" id="t2-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°3 -->
+<section class="ex" id="ex3">
+  <header><span class="num">N°3</span><h2>Le voyant « défaut » de la ligne</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapos 2 et 3</a><a href="https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2001%20-%20Concepts%20num%C3%A9riques.pdf?d=w098062972a294c8d9838cc4a50cb26fa&amp;csf=1&amp;web=1&amp;e=gBoXeN">Floyd 1-2 p. 5</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_06/#110D829B-238F-A646-BDF0-DA72F7DA82A6">LZ_4242</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_00/#B73C7F1A-B86E-3C4F-9F00-D542352FC3CA">LZ_27</a></span></header>
+  <div class="situ"><b>Cahier des charges :</b> le voyant défaut D s'allume si la pompe est en défaut (P = 1) ou si le convoyeur est bloqué (C = 1), mais seulement quand la ligne est en marche (M = 1). Ligne arrêtée : le voyant reste éteint.</div>
+  <p class="q">a) Complète la table de vérité : M est le poids fort, C le poids faible.</p>
+  <table class="tdv" id="t3-tab"></table>
+  <p class="q">b) Quelle équation correspond à ce voyant ?</p>
+  <div class="row" id="t3-eqs" role="radiogroup" aria-label="Équation du voyant"></div>
+  <div class="row"><button class="btn" id="t3-check">Vérifier</button><button class="btn ghost" id="t3-reset">Effacer</button></div>
+  <div class="fb" id="t3-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°4 -->
+<section class="ex" id="ex4">
+  <header><span class="num">N°4</span><h2>Reconnais la porte à son chronogramme</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapos 4 et 12</a><a href="https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2003%20-%20Portes%20logiques.pdf?d=w0b4d71190cd446b9af28ab8cc4e69272&amp;csf=1&amp;web=1&amp;e=O8tdfS">Floyd 3-6 p. 135-138</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_00/#D3224C49-3D75-6549-B901-FF9677C3C301">LZ_29</a></span></header>
+  <div class="lesson" id="L3"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Lire un chronogramme, intervalle par intervalle</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapo 4</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> au laboratoire, l'oscilloscope deux voies ou l'analyseur logique affiche ces signaux. En dépannage, on compare ce qu'on mesure à ce que la table de vérité prévoit.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>À l'atelier :</b> une carte de commande de la ligne a perdu son schéma. L'analyseur logique affiche les entrées A, B et la sortie Y de trois portes. Pour chacune, trouve de quelle porte il s'agit.</div>
+  <div class="chrono" id="t4-list"></div>
+  <div class="row"><button class="btn" id="t4-check">Vérifier</button></div>
+  <div class="fb" id="t4-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°5 -->
+<section class="ex" id="ex5">
+  <header><span class="num">N°5</span><h2>Quelle porte, quel CI ?</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapos 5 à 13</a><a href="https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2003%20-%20Portes%20logiques.pdf?d=w0b4d71190cd446b9af28ab8cc4e69272&amp;csf=1&amp;web=1&amp;e=O8tdfS">Floyd 3-8 p. 146</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#33DAE379-F86D-8949-BD47-E29587F2C195">LZ_2223</a></span></header>
+  <div class="situ"><b>Dans la vraie vie :</b> chaque situation ci-dessous se commande avec une seule porte. Choisis la porte et le CI de la série 74HC qui la contient.</div>
+  <div class="cases" id="t5-list"></div>
+  <div class="row"><button class="btn" id="t5-check">Vérifier</button></div>
+  <div class="fb" id="t5-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°6 -->
+<section class="ex" id="ex6">
+  <header><span class="num">N°6</span><h2>Câble la vanne sur un 74HC08</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapo 13</a><a href="https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2003%20-%20Portes%20logiques.pdf?d=w0b4d71190cd446b9af28ab8cc4e69272&amp;csf=1&amp;web=1&amp;e=O8tdfS">Floyd 3-8 p. 146-149</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#33DAE379-F86D-8949-BD47-E29587F2C195">LZ_2223</a></span></header>
+  <div class="lesson" id="L4"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>De la porte au circuit intégré, sur breadboard</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapo 13</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> sur une vraie carte, la sortie du CI ne pilote pas la vanne directement : elle commande un transistor ou un relais, comme au laboratoire.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Sur breadboard :</b> tu câbles la commande de la vanne V = B · N avec un 74HC08 (4 portes ET). Choisis une porte et indique la broche de chaque signal.</div>
+  <div class="grid2">
+    <div class="svgbox" id="t6-svg"></div>
+    <div class="pins" id="t6-pins"></div>
+  </div>
+  <div class="row"><button class="btn" id="t6-check">Vérifier</button></div>
+  <div class="fb" id="t6-fb" aria-live="polite"></div>
+</section>
+</main>
+
+<footer>
+  <span>Classe XLO1 · 2026-2027 · Test et Mesure 1 – El DT 1 · champ <a href="https://skills.futuremem.swiss/fr/9999_et/2000_lfe_bfs_1/#comp%C3%A9tences-op%C3%A9rationnelles-et-crit%C3%A8res-de-performance">LFB_El_DT1</a></span>
+  <span>Objectifs : <a href="https://skills.futuremem.swiss/fr/data/5000_lze_06/#110D829B-238F-A646-BDF0-DA72F7DA82A6">LZ_4242</a>, <a href="https://skills.futuremem.swiss/fr/data/5000_lze_01/#DCBD89FD-6D4A-5441-B4BC-4072FFACB3DC">LZ_130</a>, <a href="https://skills.futuremem.swiss/fr/data/5000_lze_00/#B73C7F1A-B86E-3C4F-9F00-D542352FC3CA">LZ_27</a>, <a href="https://skills.futuremem.swiss/fr/data/5000_lze_00/#D3224C49-3D75-6549-B901-FF9677C3C301">LZ_29</a>, <a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#33DAE379-F86D-8949-BD47-E29587F2C195">LZ_2223</a></span>
+  <span><a href="https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2003%20-%20Portes%20logiques.pdf?d=w0b4d71190cd446b9af28ab8cc4e69272&amp;csf=1&amp;web=1&amp;e=O8tdfS">Floyd, chap. 3 Portes logiques</a> · <a href="https://app.nextecmedia.ch/resolve?courseProductReference=P108e2&amp;issueProductReference=P108e3&amp;contentType=topic&amp;fileReference=F15610_4&amp;contentId=1.2.1&amp;contentReference=25454">nextecmedia 1.2.1</a> · <a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120</a></span>
+  <span>Liens Floyd : le lien ouvre le chapitre sur Teams ; tape ensuite la page dans le lecteur PDF. Chap. 3 : page du livre − 110 = page du PDF (p. 115 → 5). Chap. 1 : mêmes numéros.</span>
+</footer>
+
+<script>
+window.addEventListener("error", (e) => { const b = document.getElementById("jsx"); if (b) { b.hidden = false; b.textContent = "Erreur dans la page : " + e.message + " (ligne " + e.lineno + "). Envoie ce message à l'enseignant."; } });
+const $ = (id) => document.getElementById(id);
+const FN = {
+  "NON": (a) => 1 - a, "ET": (a, b) => a & b, "OU": (a, b) => a | b, "NON-ET": (a, b) => 1 - (a & b),
+  "NON-OU": (a, b) => 1 - (a | b), "OUX": (a, b) => a ^ b, "NON-OUX": (a, b) => 1 - (a ^ b),
+};
+const QUAL = { "NON": "1", "ET": "&amp;", "OU": "≥1", "NON-ET": "&amp;", "NON-OU": "≥1", "OUX": "=1", "NON-OUX": "=1" };
+const NEG = { "NON": 1, "ET": 0, "OU": 0, "NON-ET": 1, "NON-OU": 1, "OUX": 0, "NON-OUX": 1 };
+const EQH = {
+  "NON": 'Y = <span class="ov">A</span>', "ET": "Y = A · B", "OU": "Y = A + B", "NON-ET": 'Y = <span class="ov">A · B</span>',
+  "NON-OU": 'Y = <span class="ov">A + B</span>', "OUX": "Y = A ⊕ B", "NON-OUX": 'Y = <span class="ov">A ⊕ B</span>',
+};
+// table de vérité, entrées du poids fort au poids faible : [B, A, Y] ou [A, Y]
+function tdv(key) {
+  if (key === "NON") return [[0, 1], [1, 0]];
+  const r = [];
+  for (const b of [0, 1]) for (const a of [0, 1]) r.push([b, a, FN[key](a, b)]);
+  return r;
+}
+const wireStyle = (v) => v === 1 ? "stroke:var(--one);stroke-width:5" : (v === 0 ? "stroke:var(--zero);stroke-width:3" : "stroke:var(--muted);stroke-width:3");
+
+// Symbole CEI 60617-12 : rectangle, qualificatif, cercle de négation
+function gateParts(key, a, b, y, opt = {}) {
+  const n = key === "NON" ? 1 : 2, w = 90, h = n === 1 ? 90 : 116, x0 = 84, y0 = 14, L = 50;
+  const labels = opt.labels || ["A", "B"], out = opt.out != null ? opt.out : "Y";
+  const ys = n === 1 ? [y0 + h / 2] : [y0 + h * 0.28, y0 + h * 0.72];
+  let s = "";
+  const vin = n === 1 ? [a] : [a, b];
+  ys.forEach((yy, i) => {
+    s += `<line x1="${x0 - L}" y1="${yy}" x2="${x0}" y2="${yy}" style="${wireStyle(vin[i])}"/>`;
+    s += `<text x="${x0 - L - 8}" y="${yy + 6}" text-anchor="end" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${labels[i]}</text>`;
+  });
+  s += `<rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="2" style="fill:var(--surface);stroke:var(--ink);stroke-width:3"/>`;
+  s += `<text x="${x0 + w / 2}" y="${y0 + 30}" text-anchor="middle" font-size="24" font-weight="700" style="fill:var(--ink)">${QUAL[key]}</text>`;
+  let xo = x0 + w;
+  if (NEG[key]) { s += `<circle cx="${xo + 7}" cy="${y0 + h / 2}" r="7" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/>`; xo += 14; }
+  s += `<line x1="${xo}" y1="${y0 + h / 2}" x2="${xo + L}" y2="${y0 + h / 2}" style="${wireStyle(y)}"/>`;
+  s += `<text x="${xo + L + 8}" y="${y0 + h / 2 + 6}" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${out}</text>`;
+  return { w: x0 + w + 2 * L + 50, h: h + 2 * y0, body: s, inX: x0 - L, inY: ys, outX: xo + L, outY: y0 + h / 2 };
+}
+function gateSVG(key, a, b, y, opt = {}) {
+  const p = gateParts(key, a, b, y, opt);
+  return `<svg viewBox="0 0 ${p.w} ${p.h}" width="${p.w * (opt.scale || 1)}" role="img" aria-label="Symbole CEI de la porte ${key}">${p.body}</svg>`;
+}
+// porte placée dans un dessin : renvoie le groupe SVG et les points de raccordement (entrées, sortie)
+function gateAt(key, a, b, y, X, Y, s = 1, opt = {}) {
+  const p = gateParts(key, a, b, y, opt);
+  return { svg: `<g transform="translate(${X} ${Y}) scale(${s})">${p.body}</g>`, inX: X + p.inX * s, inY: p.inY.map((v) => Y + v * s), outX: X + p.outX * s, outY: Y + p.outY * s, w: p.w * s, h: p.h * s };
+}
+
+// suivi des exercices réussis (en mémoire seulement)
+const DONE = new Set();
+function markDone(id, ok) {
+  if (ok) DONE.add(id); else DONE.delete(id);
+  const dots = document.querySelectorAll(".score .dots i");
+  dots.forEach((d) => d.classList.toggle("on", DONE.has(d.dataset.id)));
+  $("score-n").textContent = DONE.size;
+}
+function feedback(el, kind, title, html) {
+  el.className = "fb " + kind;
+  el.innerHTML = `<b>${title}</b>${html}`;
+}
+const fmtV = (x) => String(x).replace(".", ",") + " V";
+// liens externes dans un nouvel onglet
+// démarrage : tout de suite si la page est déjà chargée (certains lecteurs injectent la page après DOMContentLoaded)
+const ready = (f) => { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", f); else f(); };
+// liens externes : <a href> simples ; le lecteur d'artefact les ouvre lui-même hors de la page (pas de target="_blank", refusé dans le cadre isolé)
+// typographie française : espaces insécables (avant « : ; ? ! », nombre + unité, « A = 1 », plages « 0 … 70 »)
+const NBSP = "\u00a0";
+function typo(s) {
+  return s
+    .replace(/ ([:;?!»])/g, NBSP + "$1").replace(/« /g, "«" + NBSP)
+    .replace(/ (=|·|×|≥|≤|<|>|→|⊕|…|\+) /g, NBSP + "$1" + NBSP)
+    .replace(/(\d) (ou|à) (?=[\d−])/g, "$1" + NBSP + "$2" + NBSP)
+    .replace(/(\d) (?=(V|mV|mA|ns|ms|µs|s|°C|%|ko|L|[a-zà-ÿ]))/g, "$1" + NBSP)
+    .replace(/\b(p\.|chap\.|diapos?|N°|Floyd|LZ) (?=\d)/g, "$1" + NBSP);
+}
+function typoTree(root) {
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: (n) => /^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  let n; while ((n = w.nextNode())) { const t = typo(n.nodeValue); if (t !== n.nodeValue) n.nodeValue = t; }
+}
+const inStage = (n) => { const e = n.nodeType === 1 ? n : n.parentElement; return !!(e && e.closest && e.closest(".ls-stage, .nt")); };
+ready(() => {
+  typoTree(document.body);
+  new MutationObserver((ms) => ms.forEach((m) => { if (inStage(m.target)) return; m.addedNodes.forEach((x) => { if (x.nodeType === 3) { const t = typo(x.nodeValue); if (t !== x.nodeValue) x.nodeValue = t; } else if (x.nodeType === 1 && !/^(SCRIPT|STYLE)$/.test(x.nodeName)) typoTree(x); }); }))
+    .observe(document.body, { childList: true, subtree: true });
+});
+
+// ---------------------------------------------- outils de dessin des animations
+const REDUCE = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
+const prog = (t, a, b) => ease((t - a) / (b - a));
+const lerp = (a, b, p) => a + (b - a) * p;
+// texte SVG ; o = { size, anchor, bold, italic, mono, color, op }
+const TX = (x, y, s, o = {}) => `<text x="${x}" y="${y}" font-size="${o.size || 16}"${o.anchor ? ` text-anchor="${o.anchor}"` : ""}${o.bold ? ' font-weight="700"' : ""}${o.italic ? ' font-style="italic"' : ""}${o.mono ? ' font-family="IBM Plex Mono, Liberation Mono, monospace"' : ""} style="fill:${o.color || "var(--ink)"}${o.op != null ? ";opacity:" + o.op : ""}">${s}</text>`;
+const SUBV = (i, rest = "") => `V<tspan font-size="0.72em" dy="0.3em">${i}</tspan><tspan dy="-0.3em">${rest}</tspan>`;
+const wireP = (pts, v) => `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" style="${wireStyle(v)};stroke-linejoin:round"/>`;
+const lampG = (x, y, r, on, col = "var(--one)") => (on ? `<circle cx="${x}" cy="${y}" r="${r + 8}" style="fill:${col};opacity:.25"/>` : "") +
+  `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${on ? col : "var(--surface)"};stroke:var(--ink);stroke-width:2.5"/>`;
+const pill = (x, y, v, o = {}) => `<rect x="${x - 15}" y="${y - 15}" width="30" height="30" rx="7" style="fill:${v ? "var(--one)" : "var(--surface)"};stroke:var(--head);stroke-width:2"/>` +
+  TX(x, y + 7, v, { size: 19, bold: true, mono: true, anchor: "middle", color: v ? "#fff" : "var(--ink)" });
+const okMark = (x, y, ok, r = 11) => `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${ok ? "var(--ok)" : "var(--bad)"}"/>` +
+  (ok ? `<path d="M ${x - r * .45} ${y} l ${r * .3} ${r * .35} l ${r * .55} ${-r * .7}" style="fill:none;stroke:#fff;stroke-width:2.6"/>`
+      : `<path d="M ${x - r * .4} ${y - r * .4} l ${r * .8} ${r * .8} M ${x + r * .4} ${y - r * .4} l ${-r * .8} ${r * .8}" style="stroke:#fff;stroke-width:2.6"/>`);
+// boîtier DIP 14 vu de dessus, encoche à gauche : broches 1 à 7 en bas (gauche → droite), 8 à 14 en haut (droite → gauche)
+function dipG(x, y, w, h, label, o = {}) {
+  const n = 7, pw = w / n; let s = "";
+  for (let i = 0; i < n; i++) {
+    const px = x + pw * (i + 0.5) - 6;
+    s += `<rect x="${px}" y="${y - 14}" width="12" height="14" style="fill:#C8CEDA;stroke:#5A6478"/><rect x="${px}" y="${y + h}" width="12" height="14" style="fill:#C8CEDA;stroke:#5A6478"/>`;
+  }
+  s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" style="fill:#3A3F52;stroke:#23263A;stroke-width:2"/>`;
+  s += `<path d="M ${x} ${y + h / 2 - 12} a 12 12 0 0 1 0 24 z" style="fill:#23263A"/><circle cx="${x + 16}" cy="${y + h - 14}" r="5" style="fill:#5A6070"/>`;
+  if (label) s += TX(x + w / 2, y + h / 2 + 8, label, { size: o.fs || 22, bold: true, mono: true, anchor: "middle", color: "#EEF1F7" });
+  if (o.nums) for (let i = 0; i < n; i++) {
+    s += TX(x + pw * (i + 0.5), y + h - 6, i + 1, { size: 11, anchor: "middle", color: "#B8BED0" });
+    s += TX(x + pw * (i + 0.5), y + 14, 14 - i, { size: 11, anchor: "middle", color: "#B8BED0" });
+  }
+  return s;
+}
+const dipPin = (x, y, w, h, k) => k <= 7 ? [x + (w / 7) * (k - 0.5), y + h + 14] : [x + (w / 7) * (14 - k + 0.5), y - 14];
+// chronogramme qui s'écrit au fil du temps : rows = [{ name, f(s) → 0/1, color }], de s = 0 à min(t, tmax)
+function traceG(x, y, w, rows, t, tmax, o = {}) {
+  const rh = o.rh || 34, hi = rh * 0.55, X = (s) => x + w * s / tmax, dt = o.dt || tmax / 400, end = Math.min(t, tmax);
+  let g = "";
+  rows.forEach((r, i) => {
+    const yb = y + i * rh + rh - 6, yh = yb - hi;
+    g += TX(x - 10, yb - 3, r.name, { anchor: "end", bold: true, italic: true, size: o.fs || 15 });
+    g += `<line x1="${x}" y1="${yb}" x2="${x + w}" y2="${yb}" style="stroke:var(--line);stroke-width:1"/>`;
+    if (end <= 0) return;
+    let v = r.f(0), d = `M ${x} ${v ? yh : yb}`;
+    for (let s = dt; s <= end + 1e-9; s += dt) { const nv = r.f(s); if (nv !== v) { d += ` L ${X(s)} ${v ? yh : yb} L ${X(s)} ${nv ? yh : yb}`; v = nv; } }
+    d += ` L ${X(end)} ${v ? yh : yb}`;
+    g += `<path d="${d}" fill="none" style="stroke:${r.color || "var(--ink)"};stroke-width:2.6;stroke-linejoin:round"/>`;
+  });
+  if (o.cursor !== false && t > 0 && t < tmax) g += `<line x1="${X(end)}" y1="${y}" x2="${X(end)}" y2="${y + rows.length * rh}" style="stroke:var(--bad);stroke-width:1.5"/>`;
+  return g;
+}
+
+// ---------------------------------------------- leçons animées : lecture, pause, étapes numérotées, sous-titres
+// L'animation tourne en boucle et s'arrête quand elle sort de l'écran. Avec « réduire les animations », elle démarre en pause.
+const LESSONS = [];
+function lesson(id, cfg) {
+  const root = $(id), body = root.querySelector(".ls-body");
+  body.innerHTML = `<div class="ls-stage"></div><div class="ls-cap"></div>
+    <div class="ls-ctrl"><button class="ls-btn ls-play" type="button"></button><button class="ls-btn ls-back" type="button">↺ Recommencer</button>
+    <span class="ls-steps" role="group" aria-label="Étapes"></span><span class="ls-prog"><i></i></span></div>`;
+  if (cfg.extra) { const e = document.createElement("div"); e.className = "ls-extra"; e.innerHTML = cfg.extra; body.insertBefore(e, body.querySelector(".ls-cap")); }
+  const st = { t: 0, T: 0, playing: !REDUCE, vis: true, last: null, step: -1, dirty: true, cfg };
+  const stage = body.querySelector(".ls-stage"), cap = body.querySelector(".ls-cap"), play = body.querySelector(".ls-play"), bar = body.querySelector(".ls-prog i"), steps = body.querySelector(".ls-steps");
+  stage.setAttribute("role", "img"); stage.setAttribute("aria-label", cfg.label);
+  cfg.steps.forEach(([t0], i) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = i + 1; b.setAttribute("aria-label", "Étape " + (i + 1));
+    b.onclick = () => { st.t = t0 + 0.01; st.dirty = true; }; steps.appendChild(b);
+  });
+  const setPlay = () => { play.textContent = st.playing ? "❚❚ Pause" : "▶ Lecture"; };
+  play.onclick = () => { st.playing = !st.playing; setPlay(); }; setPlay();
+  body.querySelector(".ls-back").onclick = () => { st.t = 0; st.dirty = true; if (!st.playing) { st.playing = true; setPlay(); } };
+  if ("IntersectionObserver" in window) new IntersectionObserver((es) => es.forEach((e) => { st.vis = e.isIntersecting; st.last = null; }), { threshold: 0.1 }).observe(stage);
+  st.render = () => {
+    stage.innerHTML = cfg.draw(st.t, st.T, st);
+    let k = 0; cfg.steps.forEach(([t0], i) => { if (st.t >= t0) k = i; });
+    if (k !== st.step) {
+      st.step = k; cap.innerHTML = `<b>${k + 1}.</b> ${cfg.steps[k][1]}`;
+      steps.querySelectorAll("button").forEach((b, i) => b.setAttribute("aria-current", i === k ? "step" : "false"));
+    }
+    bar.style.width = (100 * st.t / cfg.dur).toFixed(1) + "%";
+  };
+  LESSONS.push(st);
+  try { st.render(); } catch (e) { console.error(e); }   // première image tout de suite, même si l'animation ne démarre pas
+  return st;
+}
+function lessonLoop(ts) {
+  LESSONS.forEach((st) => {
+    if (!st.vis) return;
+    const dt = st.last == null ? 0 : Math.min(0.1, (ts - st.last) / 1000); st.last = ts;
+    if (st.playing) { st.t += dt; st.T += dt; if (st.t >= st.cfg.dur) st.t = 0; st.dirty = true; }
+    if (st.dirty && ts - (st.drawn || 0) > 33) { st.render(); st.drawn = ts; st.dirty = false; }
+  });
+  requestAnimationFrame(lessonLoop);
+}
+ready(() => requestAnimationFrame(lessonLoop));
+
+const D = {"GATES": {"NON": {"nom": "NON", "en": "NOT", "regle": "Y = 1 si A = 0 : la sortie est l'inverse de l'entrée.", "ci74": "74HC04", "ci4000": "4069", "contenu": "6 inverseurs", "sec": "3-1", "page": 112}, "ET": {"nom": "ET", "en": "AND", "regle": "Y = 1 seulement si A = 1 et B = 1.", "ci74": "74HC08", "ci4000": "4081", "contenu": "4 portes ET à 2 entrées", "sec": "3-2", "page": 115}, "OU": {"nom": "OU", "en": "OR", "regle": "Y = 1 si au moins une entrée vaut 1.", "ci74": "74HC32", "ci4000": "4071", "contenu": "4 portes OU à 2 entrées", "sec": "3-3", "page": 122}, "NON-ET": {"nom": "NON-ET", "en": "NAND", "regle": "Y = 0 seulement si A = 1 et B = 1.", "ci74": "74HC00", "ci4000": "4011", "contenu": "4 portes NON-ET à 2 entrées", "sec": "3-4", "page": 126}, "NON-OU": {"nom": "NON-OU", "en": "NOR", "regle": "Y = 1 seulement si A = 0 et B = 0.", "ci74": "74HC02", "ci4000": "4001", "contenu": "4 portes NON-OU à 2 entrées", "sec": "3-5", "page": 131}, "OUX": {"nom": "OU exclusif", "en": "XOR", "regle": "Y = 1 si les deux entrées sont différentes.", "ci74": "74HC86", "ci4000": "4070", "contenu": "4 portes OU exclusif à 2 entrées", "sec": "3-6", "page": 135}, "NON-OUX": {"nom": "NON-OU exclusif", "en": "XNOR", "regle": "Y = 1 si les deux entrées sont égales.", "ci74": "74HC7266", "ci4000": "4077", "contenu": "4 portes NON-OU exclusif à 2 entrées", "sec": "3-6", "page": 135}}, "ORDER": ["NON", "ET", "OU", "NON-ET", "NON-OU", "OUX", "NON-OUX"], "NIV": {"TTL": [0.8, 2.0, 0.4, 2.4], "HC": [1.5, 3.5, 0.33, 4.4], "HCT": [0.8, 2.0, 0.33, 4.4]}, "CHRONO_A": [0, 1, 0, 1, 1, 0, 1, 0], "CHRONO_B": [0, 0, 1, 1, 0, 1, 1, 0]};
+const LIFE = {
+  "NON": "Voyant « cuve vide » : il s'allume quand le capteur de niveau N vaut 0.",
+  "ET": "Vanne de remplissage : elle s'ouvre seulement si une bouteille est sous le bec ET si la cuve est assez pleine (V = B · N).",
+  "OU": "Plafonnier de voiture : il s'allume si l'une des portières est ouverte, ou les deux.",
+  "NON-ET": "Le 74HC00 est très répandu : avec des NON-ET seulement, on peut construire toutes les autres portes.",
+  "NON-OU": "Le convoyeur peut tourner seulement si aucun des deux arrêts d'urgence n'est actionné.",
+  "OUX": "Éclairage d'escalier en va-et-vient : chaque interrupteur change l'état de la lampe.",
+  "NON-OUX": "Deux capteurs de niveau redondants : « capteurs cohérents » = 1 quand ils donnent la même valeur.",
+};
+
+// ---------------------------------------------- N°1 simulateur
+let gk = "ET", ga = 0, gb = 0;
+function drawSim() {
+  const g = D.GATES[gk], n = gk === "NON" ? 1 : 2;
+  const y = n === 1 ? FN[gk](ga) : FN[gk](ga, gb);
+  $("g-svg").innerHTML = gateSVG(gk, ga, gb, y, { scale: 1.6 });
+  $("g-a").textContent = "A = " + ga; $("g-a").classList.toggle("on", ga === 1);
+  $("g-b").textContent = "B = " + gb; $("g-b").classList.toggle("on", gb === 1); $("g-b").hidden = n === 1;
+  $("g-lamp").classList.toggle("on", y === 1); $("g-y").textContent = "Y = " + y;
+  $("g-title").textContent = `Porte ${g.nom} (${g.en})`;
+  const head = n === 1 ? ["A", "Y"] : ["B", "A", "Y"];
+  let h = "<tr>" + head.map((c, i) => `<th class="${i === head.length - 1 ? "out" : ""}">${c}</th>`).join("") + "</tr>";
+  tdv(gk).forEach((r) => {
+    const cur = n === 1 ? r[0] === ga : (r[0] === gb && r[1] === ga);
+    h += `<tr class="${cur ? "hl" : ""}">` + r.map((v, i) => `<td class="${i === r.length - 1 ? "out" : ""} ${i === r.length - 1 && v ? "one" : ""}">${v}</td>`).join("") + "</tr>";
+  });
+  $("g-tdv").innerHTML = h;
+  $("g-eq").innerHTML = EQH[gk]; $("g-rule").textContent = g.regle;
+  $("g-ci").textContent = `CI : ${g.ci74} (${g.contenu}) · série 4000 : ${g.ci4000}`;
+  $("g-life").innerHTML = "<b>Dans la vraie vie :</b> " + LIFE[gk];
+  document.querySelectorAll("#g-chips .chip").forEach((c) => c.setAttribute("aria-pressed", c.dataset.k === gk ? "true" : "false"));
+}
+D.ORDER.forEach((k) => {
+  const b = document.createElement("button"); b.className = "chip"; b.dataset.k = k; b.textContent = D.GATES[k].nom;
+  b.onclick = () => { gk = k; drawSim(); }; $("g-chips").appendChild(b);
+});
+$("g-a").onclick = () => { ga = 1 - ga; drawSim(); };
+$("g-b").onclick = () => { gb = 1 - gb; drawSim(); };
+drawSim();
+
+// ---------------------------------------------- N°2 table de test
+const T2_CI = [["74HC02", "NON-OU"], ["74HC86", "OUX"], ["74HC00", "NON-ET"], ["74HC7266", "NON-OUX"], ["74HC32", "OU"]];
+let t2 = [];
+T2_CI.forEach(([ci, k], i) => { const o = document.createElement("option"); o.value = i; o.textContent = `${ci} : ${D.GATES[k].contenu}`; $("t2-sel").appendChild(o); });
+function drawT2() {
+  const k = T2_CI[$("t2-sel").value][1];
+  $("t2-q").textContent = `Complète la colonne Y d'une porte ${D.GATES[k].nom} du ${T2_CI[$("t2-sel").value][0]}.`;
+  t2 = [null, null, null, null];
+  renderT2(k, []);
+  $("t2-svg").innerHTML = gateSVG(k, null, null, null, { scale: 1.2 });
+  $("t2-fb").className = "fb";
+}
+function renderT2(k, wrong) {
+  let h = '<tr><th>B</th><th>A</th><th class="out">Y</th></tr>';
+  tdv(k).forEach((r, i) => {
+    const v = t2[i];
+    h += `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="out ${wrong.includes(i) ? "wrong" : ""}"><button data-i="${i}" class="${v === null ? "" : "set"}" aria-label="Y pour B = ${r[0]}, A = ${r[1]}">${v === null ? "?" : v}</button></td></tr>`;
+  });
+  $("t2-tab").innerHTML = h;
+  $("t2-tab").querySelectorAll("button").forEach((b) => b.onclick = () => {
+    const i = +b.dataset.i; t2[i] = t2[i] === null ? 0 : (t2[i] === 0 ? 1 : null); renderT2(k, []);
+  });
+}
+$("t2-sel").onchange = drawT2;
+$("t2-reset").onclick = drawT2;
+$("t2-check").onclick = () => {
+  const k = T2_CI[$("t2-sel").value][1], ref = tdv(k);
+  if (t2.includes(null)) { feedback($("t2-fb"), "info", "Il manque des cases.", "Écris un 0 ou un 1 dans chaque ligne de la colonne Y."); return; }
+  const wrong = ref.map((r, i) => (r[2] === t2[i] ? -1 : i)).filter((i) => i >= 0);
+  renderT2(k, wrong);
+  if (!wrong.length) { feedback($("t2-fb"), "ok", "Juste.", ` ${D.GATES[k].regle} Équation : <span class="eq" style="font-size:18px">${EQH[k]}</span>.`); markDone("t2", true); }
+  else {
+    feedback($("t2-fb"), "bad", `${wrong.length} ligne${wrong.length > 1 ? "s" : ""} à revoir (en rouge).`,
+      ` Règle de la porte ${D.GATES[k].nom} : ${D.GATES[k].regle} Essaie-la dans le N°1 si tu hésites.`);
+    markDone("t2", false);
+  }
+};
+drawT2();
+
+// ---------------------------------------------- N°3 voyant défaut D = M · (P + C)
+let t3 = Array(8).fill(null), t3eq = null;
+const T3REF = Array.from({ length: 8 }, (_, v) => ((v >> 2) & 1) & (((v >> 1) & 1) | (v & 1)));
+const T3EQ = [["D = M · (P + C)", true], ["D = M + P · C", false], ["D = M · P · C", false], ["D = (M + P) · C", false]];
+function renderT3(wrong) {
+  let h = '<tr><th>M</th><th>P</th><th>C</th><th class="out">D</th></tr>';
+  for (let v = 0; v < 8; v++) {
+    const val = t3[v];
+    h += `<tr><td>${(v >> 2) & 1}</td><td>${(v >> 1) & 1}</td><td>${v & 1}</td><td class="out ${wrong.includes(v) ? "wrong" : ""}"><button data-i="${v}" class="${val === null ? "" : "set"}" aria-label="D pour la ligne ${v}">${val === null ? "?" : val}</button></td></tr>`;
+  }
+  $("t3-tab").innerHTML = h;
+  $("t3-tab").querySelectorAll("button").forEach((b) => b.onclick = () => { const i = +b.dataset.i; t3[i] = t3[i] === null ? 0 : (t3[i] === 0 ? 1 : null); renderT3([]); });
+}
+T3EQ.forEach(([e], i) => {
+  const b = document.createElement("button"); b.className = "chip"; b.textContent = e; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", "false");
+  b.onclick = () => { t3eq = i; $("t3-eqs").querySelectorAll(".chip").forEach((c, j) => { c.setAttribute("aria-pressed", j === i ? "true" : "false"); c.setAttribute("aria-checked", j === i ? "true" : "false"); }); };
+  $("t3-eqs").appendChild(b);
+});
+$("t3-reset").onclick = () => { t3 = Array(8).fill(null); t3eq = null; renderT3([]); $("t3-eqs").querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", "false")); $("t3-fb").className = "fb"; };
+$("t3-check").onclick = () => {
+  if (t3.includes(null) || t3eq === null) { feedback($("t3-fb"), "info", "Il manque des réponses.", "Remplis les 8 lignes de D et choisis une équation."); return; }
+  const wrong = T3REF.map((r, i) => (r === t3[i] ? -1 : i)).filter((i) => i >= 0);
+  renderT3(wrong);
+  const eqOk = T3EQ[t3eq][1];
+  if (!wrong.length && eqOk) {
+    feedback($("t3-fb"), "ok", "Juste.", " D = 1 sur trois lignes seulement : 101, 110 et 111. La ligne doit être en marche (M = 1) et au moins un défaut présent (P + C). D'où D = M · (P + C) : une porte OU suivie d'une porte ET.");
+    markDone("t3", true);
+  } else {
+    let msg = "";
+    if (wrong.length) msg += ` ${wrong.length} ligne${wrong.length > 1 ? "s" : ""} de la table à revoir (en rouge). Ligne arrêtée (M = 0) : D = 0 dans tous les cas.`;
+    if (!eqOk) msg += " L'équation ne correspond pas : lis-la sur une ligne précise, par exemple M = 1, P = 0, C = 1.";
+    feedback($("t3-fb"), "bad", "Pas encore.", msg); markDone("t3", false);
+  }
+};
+renderT3([]);
+
+// ---------------------------------------------- N°4 chronogrammes mystère
+const MYST = [
+  { k: "OU", A: [0, 1, 1, 0, 0, 1, 0, 0], B: [0, 0, 1, 1, 0, 0, 1, 0] },
+  { k: "NON-OUX", A: [1, 0, 1, 0, 0, 1, 1, 0], B: [1, 1, 0, 0, 0, 1, 0, 1] },
+  { k: "NON-OU", A: [0, 0, 1, 0, 1, 0, 0, 1], B: [0, 1, 0, 0, 1, 0, 1, 0] },
+];
+function chronoSVG(A, B, Y) {
+  const x0 = 40, pw = 64, H = 50, gap = 26, rows = [["A", A], ["B", B], ["Y", Y]];
+  let s = `<svg viewBox="0 0 ${x0 + 8 * pw + 10} ${3 * (H + gap) + 26}" width="${x0 + 8 * pw + 10}" role="img" aria-label="Chronogramme A, B, Y">`;
+  for (let i = 0; i < 8; i++) {
+    s += `<text x="${x0 + i * pw + pw / 2}" y="14" text-anchor="middle" font-size="13" style="fill:var(--muted)">${i + 1}</text>`;
+    s += `<line x1="${x0 + i * pw}" y1="20" x2="${x0 + i * pw}" y2="${3 * (H + gap) + 18}" style="stroke:var(--line);stroke-width:1;stroke-dasharray:3 4"/>`;
+  }
+  rows.forEach(([nm, sig], r) => {
+    const yb = 26 + r * (H + gap) + H, yh = yb - H + 12;
+    s += `<text x="${x0 - 12}" y="${yb - 14}" text-anchor="end" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${nm}</text>`;
+    let d = `M ${x0} ${sig[0] ? yh : yb}`;
+    for (let i = 0; i < 8; i++) { const y = sig[i] ? yh : yb; d += ` L ${x0 + i * pw} ${y} L ${x0 + (i + 1) * pw} ${y}`; }
+    s += `<path d="${d}" fill="none" style="stroke:${nm === "Y" ? "var(--one)" : "var(--ink)"};stroke-width:3"/>`;
+  });
+  return s + "</svg>";
+}
+const twoIn = D.ORDER.filter((k) => k !== "NON");
+MYST.forEach((m, i) => {
+  m.Y = m.A.map((a, j) => FN[m.k](a, m.B[j]));
+  const div = document.createElement("div"); div.className = "case";
+  div.innerHTML = `<div class="row"><b>Chronogramme ${i + 1}</b><label class="muted" for="t4-s${i}">Porte :</label>
+    <select id="t4-s${i}"><option value="">choisir…</option>${twoIn.map((k) => `<option value="${k}">${D.GATES[k].nom}</option>`).join("")}</select>
+    <span id="t4-r${i}"></span></div><div class="svgbox">${chronoSVG(m.A, m.B, m.Y)}</div>`;
+  $("t4-list").appendChild(div);
+});
+$("t4-check").onclick = () => {
+  let ok = 0, notes = [];
+  MYST.forEach((m, i) => {
+    const v = $(`t4-s${i}`).value, good = v === m.k;
+    if (good) ok++;
+    $(`t4-r${i}`).innerHTML = v ? `<span class="tag ${good ? "ok" : "bad"}">${good ? "juste" : "à revoir"}</span>` : "";
+    if (v && !good) {
+      // l'intervalle qui contredit le choix
+      const j = m.A.findIndex((a, t) => FN[v](a, m.B[t]) !== m.Y[t]);
+      notes.push(`Chronogramme ${i + 1} : intervalle ${j + 1}, A = ${m.A[j]} et B = ${m.B[j]}. Une porte ${D.GATES[v].nom} donnerait Y = ${FN[v](m.A[j], m.B[j])}, l'écran montre Y = ${m.Y[j]}.`);
+    }
+  });
+  if (ok === 3) { feedback($("t4-fb"), "ok", "Les trois sont justes.", " Méthode : chercher la combinaison qui départage. A = B = 1 sépare OU (Y = 1) et OU exclusif (Y = 0) ; A = B = 0 sépare NON-OU (Y = 1) de OU (Y = 0)."); markDone("t4", true); }
+  else feedback($("t4-fb"), "bad", `${ok} sur 3.`, notes.length ? " " + notes.join(" ") : " Choisis une porte pour chaque chronogramme.");
+  if (ok < 3) markDone("t4", false);
+};
+
+// ---------------------------------------------- N°5 situations réelles
+const SITU = [
+  ["Presse à deux mains : la presse ne descend que si l'opérateur appuie sur les deux boutons à la fois.", "ET", "74HC08"],
+  ["Plafonnier de voiture : la lampe s'allume si l'une des deux portières est ouverte, ou les deux.", "OU", "74HC32"],
+  ["Voyant « cuve vide » : il s'allume quand le capteur de niveau N donne 0.", "NON", "74HC04"],
+  ["Voyant « remplir » : les capteurs des cuves de sirop et d'eau donnent 1 quand le niveau est bon. Le voyant s'allume dès qu'une cuve n'a plus assez de liquide.", "NON-ET", "74HC00"],
+  ["Surveillance : deux capteurs redondants mesurent le même niveau. L'alarme sonne quand ils ne donnent pas la même valeur.", "OUX", "74HC86"],
+];
+const CIS = ["74HC00", "74HC02", "74HC04", "74HC08", "74HC32", "74HC86", "74HC7266"];
+SITU.forEach(([s], i) => {
+  const div = document.createElement("div"); div.className = "case";
+  div.innerHTML = `<div>${s}</div><div class="row">
+    <label for="t5-g${i}">Porte</label><select id="t5-g${i}"><option value="">choisir…</option>${D.ORDER.map((k) => `<option value="${k}">${D.GATES[k].nom}</option>`).join("")}</select>
+    <label for="t5-c${i}">CI</label><select id="t5-c${i}"><option value="">choisir…</option>${CIS.map((c) => `<option value="${c}">${c}</option>`).join("")}</select>
+    <span id="t5-r${i}"></span></div>`;
+  $("t5-list").appendChild(div);
+});
+$("t5-check").onclick = () => {
+  let ok = 0, notes = [];
+  SITU.forEach(([s, k, ci], i) => {
+    const g = $(`t5-g${i}`).value, c = $(`t5-c${i}`).value;
+    const good = g === k && c === ci; if (good) ok++;
+    $(`t5-r${i}`).innerHTML = g || c ? `<span class="tag ${good ? "ok" : "bad"}">${good ? "juste" : "à revoir"}</span>` : "";
+    if ((g || c) && !good && g === k) notes.push(`Situation ${i + 1} : la porte est juste, mais elle se trouve dans le ${ci}.`);
+  });
+  if (ok === SITU.length) { feedback($("t5-fb"), "ok", "Tout est juste.", " Dans la série 74, les deux derniers chiffres donnent la fonction : 00 NON-ET, 02 NON-OU, 04 NON, 08 ET, 32 OU, 86 OU exclusif."); markDone("t5", true); }
+  else { feedback($("t5-fb"), "bad", `${ok} sur ${SITU.length}.`, notes.length ? " " + notes.join(" ") : " Relis chaque situation : quelles entrées, et quand la sortie vaut-elle 1 ?"); markDone("t5", false); }
+};
+
+// ---------------------------------------------- N°6 brochage du 74HC08
+const PL = ["1A", "1B", "1Y", "2A", "2B", "2Y", "GND"], PR = ["VCC", "4B", "4A", "4Y", "3B", "3A", "3Y"];
+function dipSVG() {
+  const bx = 150, by = 20, bw = 170, ph = 46;
+  let s = `<svg viewBox="0 0 470 ${by * 2 + ph * 7 + 20}" width="470" role="img" aria-label="Brochage du 74HC08 vu de dessus">`;
+  s += `<rect x="${bx}" y="${by}" width="${bw}" height="${ph * 7 + 20}" rx="10" style="fill:#343848;stroke:var(--ink);stroke-width:2"/>`;
+  s += `<path d="M ${bx + bw / 2 - 18} ${by} a 18 18 0 0 0 36 0" style="fill:#1E2030"/>`;
+  for (let i = 0; i < 7; i++) {
+    const y = by + 22 + i * ph;
+    s += `<rect x="${bx - 24}" y="${y - 9}" width="24" height="18" style="fill:#C8CEDA;stroke:var(--ink);stroke-width:1.5"/>`;
+    s += `<rect x="${bx + bw}" y="${y - 9}" width="24" height="18" style="fill:#C8CEDA;stroke:var(--ink);stroke-width:1.5"/>`;
+    s += `<text x="${bx + 10}" y="${y + 5}" font-size="13" fill="#B8BED0">${i + 1}</text><text x="${bx + bw - 10}" y="${y + 5}" font-size="13" text-anchor="end" fill="#B8BED0">${14 - i}</text>`;
+    s += `<text x="${bx - 32}" y="${y + 6}" font-size="16" font-weight="700" text-anchor="end" style="fill:var(--ink)">${PL[i]}</text>`;
+    s += `<text x="${bx + bw + 32}" y="${y + 6}" font-size="16" font-weight="700" style="fill:var(--ink)">${PR[i]}</text>`;
+  }
+  s += `<text x="${bx + bw / 2}" y="${by + ph * 3.5 + 6}" text-anchor="middle" font-size="22" font-weight="700" fill="#EEF1F7" font-family="IBM Plex Mono, monospace">74HC08</text>`;
+  return s + "</svg>";
+}
+$("t6-svg").innerHTML = dipSVG();
+const SIG = [["B", "capteur bouteille"], ["N", "capteur niveau"], ["V", "vanne"], ["+5 V", "alimentation"], ["GND", "masse"]];
+SIG.forEach(([s, l], i) => {
+  const lab = document.createElement("label"); lab.setAttribute("for", `t6-p${i}`);
+  lab.innerHTML = `<div>${s} <span class="muted">(${l})</span></div><select id="t6-p${i}"><option value="">broche…</option>${Array.from({ length: 14 }, (_, j) => `<option value="${j + 1}">${j + 1}</option>`).join("")}</select>`;
+  $("t6-pins").appendChild(lab);
+});
+const GATES08 = [[1, 2, 3], [4, 5, 6], [9, 10, 8], [12, 13, 11]];
+$("t6-check").onclick = () => {
+  const p = SIG.map((_, i) => +$(`t6-p${i}`).value || 0);
+  if (p.includes(0)) { feedback($("t6-fb"), "info", "Il manque des broches.", "Choisis une broche pour chaque signal."); return; }
+  const g = GATES08.find((x) => [x[0], x[1]].includes(p[0]) && [x[0], x[1]].includes(p[1]) && p[0] !== p[1]);
+  const notes = [];
+  if (!g) notes.push("B et N doivent arriver sur les deux entrées d'une même porte (par exemple 1A et 1B, broches 1 et 2).");
+  else if (p[2] !== g[2]) notes.push(`La sortie de cette porte est la broche ${g[2]}.`);
+  if (p[3] !== 14) notes.push("Le +5 V va sur VCC, broche 14.");
+  if (p[4] !== 7) notes.push("La masse va sur GND, broche 7.");
+  if (!notes.length) { feedback($("t6-fb"), "ok", "Câblage juste.", ` Porte utilisée : ${p[0]}, ${p[1]} → ${p[2]}. N'oublie pas de relier les entrées des trois autres portes à GND : une entrée CMOS ne reste jamais en l'air.`); markDone("t6", true); }
+  else { feedback($("t6-fb"), "bad", "À corriger.", " " + notes.join(" ")); markDone("t6", false); }
+};
+// ================================================================ leçons animées de la page 121 (présentation 120)
+const OVN = '<tspan style="text-decoration:overline">N</tspan>';
+
+// ---------------------------------------------------------------- L1 la ligne de remplissage (diapo 2)
+// temps du scénario u = t / 1.5 (ralenti), boucle de 27 s de scénario
+const LK = (u) => { let k = 0; for (const [a, b] of [[0, 3], [6, 9], [12, 15], [21, 24]]) { if (u >= b) k++; else if (u > a) return k + ease((u - a) / (b - a)); else return k; } return k; };
+const LFILL = { 1: [3, 6], 2: [9, 12], 3: [18, 21], 4: [24, 27] };
+const lfill = (j, u) => j <= 0 ? 1 : LFILL[j] ? clamp((u - LFILL[j][0]) / 3) : 0;
+const inI = (u, iv) => iv.some(([a, b]) => u >= a && u < b);
+const LB = (u) => inI(u, [[3, 6], [9, 12], [15, 21], [24, 27]]) ? 1 : 0;
+const LL = (u) => u < 3 ? 0.7 : u < 6 ? lerp(0.7, 0.6, (u - 3) / 3) : u < 9 ? 0.6 : u < 12 ? lerp(0.6, 0.5, (u - 9) / 3) : u < 18 ? 0.5 :
+  u < 23 ? lerp(0.5, 0.8, (u - 18) / 5) : u < 24 ? 0.8 : u < 27 ? lerp(0.8, 0.7, (u - 24) / 3) : 0.7;
+const LN = (u) => LL(u) > 0.5001 ? 1 : 0;
+const LV = (u) => LB(u) & LN(u);
+lesson("L1", {
+  dur: 40.5, label: "Animation : la ligne de remplissage, avec le capteur de bouteille B, le capteur de niveau N, la vanne V = B · N et son chronogramme",
+  steps: [
+    [0, "Sur la ligne de remplissage, chaque capteur donne un 0 ou un 1. B = 1 : une bouteille vide est sous le bec."],
+    [6, "N = 1 : la cuve contient assez de liquide. La vanne s'ouvre seulement si B = 1 et N = 1 : V = B · N, une porte ET."],
+    [13.5, "La cuve se vide peu à peu. Quand le liquide passe sous le capteur, N tombe à 0."],
+    [22.5, "Une bouteille attend (B = 1), mais N = 0 : la vanne reste fermée et le voyant « cuve vide » s'allume."],
+    [27, "La pompe remplit la cuve : N repasse à 1 et la vanne s'ouvre enfin."],
+    [33, "Le chronogramme garde la trace de B, N et V : V vaut 1 seulement quand B et N valent 1 en même temps."],
+  ],
+  draw(t) {
+    const u = t / 1.5, k = LK(u), B = LB(u), N = LN(u), V = LV(u), L = LL(u), pump = u >= 18 && u < 23;
+    let s = '<svg viewBox="0 0 960 400">';
+    // pompe et cuve
+    s += `<line x1="110" y1="60" x2="194" y2="60" style="stroke:var(--muted);stroke-width:6"/><line x1="226" y1="60" x2="270" y2="60" style="stroke:var(--muted);stroke-width:6"/>`;
+    s += `<circle cx="210" cy="60" r="16" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/>`;
+    const an = pump ? u * 7 : 0.6;
+    s += `<line x1="${210 - 11 * Math.cos(an)}" y1="${60 - 11 * Math.sin(an)}" x2="${210 + 11 * Math.cos(an)}" y2="${60 + 11 * Math.sin(an)}" style="stroke:${pump ? "var(--one)" : "var(--ink)"};stroke-width:3"/>`;
+    s += TX(210, 98, pump ? "pompe : marche" : "pompe", { size: 13, anchor: "middle", color: pump ? "var(--one)" : "var(--muted)", bold: pump });
+    s += `<rect x="270" y="${150 - L * 120}" width="160" height="${L * 120}" style="fill:var(--one);opacity:.45"/>`;
+    s += `<rect x="270" y="30" width="160" height="120" rx="4" style="fill:none;stroke:var(--ink);stroke-width:3"/>` + TX(350, 24, "cuve", { size: 13, anchor: "middle", color: "var(--muted)" });
+    s += `<line x1="272" y1="90" x2="428" y2="90" style="stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4"/><path d="M 444 90 l 12 -8 v 16 z" style="fill:${N ? "var(--one)" : "var(--ink)"}"/>`;
+    s += TX(462, 96, "N", { size: 18, bold: true, italic: true }) + pill(500, 90, N);
+    s += lampG(570, 72, 14, !N, "var(--warn)") + TX(570, 106, "cuve vide", { size: 13, anchor: "middle", bold: !N, color: !N ? "var(--warn)" : "var(--muted)" }) +
+      TX(570, 124, "= " + OVN, { size: 14, anchor: "middle", italic: true });
+    // bec, vanne, jet
+    s += `<line x1="350" y1="150" x2="350" y2="214" style="stroke:var(--muted);stroke-width:8"/>`;
+    s += `<polygon points="336,170 336,186 350,178 364,170 364,186 350,178" style="fill:${V ? "var(--one)" : "var(--surface)"};stroke:var(--ink);stroke-width:2"/>`;
+    s += TX(374, 184, "V", { size: 18, bold: true, italic: true }) + pill(410, 178, V);
+    if (V) s += `<rect x="346" y="214" width="8" height="24" style="fill:var(--one);opacity:.8"/>`;
+    // convoyeur et bouteilles
+    s += `<rect x="10" y="310" width="610" height="14" rx="7" style="fill:var(--line);stroke:var(--ink);stroke-width:1.5"/>`;
+    for (let i = 0; i < 16; i++) { const x = 10 + ((i * 40 + k * 120) % 640); if (x < 616) s += `<line x1="${x}" y1="312" x2="${x}" y2="322" style="stroke:var(--muted);stroke-width:2"/>`; }
+    const bot = [];
+    for (let j = Math.floor(k) - 3; j <= Math.floor(k) + 4; j++) {
+      const x = 350 + (k - j) * 120; if (x < 26 || x > 604) continue;
+      const f = lfill(j, u); bot.push(x);
+      s += `<rect x="${x - 6}" y="236" width="12" height="15" style="fill:var(--surface);stroke:var(--ink);stroke-width:1.8"/>`;
+      s += `<rect x="${x - 16}" y="250" width="32" height="60" rx="5" style="fill:var(--surface);stroke:var(--ink);stroke-width:1.8"/>`;
+      if (f > 0) s += `<rect x="${x - 14}" y="${308 - 56 * f}" width="28" height="${56 * f}" rx="3" style="fill:var(--one);opacity:.7"/>`;
+    }
+    // barrière lumineuse B
+    const hit = bot.filter((x) => x + 16 > 304 && x - 16 < 396).map((x) => x - 16).sort((a, b) => a - b)[0];
+    s += `<rect x="296" y="276" width="8" height="18" style="fill:var(--ink)"/><rect x="396" y="276" width="8" height="18" style="fill:var(--ink)"/>`;
+    s += `<line x1="304" y1="285" x2="${hit != null ? Math.max(304, hit) : 396}" y2="285" style="stroke:var(--bad);stroke-width:2;stroke-dasharray:5 3"/>`;
+    s += pill(150, 352, B) + TX(124, 359, "B", { size: 18, bold: true, italic: true, anchor: "end" }) +
+      TX(176, 358, "barrière lumineuse : une bouteille vide est sous le bec", { size: 14, color: "var(--muted)" });
+    // logique et chronogramme
+    const g = gateAt("ET", B, N, V, 640, 0, 0.85, { labels: ["B", "N"], out: "V" });
+    s += g.svg + TX(790, 142, "V = B · N", { size: 20, bold: true, anchor: "middle", color: "var(--head)" });
+    s += traceG(700, 156, 240, [{ name: "B", f: LB }, { name: "N", f: LN }, { name: "V", f: LV, color: "var(--one)" }], u, 27, { rh: 42, dt: 0.05 });
+    s += TX(820, 298, "chronogramme", { size: 12, anchor: "middle", color: "var(--muted)" });
+    return s + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- N°1 : chronogramme en direct de la porte choisie (diapo 12)
+let gAuto = !REDUCE, gT = 0, gHist = [{ tm: 0, a: 0, b: 0 }], gNext = 2.5, gIdx = 0, gLast = null, gVis = true, gDrawn = 0;
+const G_SEQ = [[0, 0], [0, 1], [1, 0], [1, 1]];   // (B, A) dans l'ordre de la table
+function gSet(a, b) { ga = a; gb = b; gHist.push({ tm: gT, a, b }); while (gHist.length > 2 && gHist[1].tm < gT - 30) gHist.shift(); drawSim(); }
+const gBtn = () => { $("g-auto").textContent = gAuto ? "❚❚ Arrêter la démonstration" : "▶ Démonstration automatique"; };
+$("g-auto").onclick = () => { gAuto = !gAuto; gNext = gT + 0.8; gBtn(); }; gBtn();
+$("g-a").onclick = () => { gAuto = false; gBtn(); gSet(1 - ga, gb); };
+$("g-b").onclick = () => { gAuto = false; gBtn(); gSet(ga, 1 - gb); };
+if ("IntersectionObserver" in window) new IntersectionObserver((es) => es.forEach((e) => { gVis = e.isIntersecting; gLast = null; }), { threshold: 0.1 }).observe($("g-chrono"));
+function gChrono() {
+  const W = 20, x0 = 60, x1 = 940, X = (tm) => x1 - (gT - tm) * (x1 - x0) / W, ws = gT - W, one = gk === "NON";
+  const rows = [["A", (h) => h.a, "var(--ink)"], ["B", (h) => h.b, one ? "var(--line)" : "var(--ink)"], ["Y", (h) => (one ? FN.NON(h.a) : FN[gk](h.a, h.b)), "var(--one)"]];
+  let s = '<svg viewBox="0 0 960 186">';
+  for (let k = Math.ceil(ws); k <= gT; k++) s += `<line x1="${X(k)}" y1="8" x2="${X(k)}" y2="176" style="stroke:var(--line);stroke-width:1;stroke-dasharray:2 5"/>`;
+  rows.forEach(([nm, f, col], i) => {
+    const yb = 18 + i * 56 + 40, yh = yb - 28;
+    let e = gHist[0]; for (const h of gHist) if (h.tm <= ws) e = h;
+    let v = f(e), d = `M ${x0} ${v ? yh : yb}`;
+    for (const h of gHist) if (h.tm > ws) { const nv = f(h); if (nv !== v) { d += ` L ${X(h.tm)} ${v ? yh : yb} L ${X(h.tm)} ${nv ? yh : yb}`; v = nv; } }
+    d += ` L ${x1} ${v ? yh : yb}`;
+    s += TX(x0 - 14, yb - 6, nm, { size: 18, bold: true, italic: true, anchor: "end", color: i === 1 && one ? "var(--muted)" : "var(--ink)" }) +
+      `<line x1="${x0}" y1="${yb}" x2="${x1}" y2="${yb}" style="stroke:var(--line)"/><path d="${d}" fill="none" style="stroke:${col};stroke-width:3;stroke-linejoin:round"/>`;
+  });
+  s += `<line x1="${x1}" y1="8" x2="${x1}" y2="176" style="stroke:var(--bad);stroke-width:2"/>` + TX(x1 - 6, 184, "maintenant", { size: 11, anchor: "end", color: "var(--bad)" });
+  $("g-chrono").innerHTML = s + "</svg>";
+}
+function gLoop(ts) {
+  if (gVis) {
+    const dt = gLast == null ? 0 : Math.min(0.1, (ts - gLast) / 1000); gLast = ts; gT += dt;
+    if (gAuto && gT >= gNext) { gIdx = (gIdx + 1) % 4; const [b, a] = G_SEQ[gIdx]; gSet(a, b); gNext += 2.5; }
+    if (ts - gDrawn > 40) { gChrono(); gDrawn = ts; }
+  }
+  requestAnimationFrame(gLoop);
+}
+gChrono(); ready(() => requestAnimationFrame(gLoop));
+
+// ---------------------------------------------------------------- L2 construire une table de vérité (diapo 3)
+lesson("L2", {
+  dur: 30, label: "Animation : la table de vérité d'une porte ET à trois entrées se remplit ligne par ligne, en comptant en binaire de 000 à 111",
+  steps: [
+    [0, "Une table de vérité donne la sortie pour toutes les combinaisons des entrées. Exemple : une porte ET à 3 entrées (74HC11), testée sur un banc."],
+    [3, "Colonnes du poids fort au poids faible : C B A, puis la sortie Y. Les lignes suivent le comptage binaire, de 000 à 111."],
+    [16, "Pour ne rien oublier : A change à chaque ligne, B toutes les 2 lignes, C toutes les 4 lignes."],
+    [24, "3 entrées : 2³ = 8 lignes. Avec n entrées, la table a 2ⁿ lignes."],
+  ],
+  draw(t) {
+    const cr = t < 3 ? -1 : Math.min(7, Math.floor((t - 3) / 1.6)), bits = (r) => [(r >> 2) & 1, (r >> 1) & 1, r & 1], cur = cr < 0 ? [0, 0, 0] : bits(cr);
+    const y = cur[0] & cur[1] & cur[2];
+    let s = '<svg viewBox="0 0 960 370">';
+    s += TX(140, 28, "banc de test", { size: 14, anchor: "middle", bold: true, color: "var(--muted)" });
+    ["C", "B", "A"].forEach((n, i) => {
+      const x = 70 + i * 70, v = cur[i];
+      s += TX(x, 52, n, { size: 18, bold: true, italic: true, anchor: "middle" }) +
+        `<rect x="${x - 14}" y="62" width="28" height="80" rx="14" style="fill:var(--line);stroke:var(--ink);stroke-width:1.5"/>` +
+        `<circle cx="${x}" cy="${v ? 82 : 122}" r="12" style="fill:${v ? "var(--one)" : "var(--surface)"};stroke:var(--ink);stroke-width:2"/>` +
+        TX(x, 170, v, { size: 22, bold: true, mono: true, anchor: "middle", color: v ? "var(--one)" : "var(--ink)" });
+    });
+    // porte ET à 3 entrées (CEI) et lampe
+    ["C", "B", "A"].forEach((n, i) => {
+      const yy = 76 + i * 26;
+      s += `<line x1="276" y1="${yy}" x2="306" y2="${yy}" style="${wireStyle(cur[i])}"/>` + TX(268, yy + 5, n, { size: 15, bold: true, italic: true, anchor: "end" });
+    });
+    s += `<rect x="306" y="56" width="70" height="92" style="fill:var(--surface);stroke:var(--ink);stroke-width:3"/>` + TX(341, 86, "&amp;", { size: 22, bold: true, anchor: "middle" });
+    s += `<line x1="376" y1="102" x2="408" y2="102" style="${wireStyle(y)}"/>` + lampG(424, 102, 13, y) + TX(424, 136, "Y", { size: 15, bold: true, italic: true, anchor: "middle" });
+    // tableau
+    const tx = 520, cw = 70, ry = (r) => 64 + r * 36;
+    ["C", "B", "A", "Y"].forEach((n, i) => {
+      s += `<rect x="${tx + i * cw}" y="28" width="${cw}" height="36" style="fill:var(--light);stroke:var(--line)"/>` + TX(tx + i * cw + cw / 2, 53, n, { size: 18, bold: true, anchor: "middle", color: "#242852" });
+    });
+    for (let r = 0; r < 8; r++) {
+      const o = prog(t, 3 + r * 1.6, 3.6 + r * 1.6); if (o <= 0) continue;
+      const b = bits(r), yv = b[0] & b[1] & b[2], hl = r === cr && t < 16;
+      s += `<g style="opacity:${o}">`;
+      [...b, yv].forEach((v, i) => {
+        let fill = hl ? "var(--tint)" : "var(--surface)";
+        const runLen = [4, 2, 1][i], phase = [21.4, 18.7, 16][i];
+        if (i < 3 && t >= phase && Math.floor(r / runLen) % 2 === 1) fill = "rgba(41,127,213,.22)";
+        s += `<rect x="${tx + i * cw}" y="${ry(r)}" width="${cw}" height="36" style="fill:${fill};stroke:var(--line)"/>` +
+          TX(tx + i * cw + cw / 2, ry(r) + 25, v, { size: 20, mono: true, bold: i === 3 && v === 1, anchor: "middle", color: i === 3 && v ? "var(--one)" : "var(--ink)" });
+      });
+      if (hl) s += `<rect x="${tx}" y="${ry(r)}" width="${4 * cw}" height="36" style="fill:none;stroke:var(--blue);stroke-width:2.5"/>`;
+      s += "</g>";
+    }
+    s += `<line x1="${tx + 3 * cw}" y1="28" x2="${tx + 3 * cw}" y2="${ry(8)}" style="stroke:var(--head);stroke-width:3"/>`;
+    [["A : à chaque ligne", 16, 2], ["B : toutes les 2", 18.7, 1], ["C : toutes les 4", 21.4, 0]].forEach(([txt, t0, col], i) => {
+      const o = prog(t, t0, t0 + 0.8); if (o <= 0) return;
+      s += `<g style="opacity:${o}">` +
+        TX(820, 110 + i * 60, txt, { size: 16, bold: true, color: "var(--blue)" }) + "</g>";
+    });
+    if (cr >= 0 && t < 24) s += TX(60, 230, `ligne ${cr} : C B A = ${cur.join(" ")}`, { size: 20, bold: true }) + TX(60, 262, `Y = A · B · C = ${y}`, { size: 20, color: y ? "var(--one)" : "var(--ink)", bold: true });
+    if (t >= 24) { const o = prog(t, 24, 25); s += `<g style="opacity:${o}">` + TX(60, 236, "3 entrées → 2³ = 8 lignes", { size: 26, bold: true, color: "var(--head)" }) + TX(60, 274, "n entrées → 2ⁿ lignes", { size: 22, color: "var(--head)" }) + "</g>"; }
+    return s + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L3 lire un chronogramme (diapo 4)
+let l3g = "ET";
+const L3C = lesson("L3", {
+  dur: 27, label: "Animation : un curseur parcourt le chronogramme intervalle par intervalle, lit A et B, et trouve Y dans la table de vérité",
+  extra: '<span class="muted">Porte :</span><span class="chips" id="l3-g"></span>',
+  steps: [
+    [0, "Le temps avance de gauche à droite. On découpe le chronogramme en intervalles : dans chacun, aucun signal ne change."],
+    [2, "Pour chaque intervalle, on lit A et B, puis on cherche la ligne B A dans la table : elle donne Y."],
+    [12.4, "On continue jusqu'au bout. La courbe Y obtenue est le chronogramme de sortie de la porte."],
+    [23, "Si un seul intervalle ne correspond pas à la table, ce n'est pas cette porte : c'est la méthode de cet exercice."],
+  ],
+  draw(t) {
+    const CA = D.CHRONO_A, CB = D.CHRONO_B, n = CA.length, x0 = 70, pw = 540 / n, CY = CA.map((a, i) => FN[l3g](a, CB[i]));
+    const cur = t < 2 ? -1 : Math.min(n - 1, Math.floor((t - 2) / 2.6)), done = t >= 2 + n * 2.6;
+    let s = '<svg viewBox="0 0 960 300">';
+    if (cur >= 0 && !done) s += `<rect x="${x0 + cur * pw}" y="30" width="${pw}" height="232" style="fill:var(--tint);stroke:var(--blue);stroke-width:2"/>`;
+    for (let i = 0; i <= n; i++) s += `<line x1="${x0 + i * pw}" y1="30" x2="${x0 + i * pw}" y2="262" style="stroke:var(--line);stroke-dasharray:3 4"/>`;
+    for (let i = 0; i < n; i++) s += TX(x0 + i * pw + pw / 2, 22, i + 1, { size: 13, anchor: "middle", color: "var(--muted)" });
+    [["A", CA, n, "var(--ink)"], ["B", CB, n, "var(--ink)"], ["Y", CY, done ? n : cur + 1, "var(--one)"]].forEach(([nm, sig, upto, col], r) => {
+      const yb = 100 + r * 75, yh = yb - 42;
+      s += TX(x0 - 14, yb - 12, nm, { size: 20, bold: true, italic: true, anchor: "end" }) + `<line x1="${x0}" y1="${yb}" x2="${x0 + n * pw}" y2="${yb}" style="stroke:var(--line)"/>`;
+      if (upto > 0) {
+        let d = `M ${x0} ${sig[0] ? yh : yb}`;
+        for (let i = 0; i < upto; i++) { const yy = sig[i] ? yh : yb; d += ` L ${x0 + i * pw} ${yy} L ${x0 + (i + 1) * pw} ${yy}`; }
+        s += `<path d="${d}" fill="none" style="stroke:${col};stroke-width:3.2;stroke-linejoin:round"/>`;
+      }
+      if (r === 2 && upto < n) s += TX(x0 + upto * pw + 12, yb - 14, "?", { size: 20, bold: true, color: "var(--muted)" });
+    });
+    // table B A Y
+    const tx = 690, cw = 64;
+    s += TX(tx + 1.5 * cw, 22, `Porte ${D.GATES[l3g].nom}`, { size: 15, bold: true, anchor: "middle", color: "var(--head)" });
+    ["B", "A", "Y"].forEach((h, i) => { s += `<rect x="${tx + i * cw}" y="32" width="${cw}" height="34" style="fill:var(--light);stroke:var(--line)"/>` + TX(tx + i * cw + cw / 2, 56, h, { size: 18, bold: true, anchor: "middle", color: "#242852" }); });
+    const row = cur >= 0 && !done ? CB[cur] * 2 + CA[cur] : -1;
+    tdv(l3g).forEach((r, k) => {
+      const y = 66 + k * 36;
+      r.forEach((v, i) => { s += `<rect x="${tx + i * cw}" y="${y}" width="${cw}" height="36" style="fill:${k === row ? "var(--tint)" : "var(--surface)"};stroke:var(--line)"/>` + TX(tx + i * cw + cw / 2, y + 25, v, { size: 19, mono: true, anchor: "middle", bold: i === 2 && v === 1, color: i === 2 && v ? "var(--one)" : "var(--ink)" }); });
+      if (k === row) s += `<rect x="${tx}" y="${y}" width="${3 * cw}" height="36" style="fill:none;stroke:var(--blue);stroke-width:2.5"/>`;
+    });
+    s += `<line x1="${tx + 2 * cw}" y1="32" x2="${tx + 2 * cw}" y2="210" style="stroke:var(--head);stroke-width:3"/>`;
+    if (row >= 0) s += TX(tx + 1.5 * cw, 244, `intervalle ${cur + 1} : B A = ${CB[cur]} ${CA[cur]}`, { size: 16, anchor: "middle" }) +
+      TX(tx + 1.5 * cw, 272, `→ Y = ${CY[cur]}`, { size: 22, bold: true, anchor: "middle", color: CY[cur] ? "var(--one)" : "var(--head)" });
+    return s + "</svg>";
+  },
+});
+D.ORDER.filter((k) => k !== "NON").forEach((k) => {
+  const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = D.GATES[k].nom; b.setAttribute("aria-pressed", k === l3g ? "true" : "false");
+  b.onclick = () => { l3g = k; $("l3-g").querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", c.textContent === D.GATES[k].nom ? "true" : "false")); L3C.t = 0; L3C.dirty = true; };
+  $("l3-g").appendChild(b);
+});
+
+// ---------------------------------------------------------------- L4 le 74HC08 sur breadboard (diapo 13)
+lesson("L4", {
+  dur: 20, label: "Animation : un 74HC08 câblé sur breadboard, deux interrupteurs B et N sur la porte 1 et une LED sur sa sortie",
+  steps: [
+    [0, "Le 74HC08 contient 4 portes ET. On utilise la porte 1 : entrées 1A (broche 1) et 1B (broche 2), sortie 1Y (broche 3)."],
+    [5, "Alimentation : +5 V sur VCC (broche 14), masse sur GND (broche 7). Sans elles, le CI ne fonctionne pas."],
+    [10, "Les entrées des portes inutilisées (broches 4, 5, 9, 10, 12, 13) vont à GND : une entrée CMOS ne reste jamais en l'air."],
+    [15, "Avec B = 1 et N = 1, la sortie 1Y passe à 1 et la LED (la vanne) s'allume. Dans les trois autres cas, elle reste éteinte."],
+  ],
+  draw(t) {
+    const CMB = [[0, 0], [1, 0], [0, 1], [1, 1]][Math.min(3, Math.floor(t / 5))], [B, N] = CMB, V = B & N;
+    const cx = 330, cy = 160, cw = 300, ch = 70, P = (k) => dipPin(cx, cy, cw, ch, k);
+    const ink = "#242852", wv = (v) => v ? "stroke:#297FD5;stroke-width:5" : "stroke:#242852;stroke-width:3", pl = (pts, st) => `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" style="${st};stroke-linejoin:round"/>`;
+    const T2 = (x, y, s, o = {}) => TX(x, y, s, Object.assign({ color: ink }, o));
+    let s = '<svg viewBox="0 0 960 380">';
+    s += `<rect x="20" y="28" width="920" height="340" rx="12" style="fill:#F4F5F8;stroke:#C9D2E3"/>`;
+    for (let x = 40; x <= 920; x += 20) for (const y of [120, 300]) s += `<circle cx="${x}" cy="${y}" r="2" style="fill:#C9CFDB"/>`;
+    s += `<line x1="40" y1="52" x2="920" y2="52" style="stroke:#D0312D;stroke-width:4"/>` + T2(44, 46, "+5 V", { size: 13, bold: true, color: "#D0312D" });
+    s += `<line x1="380" y1="80" x2="920" y2="80" style="stroke:${ink};stroke-width:4"/>` + T2(916, 74, "GND", { size: 13, bold: true, anchor: "end" });
+    s += `<line x1="40" y1="348" x2="920" y2="348" style="stroke:${ink};stroke-width:4"/>` + T2(916, 364, "GND", { size: 13, bold: true, anchor: "end" });
+    // alimentation et entrées inutilisées
+    s += pl([P(14), [P(14)[0], 52]], "stroke:#D0312D;stroke-width:3") + `<circle cx="${P(14)[0]}" cy="52" r="4" style="fill:#D0312D"/>`;
+    [13, 12, 10, 9].forEach((k) => { s += pl([P(k), [P(k)[0], 80]], "stroke:#5A6478;stroke-width:2.5") + `<circle cx="${P(k)[0]}" cy="80" r="3.5" style="fill:${ink}"/>`; });
+    s += pl([P(7), [P(7)[0], 348]], `stroke:${ink};stroke-width:3`) + `<circle cx="${P(7)[0]}" cy="348" r="4" style="fill:${ink}"/>`;
+    s += pl([P(4), [P(4)[0], 262], [P(7)[0], 262]], "stroke:#5A6478;stroke-width:2.5") + pl([P(5), [P(5)[0], 262]], "stroke:#5A6478;stroke-width:2.5") + `<circle cx="${P(7)[0]}" cy="262" r="3.5" style="fill:${ink}"/>`;
+    // interrupteurs B et N
+    [["B", "bouteille", B, 280, 1], ["N", "niveau", N, 318, 2]].forEach(([n, l, v, y, pin]) => {
+      s += `<rect x="54" y="${y - 16}" width="140" height="32" rx="6" style="fill:#FFFFFF;stroke:#9AA2B4"/>` + T2(64, y + 6, `${n} ${l}`, { size: 14, bold: true });
+      s += `<rect x="150" y="${y - 8}" width="34" height="16" rx="8" style="fill:${v ? "#297FD5" : "#C9CFDB"}"/><circle cx="${v ? 176 : 158}" cy="${y}" r="7" style="fill:#FFFFFF;stroke:${ink}"/>`;
+      s += pl([[194, y], [P(pin)[0], y], P(pin)], wv(v)) + T2(204, y - 6, n + " = " + v, { size: 13, bold: true, color: v ? "#297FD5" : ink });
+    });
+    // sortie 1Y → LED → résistance → GND
+    const xo = P(3)[0], on = V === 1;
+    s += pl([P(3), [xo, 266]], wv(V));
+    if (on) s += `<circle cx="${xo}" cy="282" r="22" style="fill:#FF5A3C;opacity:.3"/>`;
+    s += `<polygon points="${xo - 11},266 ${xo + 11},266 ${xo},286" style="fill:${on ? "#FF5A3C" : "#FFFFFF"};stroke:${ink};stroke-width:2"/><line x1="${xo - 11}" y1="287" x2="${xo + 11}" y2="287" style="stroke:${ink};stroke-width:2.5"/>`;
+    s += `<path d="M ${xo + 13} 272 l 10 -8 m -4 0 h 4 v 4 M ${xo + 13} 280 l 10 -8 m -4 0 h 4 v 4" style="fill:none;stroke:${on ? "#FF5A3C" : ink};stroke-width:1.6"/>`;
+    s += pl([[xo, 287], [xo, 300]], `stroke:${ink};stroke-width:2.5`) + `<rect x="${xo - 6}" y="300" width="12" height="30" style="fill:#FFFFFF;stroke:${ink};stroke-width:2"/>` + pl([[xo, 330], [xo, 348]], `stroke:${ink};stroke-width:2.5`);
+    s += T2(xo + 30, 296, "LED = vanne V", { size: 13, bold: true, color: on ? "#D0312D" : ink });
+    s += dipG(cx, cy, cw, ch, "74HC08", { nums: true, fs: 24 });
+    // repères de l'étape en cours
+    const step = Math.min(3, Math.floor(t / 5)), pulse = 0.55 + 0.45 * Math.sin(t * 5);
+    const ring = (k) => `<circle cx="${P(k)[0]}" cy="${P(k)[1] + (k <= 7 ? -7 : 7)}" r="13" style="fill:none;stroke:#EE8A00;stroke-width:3;opacity:${pulse}"/>`;
+    ({ 0: [1, 2, 3], 1: [14, 7], 2: [4, 5, 9, 10, 12, 13], 3: [3] })[step].forEach((k) => { s += ring(k); });
+    return s + "</svg>";
+  },
+});
+
+$("jsx").hidden = true;
+</script>
+</body>
+</html>

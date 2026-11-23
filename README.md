@@ -10,7 +10,8 @@ moteur/        briques communes (charte, équations, symboles CEI, deck, fiche, 
 contenus/      un fichier par séance, rangé par matière et par semaine
 controle/      validation, rendu, conventions, recalculs
 modeles/       Rapport_Simple.dotx et logo ETML
-reference/     sorties étalons (pour comparer après une modification)
+reference/     sorties étalons : les fichiers réellement livrés (pour comparer après une modification)
+sources/       anciens supports d'où l'on extrait des figures (100 d'origine, Circuits intégrés 2016, fiche Moser 2020)
 archive/       anciens générateurs, gardés pour mémoire
 sortie/        fichiers générés (non versionné)
 ```
@@ -26,7 +27,7 @@ python build.py tm1/semaine-1
 ## État de la migration
 
 1. Squelette et règles : fait
-2. Référence semaine 1 TM1 : à faire
+2. Référence semaine 1 TM1 : fait (fichiers livrés, 11/23/2026)
 3. Moteur : à faire
 4. Contenus semaine 1 : à faire
 5. Génération et comparaison : à faire
