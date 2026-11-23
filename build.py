@@ -8,6 +8,7 @@ Usage :
   python3 build.py tm1/semaine-1 --plan chemin.xlsx     classeur du plan de cours à mettre à jour (sinon : celui de reference/)
   python3 build.py tm1/semaine-1 --videos reference     reprend les vidéos de reference/ au lieu de les recalculer (3 min)
   python3 build.py tm1/semaine-1 --equations image      équations en image dans les présentations (par défaut : éditables, image en secours)
+  python3 build.py tm1/semaine-1 --sauver               après la génération, copie la sortie dans reference/<séance>/ (à commiter)
 
 Sorties : sortie/<matière>/<semaine>/ ; fichiers intermédiaires (figures, logos, captures) : sortie/_travail/<matière>/<semaine>/.
 Ordre : charte → figures → fiches → animations → couvertures → pages → captures → présentations → plan.
@@ -96,6 +97,8 @@ def main():
     ap.add_argument("--date")
     ap.add_argument("--plan")
     ap.add_argument("--videos", choices=["calculer", "reference"], default="calculer")
+    ap.add_argument("--sauver", action="store_true",
+                    help="copie la génération dans reference/<séance>/ : la dernière version livrée, gardée dans GitHub")
     ap.add_argument("--equations", choices=["image", "omml"], default="omml",
                     help="équations des présentations : omml (éditables, image en secours ; validé dans PowerPoint le 11/23/2026) ou image")
     a = ap.parse_args()
@@ -132,6 +135,20 @@ def main():
     if "plan" in etapes and S.plan:
         source = a.plan or os.path.join(reference, S.plan["fichier"])
         plan.produire(S, source, os.path.join(sortie, S.plan["fichier"]))
+    if a.sauver:
+        sauver(sortie, reference)
+
+
+def sauver(sortie, reference):
+    """Remplace le contenu de reference/<séance>/ par la génération : dernière version livrée, versionnée dans GitHub."""
+    os.makedirs(reference, exist_ok=True)
+    garder = {f for f in os.listdir(sortie) if os.path.isfile(os.path.join(sortie, f))}
+    for f in os.listdir(reference):
+        if f not in garder and os.path.isfile(os.path.join(reference, f)):
+            os.remove(os.path.join(reference, f))
+    for f in sorted(garder):
+        shutil.copyfile(os.path.join(sortie, f), os.path.join(reference, f))
+    print(f"sauvé dans {os.path.relpath(reference, RACINE)}/ : {len(garder)} fichier(s) ; à commiter")
 
 
 if __name__ == "__main__":

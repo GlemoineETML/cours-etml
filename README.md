@@ -10,7 +10,7 @@ moteur/        briques communes (charte, équations, symboles CEI, deck, fiche, 
 contenus/      un fichier par séance, rangé par matière et par semaine
 controle/      validation, rendu, conventions, recalculs
 modeles/       Rapport_Simple.dotx et logo ETML
-reference/     sorties étalons : les fichiers réellement livrés (pour comparer après une modification)
+reference/     dernière version livrée de chaque séance (build.py --sauver), sert aussi d'étalon de comparaison
 sources/       anciens supports d'où l'on extrait des figures (100 d'origine, Circuits intégrés 2016, fiche Moser 2020)
 archive/       anciens générateurs, gardés pour mémoire
 sortie/        fichiers générés (non versionné)
@@ -24,6 +24,7 @@ Prérequis : Python 3 (python-docx, openpyxl, matplotlib, Pillow, PyYAML, playwr
 python3 build.py tm1/semaine-1                       # tout : figures, fiches, vidéos, pages, présentations, plan
 python3 build.py tm1/semaine-1 --seulement fiches    # une partie : figures, fiches, animations, pages, presentations, plan
 python3 build.py tm1/semaine-1 --videos reference    # reprend les vidéos de reference/ (sinon 3 min de calcul)
+python3 build.py tm1/semaine-1 --sauver              # livraison : copie la génération dans reference/ (à commiter)
 python3 controle/controler.py tm1/semaine-1          # validation, conventions, recalcul (verif.py) ; --rendu, --reference
 python3 controle/comparer.py produit.pptx etalon.pptx --diff
 ```
