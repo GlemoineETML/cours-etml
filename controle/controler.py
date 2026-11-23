@@ -122,7 +122,10 @@ def conventions(S, chemin):
         for k, ps in diapos.items():
             if k > 1 and any(S.editeur in p for p in ps):
                 E.append(f"{nom} (diapo {k}) : l'éditeur n'apparaît que sur la diapositive de titre (REGLES 5)")
-        if not any(S.editeur in p and S.date in p for p in diapos.get(1, [])):
+        z = zipfile.ZipFile(chemin)
+        lay = re.search(r'Target="\.\./slideLayouts/(slideLayout\d+\.xml)"', z.read("ppt/slides/_rels/slide1.xml.rels").decode("utf-8"))
+        titre = diapos.get(1, []) + ([html.unescape(t) for t in re.findall(r"<a:t>([^<]*)</a:t>", z.read("ppt/slideLayouts/" + lay.group(1)).decode("utf-8"))] if lay else [])
+        if not any(S.editeur in p and S.date in p for p in titre):
             E.append(f"{nom} : ligne « {S.editeur} · {S.date} » absente de la diapositive de titre (REGLES 5)")
 
     # fiche élève / corrigé (REGLES 4)

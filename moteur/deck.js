@@ -78,7 +78,7 @@ function creer(cfg) {
     objects: BAND().concat([
       { line: { x: 0.6, y: 5.6, w: 8.3, h: 0, line: { color: BLUE, width: 0.75 } } },
       { text: { text: "Section électronique", options: { x: 0.6, y: 5.66, w: 4, h: 0.3, fontFace: F, fontSize: 11, italic: true, color: NAVY, margin: 0 } } },
-      { text: { text: `Version : ${DATE_US} / ${VERSION}`, options: { x: 5.4, y: 5.66, w: 3.5, h: 0.3, fontFace: F, fontSize: 11, color: NAVY, align: "right", margin: 0 } } },
+      { text: { text: `${DATA.EDITEUR} · ${DATE_US} · version ${VERSION}`, options: { x: 4.6, y: 5.66, w: 4.3, h: 0.3, fontFace: F, fontSize: 11, color: NAVY, align: "right", margin: 0 } } },
       { rect: { x: 9.37, y: 5.62, w: 0.5, h: 0.5, fill: { color: LBLUE } } },
     ]),
     slideNumber: { x: 9.37, y: 5.62, w: 0.5, h: 0.5, fontFace: F, fontSize: 12, bold: true, color: NAVY, align: "center", valign: "middle" },
@@ -133,7 +133,7 @@ function creer(cfg) {
   }
   function slide(title, notes) {
     const s = pres.addSlide({ masterName: "CONTENU" });
-    s.addText(expand(title), { x: 0.5, y: 0.25, w: 9.0, h: 0.55, fontFace: F, fontSize: 23, bold: true, color: NAVY, margin: 0, valign: "middle", fit: "shrink" });
+    s.addText(expand(TY(title)), { x: 0.5, y: 0.25, w: 9.0, h: 0.55, fontFace: F, fontSize: 23, bold: true, color: NAVY, margin: 0, valign: "middle", fit: "shrink" });
     squeeze(s, 0.5, 9.5, 8.9);
     if (notes) s.addNotes(notes);
     return s;
