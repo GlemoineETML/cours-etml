@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Labo triphasé – étoile, triangle et neutre</title>
+<style>
+:root{--navy:#242852;--blue:#297FD5;--lblue:#ACCBF9;--tint:#E8EFFB;--grey:#5A6478;--red:#EE0000;--l1:#8B5A2B;--l2:#1A1A1A;--l3:#7A7A7A;--ok:#1E8A4C}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--navy);background:#fff;font-size:15px;line-height:1.4}
+header{background:var(--navy);color:#fff;padding:14px 20px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+header h1{margin:0;font-size:21px}
+header .meta{font-size:12.5px;opacity:.85}
+header a{color:var(--lblue)}
+main{max-width:1180px;margin:0 auto;padding:16px 18px 30px}
+.intro{background:var(--tint);border-left:5px solid var(--blue);padding:10px 14px;margin-bottom:14px;font-size:14px}
+.grid{display:grid;grid-template-columns:330px 1fr;gap:16px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.card{border:1.5px solid var(--lblue);border-radius:8px;padding:12px 14px;background:#fff}
+.card h2{font-size:15px;margin:0 0 8px;color:var(--blue);text-transform:uppercase;letter-spacing:.4px}
+.seg{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.seg button,.scen button{font:inherit;font-size:13px;border:1.5px solid var(--blue);background:#fff;color:var(--navy);border-radius:6px;padding:6px 9px;cursor:pointer}
+.seg button.on{background:var(--blue);color:#fff}
+.scen{display:flex;flex-direction:column;gap:5px}
+.scen button{text-align:left}
+.scen button:hover,.seg button:hover{background:var(--tint)}
+.seg button.on:hover{background:var(--blue)}
+.ph{display:grid;grid-template-columns:34px 1fr 74px;align-items:center;gap:6px;margin:6px 0}
+.ph b{font-size:14px}
+.ph input[type=range]{width:100%}
+.ph .val{font-size:13px;text-align:right}
+.chk{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;margin:4px 0 2px}
+.chk label{cursor:pointer;white-space:nowrap}
+.sub{font-size:12.5px;color:var(--grey);margin:8px 0 2px;font-weight:bold}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--navy);padding:5px 7px;text-align:center}
+th{background:var(--lblue)}
+td.bad{color:var(--red);font-weight:bold}
+td.low{color:var(--blue);font-weight:bold}
+.kpi{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.kpi div{background:var(--tint);border-radius:6px;padding:8px 12px;min-width:120px}
+.kpi span{display:block;font-size:12px;color:var(--grey)}
+.kpi strong{font-size:19px}
+.alert{border:2px solid var(--red);color:var(--red);border-radius:6px;padding:8px 12px;margin:8px 0;font-weight:bold;display:none}
+.info{border:1.5px solid var(--ok);color:var(--ok);border-radius:6px;padding:8px 12px;margin:8px 0;display:none}
+.diag{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:620px){.diag{grid-template-columns:1fr}}
+svg{width:100%;height:auto;background:#fff}
+.legend{font-size:12px;color:var(--grey);margin-top:2px}
+details{border:1.5px solid var(--lblue);border-radius:6px;padding:7px 11px;margin:6px 0}
+details summary{cursor:pointer;font-weight:bold}
+details p{margin:6px 0 2px}
+.foot{font-size:12px;color:var(--grey);margin-top:18px;border-top:1px solid var(--lblue);padding-top:8px}
+sub{font-size:72%}
+</style>
+</head>
+<body>
+<header>
+  <h1>Labo triphasé : étoile, triangle et neutre</h1>
+  <div class="meta">Électrotechnique – triphasé · XLO4 · 2026-2027 · Section électronique ETML · Gaël Lemoine · 11/10/2026</div>
+</header>
+<main>
+<div class="intro"><strong>Comment l'utiliser :</strong> choisis un scénario ou règle toi-même les trois résistances. <strong>Avant chaque clic, prédis le résultat</strong> (tension, courant, puissance), puis vérifie. Réseau 3 × 400/230 V – 50 Hz, récepteurs résistifs (cos φ = 1). Les valeurs en <span style="color:var(--red);font-weight:bold">rouge</span> dépassent de plus de 10 % la tension prévue pour l'élément ; celles en <span style="color:var(--blue);font-weight:bold">bleu</span> sont à moins de 90 %.</div>
+<div class="grid">
+  <div>
+    <div class="card">
+      <h2>1 · Couplage</h2>
+      <div class="seg" id="mode">
+        <button data-m="YN" class="on">Étoile avec neutre</button>
+        <button data-m="Y">Étoile sans neutre</button>
+        <button data-m="D">Triangle</button>
+      </div>
+      <h2>2 · Éléments du récepteur</h2>
+      <div id="sliders"></div>
+      <div class="sub">Pannes à simuler</div>
+      <div class="chk" id="faults"></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h2>Scénarios</h2>
+      <div class="scen" id="scen"></div>
+    </div>
+  </div>
+  <div>
+    <div class="card">
+      <h2>Résultats</h2>
+      <div class="alert" id="alert"></div>
+      <div class="info" id="info"></div>
+      <table id="tab"></table>
+      <div class="kpi" id="kpi"></div>
+      <div class="diag">
+        <div><svg id="sv" viewBox="-170 -170 340 330"></svg><div class="legend">Tensions. Traits fins : tensions de phase du réseau. Flèches épaisses : tension aux bornes de chaque élément.</div></div>
+        <div><svg id="si" viewBox="-170 -170 340 330"></svg><div class="legend">Courants de ligne (couleur de la phase) et courant de neutre (rouge), placés bout à bout.</div></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h2>Défis : prédis, puis vérifie</h2>
+      <details><summary>1. Trois résistances de 40 Ω : étoile ou triangle, quel couplage chauffe le plus, et combien de fois plus ?</summary><p>Triangle : 12 kW contre 4 kW en étoile, soit 3 fois plus. En triangle chaque élément reçoit 400 V au lieu de 231 V (√3 fois plus), et P varie avec U².</p></details>
+      <details><summary>2. Scénario « atelier » : le courant de neutre vaut-il 10 − 6 − 4 = 0 A ?</summary><p>Non : les courants sont décalés de 120°, on les additionne en vecteurs. I<sub>N</sub> = √28 = 5,3 A.</p></details>
+      <details><summary>3. Scénario « neutre desserré » : quel appareil grille, le gros radiateur ou la petite lampe ?</summary><p>La lampe. En série sous 400 V, la tension se partage comme les résistances : la lampe (529 Ω) prend 381 V, le radiateur (26 Ω) seulement 19 V.</p></details>
+      <details><summary>4. Chauffe-eau en triangle : que perds-tu si un fusible de ligne fond ? Et si un élément est coupé ?</summary><p>Fusible fondu : la moitié de la puissance (P/2). Élément coupé : il reste deux éléments sous 400 V, soit 2P/3.</p></details>
+      <details><summary>5. En étoile sans neutre, un élément est coupé. La puissance tombe-t-elle à 2P/3 ?</summary><p>Non : les deux éléments restants se retrouvent en série sous 400 V, chacun sous 200 V. La puissance tombe à P/2.</p></details>
+    </div>
+  </div>
+</div>
+<div class="foot">Référence : <a href="https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electrotechnique%20ELEC/FET%20Electrotechnique%203/ElectrotechniqueFascicule03_V2014_opt.pdf?d=w58dfaaa0153748aa92aceeae8e494206&csf=1&web=1&e=AtwPZK">Électrotechnique, fascicule 03, chapitre 11 « Courant alternatif triphasé »</a>. Calcul : nombres complexes, théorème de Millman pour le point étoile sans neutre. Couleurs des conducteurs selon CEI 60445 (L1 brun, L2 noir, L3 gris, N bleu).</div>
+</main>
+<script>
+(function(){
+const U=400, UPH=U/Math.sqrt(3), COL=["#8B5A2B","#1A1A1A","#7A7A7A"], ANG=[90,-30,210];
+const S={m:"YN", R:[40,40,40], elCut:[false,false,false], lineCut:[false,false,false], nCut:false};
+const c=(re,im)=>({re,im}), add=(a,b)=>c(a.re+b.re,a.im+b.im), sub=(a,b)=>c(a.re-b.re,a.im-b.im),
+      mul=(a,k)=>c(a.re*k,a.im*k), abs=a=>Math.hypot(a.re,a.im), pol=(r,d)=>c(r*Math.cos(d*Math.PI/180),r*Math.sin(d*Math.PI/180));
+const E=ANG.map(a=>pol(UPH,a));
+const fr=(x,n)=>x.toLocaleString("fr-CH",{minimumFractionDigits:n,maximumFractionDigits:n});
+// curseur logarithmique 5 Ω … 1000 Ω
+const toR=v=>Math.round(5*Math.pow(200,v/1000)*10)/10, toV=r=>Math.round(1000*Math.log(r/5)/Math.log(200));
+
+function solve(){
+  const G=S.R.map((r,k)=>S.elCut[k]?0:1/r);
+  const res={vEl:[0,0,0],iEl:[0,0,0],iL:[c(0,0),c(0,0),c(0,0)],iN:c(0,0),vN:c(0,0),vElC:[c(0,0),c(0,0),c(0,0)],nom:S.m==="D"?U:UPH};
+  if(S.m!=="D"){
+    const g=G.map((x,k)=>S.lineCut[k]?0:x);
+    let vN=c(0,0);
+    const withN=S.m==="YN"&&!S.nCut;
+    if(!withN){ const sg=g.reduce((a,b)=>a+b,0); if(sg>0){ let s=c(0,0); g.forEach((x,k)=>{s=add(s,mul(E[k],x));}); vN=mul(s,1/sg);} }
+    res.vN=vN;
+    for(let k=0;k<3;k++){ const v=g[k]>0?sub(E[k],vN):c(0,0); res.vElC[k]=v; res.vEl[k]=abs(v); const i=mul(v,g[k]); res.iL[k]=i; res.iEl[k]=abs(i); }
+    if(withN) res.iN=mul(add(add(res.iL[0],res.iL[1]),res.iL[2]),-1);
+  } else {
+    // éléments : Z1 entre L1-L2, Z2 entre L2-L3, Z3 entre L3-L1 ; un nœud dont la ligne est coupée flotte
+    const br=[[0,1],[1,2],[2,0]];
+    const V=E.map(e=>e), conn=S.lineCut.map(x=>!x);
+    const nCut=S.lineCut.filter(x=>x).length;
+    if(nCut>=2){ /* plus de circuit */ }
+    else if(nCut===1){
+      const f=S.lineCut.indexOf(true); let sg=0, s=c(0,0);
+      br.forEach(([a,b],j)=>{ if(a===f||b===f){ const o=a===f?b:a; sg+=G[j]; s=add(s,mul(E[o],G[j])); }});
+      V[f]=sg>0?mul(s,1/sg):E[f];
+    }
+    if(nCut<2){
+      const iB=br.map(([a,b],j)=>mul(sub(V[a],V[b]),G[j]));
+      br.forEach(([a,b],j)=>{ res.vElC[j]=sub(V[a],V[b]); res.vEl[j]=G[j]>0?abs(res.vElC[j]):0; res.iEl[j]=abs(iB[j]); });
+      res.iL=[sub(iB[0],iB[2]),sub(iB[1],iB[0]),sub(iB[2],iB[1])];
+      res.V=V;
+    }
+  }
+  res.P=res.vEl.reduce((a,v,k)=>a+(S.elCut[k]?0:v*v/S.R[k]),0);
+  res.Pnom=S.R.reduce((a,r)=>a+res.nom*res.nom/r,0);
+  return res;
+}
+
+function render(){
+  document.querySelectorAll("#mode button").forEach(b=>b.classList.toggle("on",b.dataset.m===S.m));
+  const r=solve(), D=S.m==="D";
+  const names=D?["Z1 (L1-L2)","Z2 (L2-L3)","Z3 (L3-L1)"]:["Z1 (L1-N)","Z2 (L2-N)","Z3 (L3-N)"];
+  let h="<tr><th>Élément</th><th>R</th><th>Tension aux bornes</th><th>Courant élément</th><th>Puissance</th><th>Courant de ligne</th></tr>";
+  for(let k=0;k<3;k++){
+    const v=r.vEl[k], cls=S.elCut[k]?"":(v>r.nom*1.1?"bad":(v<r.nom*0.9?"low":""));
+    const p=S.elCut[k]?0:v*v/S.R[k];
+    h+=`<tr><td style="text-align:left"><b>${names[k]}</b></td><td>${S.elCut[k]?"coupé":fr(S.R[k],1)+" Ω"}</td><td class="${cls}">${S.elCut[k]?"—":fr(v,0)+" V"}</td><td>${fr(r.iEl[k],2)} A</td><td>${fr(p,0)} W</td><td style="color:${COL[k]};font-weight:bold">L${k+1} : ${fr(abs(r.iL[k]),2)} A</td></tr>`;
+  }
+  document.getElementById("tab").innerHTML=h;
+  const iN=abs(r.iN);
+  let k=`<div><span>Tension prévue par élément</span><strong>${fr(r.nom,0)} V</strong></div><div><span>Puissance totale</span><strong>${fr(r.P,0)} W</strong></div><div><span>Part de la puissance normale</span><strong>${fr(100*r.P/r.Pnom,0)} %</strong></div>`;
+  if(S.m==="YN") k+=`<div><span>Courant de neutre I<sub>N</sub></span><strong style="color:var(--red)">${S.nCut?"neutre ouvert":fr(iN,2)+" A"}</strong></div>`;
+  if(S.m!=="D"&&!(S.m==="YN"&&!S.nCut)) k+=`<div><span>Décalage du point étoile N'</span><strong>${fr(abs(r.vN),0)} V</strong></div>`;
+  document.getElementById("kpi").innerHTML=k;
+  const over=r.vEl.map((v,i)=>!S.elCut[i]&&v>r.nom*1.1?i:-1).filter(i=>i>=0);
+  const al=document.getElementById("alert"), inf=document.getElementById("info");
+  if(over.length){al.style.display="block";al.textContent="Surtension sur "+over.map(i=>names[i].split(" ")[0]).join(", ")+" : l'élément reçoit "+over.map(i=>fr(r.vEl[i],0)+" V").join(" et ")+" au lieu de "+fr(r.nom,0)+" V. Il risque d'être détruit.";}
+  else al.style.display="none";
+  const bal=S.R.every(x=>x===S.R[0])&&!S.elCut.some(x=>x)&&!S.lineCut.some(x=>x)&&!S.nCut;
+  if(bal){inf.style.display="block";inf.textContent=D?"Charge équilibrée : I = √3 · Iph = "+fr(abs(r.iL[0]),2)+" A et P = √3 · U · I = "+fr(r.P,0)+" W.":"Charge équilibrée : I = Iph = "+fr(abs(r.iL[0]),2)+" A, le neutre ne transporte rien.";}
+  else inf.style.display="none";
+  document.querySelectorAll("#faults input").forEach(cb=>{ if(cb.dataset.k==="n"){cb.disabled=S.m!=="YN"; cb.parentNode.style.opacity=S.m==="YN"?1:.4;} });
+  document.querySelectorAll(".ph .val").forEach((el,i)=>el.textContent=fr(S.R[i],1)+" Ω");
+  document.querySelectorAll(".ph input").forEach((el,i)=>el.value=toV(S.R[i]));
+  drawV(r); drawI(r);
+}
+
+function arrow(x1,y1,x2,y2,col,w,dash){
+  const a=Math.atan2(y2-y1,x2-x1), L=Math.hypot(x2-x1,y2-y1); if(L<2) return "";
+  const hs=Math.min(10,L*.4), xa=x2-hs*Math.cos(a-0.4), ya=y2-hs*Math.sin(a-0.4), xb=x2-hs*Math.cos(a+0.4), yb=y2-hs*Math.sin(a+0.4);
+  return `<line x1="${x1}" y1="${y1}" x2="${x2-hs*.7*Math.cos(a)}" y2="${y2-hs*.7*Math.sin(a)}" stroke="${col}" stroke-width="${w}" ${dash?'stroke-dasharray="4 3"':''}/><polygon points="${x2},${y2} ${xa},${ya} ${xb},${yb}" fill="${col}"/>`;
+}
+function drawV(r){
+  const s=135/UPH, P=E.map(e=>[e.re*s,-e.im*s]);
+  let g=`<polygon points="${P.map(p=>p.join(",")).join(" ")}" fill="none" stroke="#ACCBF9" stroke-width="1.5"/>`;
+  P.forEach((p,k)=>{ g+=`<line x1="0" y1="0" x2="${p[0]}" y2="${p[1]}" stroke="${COL[k]}" stroke-width="1" stroke-dasharray="3 3"/>`; g+=`<text x="${p[0]*1.12}" y="${p[1]*1.12+5}" font-size="14" font-weight="bold" fill="${COL[k]}" text-anchor="middle">L${k+1}</text>`; });
+  g+=`<circle cx="0" cy="0" r="3.5" fill="#297FD5"/><text x="8" y="16" font-size="13" fill="#297FD5" font-weight="bold">N</text>`;
+  if(S.m==="D"){
+    const br=[[0,1],[1,2],[2,0]], V=(r.V||E).map(e=>[e.re*s,-e.im*s]);
+    br.forEach(([a,b],j)=>{ if(!S.elCut[j]&&r.vEl[j]>1) g+=arrow(V[b][0],V[b][1],V[a][0],V[a][1],j===0?"#8B5A2B":j===1?"#1A1A1A":"#7A7A7A",3.2); });
+    S.lineCut.forEach((x,k)=>{ if(x&&r.V){ g+=`<circle cx="${V[k][0]}" cy="${V[k][1]}" r="5" fill="#EE0000"/><text x="${V[k][0]+8}" y="${V[k][1]-6}" font-size="12" fill="#EE0000">nœud L${k+1} flottant</text>`; } });
+  } else {
+    const n=[r.vN.re*s,-r.vN.im*s];
+    if(abs(r.vN)>1) g+=`<circle cx="${n[0]}" cy="${n[1]}" r="5" fill="#EE0000"/><text x="${n[0]+8}" y="${n[1]+16}" font-size="13" fill="#EE0000" font-weight="bold">N'</text>`;
+    for(let k=0;k<3;k++) if(r.vEl[k]>1) g+=arrow(n[0],n[1],P[k][0],P[k][1],COL[k],3.2);
+  }
+  document.getElementById("sv").innerHTML=g;
+}
+function drawI(r){
+  const L=r.iL.map(abs), mx=Math.max(...L,abs(r.iN),0.001), s=120/mx;
+  // vecteurs bout à bout en partant du bas, pour visualiser la fermeture par I_N
+  let x=0,y=0,g=`<line x1="-160" y1="0" x2="160" y2="0" stroke="#ACCBF9"/><line x1="0" y1="-160" x2="0" y2="150" stroke="#ACCBF9"/>`;
+  const pts=[];
+  let sx=0,sy=0; r.iL.forEach(i=>{sx+=i.re*s; sy+=-i.im*s;});
+  x=-sx/2; y=-sy/2; if(Math.abs(sx)<1&&Math.abs(sy)<1){x=0;y=40;}
+  // recentrage approximatif
+  const start=[x,y];
+  r.iL.forEach((i,k)=>{ const nx=x+i.re*s, ny=y-i.im*s; g+=arrow(x,y,nx,ny,COL[k],3); g+=`<text x="${(x+nx)/2+8}" y="${(y+ny)/2-6}" font-size="12.5" font-weight="bold" fill="${COL[k]}">I<tspan font-size="9" dy="3">${k+1}</tspan><tspan dy="-3"> ${fr(L[k],2)} A</tspan></text>`; x=nx; y=ny; });
+  if(S.m==="YN"&&!S.nCut&&abs(r.iN)>0.01){ g+=arrow(x,y,start[0],start[1],"#EE0000",3.4); g+=`<text x="${(x+start[0])/2+8}" y="${(y+start[1])/2+14}" font-size="13" font-weight="bold" fill="#EE0000">I<tspan font-size="9" dy="3">N</tspan><tspan dy="-3"> ${fr(abs(r.iN),2)} A</tspan></text>`; }
+  else if(Math.hypot(x-start[0],y-start[1])<2) g+=`<text x="0" y="150" font-size="12" fill="#5A6478" text-anchor="middle">la figure se referme : somme des courants = 0</text>`;
+  document.getElementById("si").innerHTML=g;
+}
+
+// --- interface
+const sl=document.getElementById("sliders");
+for(let k=0;k<3;k++){ const d=document.createElement("div"); d.className="ph"; d.innerHTML=`<b style="color:${COL[k]}">Z${k+1}</b><input type="range" min="0" max="1000" aria-label="Résistance Z${k+1}"><span class="val"></span>`; sl.appendChild(d);
+  d.querySelector("input").addEventListener("input",e=>{S.R[k]=toR(+e.target.value); render();}); }
+const fl=document.getElementById("faults");
+const F=[["e0","Z1 coupé"],["e1","Z2 coupé"],["e2","Z3 coupé"],["l0","fusible L1 fondu"],["l1","fusible L2 fondu"],["l2","fusible L3 fondu"],["n","neutre ouvert"]];
+F.forEach(([key,lab])=>{ const l=document.createElement("label"); l.innerHTML=`<input type="checkbox" data-k="${key}"> ${lab}`; fl.appendChild(l);
+  l.querySelector("input").addEventListener("change",e=>{ const v=e.target.checked; if(key==="n") S.nCut=v; else (key[0]==="e"?S.elCut:S.lineCut)[+key[1]]=v; render(); }); });
+document.querySelectorAll("#mode button").forEach(b=>b.addEventListener("click",()=>{S.m=b.dataset.m; render();}));
+const R230=p=>Math.round(230*230/p*100)/100;
+const SC=[
+ ["Four 3 × 40 Ω en étoile",{m:"YN",R:[40,40,40]}],
+ ["Même four en triangle",{m:"D",R:[40,40,40]}],
+ ["Atelier déséquilibré : 2300 / 1380 / 920 W",{m:"YN",R:[R230(2300),R230(1380),R230(920)]}],
+ ["Neutre desserré : radiateur 2000 W + lampe 100 W",{m:"YN",R:[R230(2000),R230(100),R230(100)],el:[false,false,true],n:true}],
+ ["Chauffe-eau Δ 3 × 120 Ω, fusible L3 fondu",{m:"D",R:[120,120,120],l:[false,false,true]}],
+ ["Chauffe-eau Δ 3 × 53,3 Ω, un élément coupé",{m:"D",R:[53.3,53.3,53.3],el:[true,false,false]}],
+ ["Étoile sans neutre, un élément coupé",{m:"Y",R:[40,40,40],el:[false,false,true]}],
+];
+const sc=document.getElementById("scen");
+SC.forEach(([lab,o])=>{ const b=document.createElement("button"); b.textContent=lab; sc.appendChild(b);
+  b.addEventListener("click",()=>{ S.m=o.m; S.R=o.R.slice(); S.elCut=(o.el||[false,false,false]).slice(); S.lineCut=(o.l||[false,false,false]).slice(); S.nCut=!!o.n;
+    document.querySelectorAll("#faults input").forEach(cb=>{ const k=cb.dataset.k; cb.checked=k==="n"?S.nCut:(k[0]==="e"?S.elCut:S.lineCut)[+k[1]]; }); render(); }); });
+render();
+})();
+</script>
+</body>
+</html>

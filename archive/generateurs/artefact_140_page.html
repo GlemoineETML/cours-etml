@@ -1,0 +1,636 @@
+<title>Réduire un circuit mixte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']] },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea'] }
+};
+</script>
+<script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js"></script>
+<style>
+:root{
+  --ground:#F2F5FA; --surface:#FFFFFF; --surface-2:#E9EEF7;
+  --ink:#1D2440; --ink-2:#4A5570; --ink-3:#77839E;
+  --rule:#CBD5E8; --rule-strong:#9FB0CE;
+  --accent:#1E6FC4; --accent-soft:#DCE9F9;
+  --result:#C4161C; --result-soft:#FBE7E7;
+  --valid:#26663F; --valid-soft:#E0EFE5;
+  --planche:#FFFFFF; --planche-rule:#D6DEEC;
+  --shadow:0 1px 2px rgba(29,36,64,.06),0 8px 24px -12px rgba(29,36,64,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#11141F; --surface:#1A1E2C; --surface-2:#232839;
+    --ink:#E8ECF6; --ink-2:#B4BCD2; --ink-3:#8791A9;
+    --rule:#2E3448; --rule-strong:#454D66;
+    --accent:#6BA8E8; --accent-soft:#1C2C42;
+    --result:#FF7B7B; --result-soft:#38222A;
+    --valid:#7FCB9C; --valid-soft:#1B3026;
+    --planche:#F4F6FA; --planche-rule:#C9D3E5;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#11141F; --surface:#1A1E2C; --surface-2:#232839;
+  --ink:#E8ECF6; --ink-2:#B4BCD2; --ink-3:#8791A9;
+  --rule:#2E3448; --rule-strong:#454D66;
+  --accent:#6BA8E8; --accent-soft:#1C2C42;
+  --result:#FF7B7B; --result-soft:#38222A;
+  --valid:#7FCB9C; --valid-soft:#1B3026;
+  --planche:#F4F6FA; --planche-rule:#C9D3E5;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 96px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.cols>*{min-width:0}
+@media(min-width:1020px){
+  .cols{grid-template-columns:206px minmax(0,1fr);gap:52px;align-items:start}
+  nav.index{position:sticky;top:24px;padding-top:40px}
+}
+/* ---------- en-tête ---------- */
+header.top{padding:52px 0 30px;border-bottom:2px solid var(--ink);margin-bottom:34px}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 14px
+}
+h1{
+  font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:clamp(2.1rem,5.4vw,3.3rem);
+  line-height:1.05;letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance
+}
+.lede{font-size:1.06rem;color:var(--ink-2);max-width:62ch;margin:0}
+/* ---------- index ---------- */
+nav.index ol{list-style:none;margin:0;padding:0;font-size:13.5px}
+nav.index li{margin:0 0 3px}
+nav.index a{
+  display:block;padding:4px 8px;border-radius:4px;color:var(--ink-2);text-decoration:none;
+  border-left:2px solid transparent
+}
+nav.index a:hover,nav.index a:focus-visible{color:var(--ink);background:var(--surface-2);border-left-color:var(--accent)}
+nav.index .num{font-family:"IBM Plex Mono",monospace;color:var(--ink-3);margin-right:7px;font-size:12px}
+/* ---------- sections ---------- */
+section{margin:0 0 54px;scroll-margin-top:20px}
+h2{
+  font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:1.55rem;letter-spacing:-.01em;
+  margin:0 0 6px;text-wrap:balance;display:flex;align-items:baseline;gap:12px
+}
+h2 .h-num{
+  font-family:"IBM Plex Mono",monospace;font-size:.72em;font-weight:400;color:var(--accent);
+  letter-spacing:.06em
+}
+h3{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:1.06rem;margin:26px 0 8px}
+p{max-width:66ch;margin:0 0 14px}
+.sub{color:var(--ink-2);font-size:.96rem;max-width:66ch;margin:0 0 20px}
+strong{font-weight:600}
+/* ---------- planches (schémas) ---------- */
+figure{margin:20px 0;background:var(--planche);border:1px solid var(--planche-rule);border-radius:3px;padding:16px 18px;overflow-x:auto;box-shadow:var(--shadow)}
+figure svg{display:block;width:100%;height:auto;min-width:420px}
+figcaption{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:#66718C;margin-top:12px
+}
+/* ---------- encadrés ---------- */
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:5px;padding:20px 22px;box-shadow:var(--shadow)}
+.grid2{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:13px 16px;border-radius:0 4px 4px 0;margin:18px 0;font-size:.96rem}
+.warn{border-left:3px solid var(--result);background:var(--result-soft);padding:13px 16px;border-radius:0 4px 4px 0;margin:18px 0;font-size:.96rem}
+.warn strong,.note strong{font-weight:600}
+/* ---------- listes ---------- */
+ul.plain{list-style:none;padding:0;margin:0 0 14px}
+ul.plain li{padding:6px 0 6px 22px;position:relative;max-width:66ch}
+ul.plain li::before{content:"";position:absolute;left:4px;top:15px;width:6px;height:6px;background:var(--accent);border-radius:1px}
+ol.steps{list-style:none;counter-reset:st;padding:0;margin:0}
+ol.steps li{counter-increment:st;position:relative;padding:12px 0 12px 52px;border-bottom:1px solid var(--rule);max-width:70ch}
+ol.steps li:last-child{border-bottom:0}
+ol.steps li::before{
+  content:counter(st);position:absolute;left:0;top:12px;width:30px;height:30px;
+  display:grid;place-items:center;border:1.5px solid var(--accent);color:var(--accent);
+  border-radius:50%;font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:500
+}
+/* ---------- calcul en trois temps ---------- */
+.calc{border:1px solid var(--rule);border-radius:5px;background:var(--surface);margin:18px 0;overflow:hidden}
+.calc>.calc-h{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-2);background:var(--surface-2);padding:9px 16px;border-bottom:1px solid var(--rule)
+}
+.step{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;align-items:center;padding:11px 16px;border-bottom:1px dashed var(--rule)}
+.step:last-child{border-bottom:0}
+.step .lab{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);padding-top:2px
+}
+.step .eq{overflow-x:auto;color:var(--ink)}
+.step.is-result{background:var(--result-soft)}
+.step.is-result .lab{color:var(--result)}
+.step.is-result .eq{color:var(--result);font-weight:500}
+.step.is-check{background:var(--valid-soft)}
+.step.is-check .lab,.step.is-check .eq{color:var(--valid)}
+@media(max-width:620px){.step{grid-template-columns:1fr;gap:2px}}
+/* mode révision : les résultats se cachent */
+body.quiz .step.is-result .eq,body.quiz .step.is-check .eq{visibility:hidden}
+body.quiz .step.is-result,body.quiz .step.is-check{position:relative}
+body.quiz .step.is-result::after,body.quiz .step.is-check::after{
+  content:"masqué";position:absolute;left:126px;font-family:"IBM Plex Mono",monospace;
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)
+}
+.step.revealed .eq{visibility:visible !important}
+body.quiz .step.revealed::after{content:none}
+/* ---------- tableau ---------- */
+.tw{overflow-x:auto;margin:18px 0}
+table{border-collapse:collapse;width:100%;min-width:460px;font-size:.94rem}
+th,td{border:1px solid var(--rule);padding:8px 12px;text-align:center;font-variant-numeric:tabular-nums}
+th{background:var(--surface-2);font-weight:600;font-family:Archivo,sans-serif}
+td.k{font-family:"IBM Plex Mono",monospace;font-weight:500;background:var(--surface-2)}
+td.v{color:var(--result);font-family:"IBM Plex Mono",monospace}
+body.quiz td.v{color:transparent}
+body.quiz td.v.revealed{color:var(--result)}
+/* ---------- quiz ---------- */
+.q{border-top:1px solid var(--rule);padding:16px 0}
+.q:first-of-type{border-top:0}
+.q p{margin:0 0 10px;font-weight:500}
+details.rep{margin:0}
+details.rep summary{
+  cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-family:"IBM Plex Mono",monospace;
+  font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);
+  border:1px solid var(--accent);border-radius:3px;padding:5px 11px;list-style:none
+}
+details.rep summary::-webkit-details-marker{display:none}
+details.rep summary:hover{background:var(--accent-soft)}
+details.rep[open] summary{color:var(--ink-3);border-color:var(--rule)}
+details.rep .body{margin-top:12px;padding-left:14px;border-left:2px solid var(--result);color:var(--ink-2)}
+/* ---------- auto-évaluation ---------- */
+.check{display:grid;gap:0}
+.check label{
+  display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:12px;align-items:start;
+  padding:11px 4px;border-bottom:1px solid var(--rule);cursor:pointer
+}
+.check label:last-child{border-bottom:0}
+.check input{margin:4px 0 0;width:17px;height:17px;accent-color:var(--accent)}
+.check .lz{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);white-space:nowrap}
+.check input:checked+span{color:var(--ink-3);text-decoration:line-through}
+/* ---------- barre d'outils ---------- */
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 6px;align-items:center}
+button.btn{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.07em;text-transform:uppercase;
+  background:var(--surface);color:var(--ink);border:1px solid var(--rule-strong);border-radius:3px;
+  padding:8px 14px;cursor:pointer
+}
+button.btn:hover{border-color:var(--accent);color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+footer{border-top:1px solid var(--rule);margin-top:46px;padding-top:18px;color:var(--ink-3);font-size:.86rem}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+mjx-container{overflow-x:auto;overflow-y:hidden}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <p class="eyebrow">El Dim1 · semaine 3 · périodes 9 à 13</p>
+  <h1>Réduire un circuit mixte</h1>
+  <p class="lede">Ni tout en série, ni tout en parallèle. Cette fiche te donne la méthode
+  pas à pas, les deux lois de Kirchhoff qui la justifient, et trois exemples entièrement
+  développés — formule, nombres, résultat.</p>
+</header>
+
+<div class="cols">
+<nav class="index" aria-label="Sommaire">
+  <ol>
+    <li><a href="#formules"><span class="num">01</span>Les formules</a></li>
+    <li><a href="#kirchhoff"><span class="num">02</span>Kirchhoff</a></li>
+    <li><a href="#reconnaitre"><span class="num">03</span>Reconnaître</a></li>
+    <li><a href="#methode"><span class="num">04</span>La méthode</a></li>
+    <li><a href="#exa"><span class="num">05</span>Exemple A</a></li>
+    <li><a href="#exb"><span class="num">06</span>Exemple B</a></li>
+    <li><a href="#exc"><span class="num">07</span>Cinq résistances</a></li>
+    <li><a href="#controles"><span class="num">08</span>Les contrôles</a></li>
+    <li><a href="#schema"><span class="num">09</span>Dessiner</a></li>
+    <li><a href="#mesure"><span class="num">10</span>Mesurer</a></li>
+    <li><a href="#pieges"><span class="num">11</span>Les pièges</a></li>
+    <li><a href="#test"><span class="num">12</span>Teste-toi</a></li>
+    <li><a href="#bilan"><span class="num">13</span>Où j'en suis</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<div class="tools">
+  <button class="btn" id="quizBtn" aria-pressed="false">Masquer les résultats</button>
+  <span style="font-size:.86rem;color:var(--ink-3)">Clique sur une ligne masquée pour la révéler.</span>
+</div>
+
+<!-- ============================================================ 01 -->
+<section id="formules">
+  <h2><span class="h-num">01</span>Les formules de base</h2>
+  <p class="sub">Tout le chapitre repose sur ces quatre relations. Elles doivent être au
+  formulaire, avec leurs conditions d'emploi.</p>
+
+  <div class="calc">
+    <div class="calc-h">Résistance équivalente</div>
+    <div class="step"><span class="lab">en série</span><span class="eq">\( R_{tot} = R_1 + R_2 + R_3 + \dots \)</span></div>
+    <div class="step"><span class="lab">en parallèle</span><span class="eq">\( \dfrac{1}{R_{tot}} = \dfrac{1}{R_1} + \dfrac{1}{R_2} + \dots \)</span></div>
+    <div class="step"><span class="lab">deux seulement</span><span class="eq">\( R_{tot} = \dfrac{R_1 \cdot R_2}{R_1 + R_2} \)</span></div>
+    <div class="step"><span class="lab">n égales</span><span class="eq">\( R_{tot} = \dfrac{R_1}{n} \)</span></div>
+  </div>
+
+  <div class="warn"><strong>Le piège le plus fréquent.</strong> Le « produit sur somme »
+  ne marche que pour <strong>deux</strong> résistances. Avec trois, il faut la somme des
+  inverses — ou appliquer le produit sur somme deux fois de suite.</div>
+
+  <div class="calc">
+    <div class="calc-h">Loi d'Ohm et puissance</div>
+    <div class="step"><span class="lab">Ohm</span><span class="eq">\( U = R \cdot I \qquad I = \dfrac{U}{R} \qquad R = \dfrac{U}{I} \)</span></div>
+    <div class="step"><span class="lab">puissance</span><span class="eq">\( P = U \cdot I = R \cdot I^{2} = \dfrac{U^{2}}{R} \)</span></div>
+  </div>
+  <p class="sub">Les trois formes de la puissance sont la même loi combinée à celle d'Ohm :
+  tu choisis celle dont tu as déjà les grandeurs.</p>
+</section>
+
+<!-- ============================================================ 02 -->
+<section id="kirchhoff">
+  <h2><span class="h-num">02</span>Les deux lois de Kirchhoff</h2>
+  <p class="sub">Deux lois de conservation : la charge ne s'accumule pas dans un nœud,
+  l'énergie ne se perd pas dans une maille. Ce sont elles qui justifient tous les contrôles
+  de ce chapitre.</p>
+
+  <figure>{{SVG:54_kirchhoff}}<figcaption>a) loi des nœuds — b) loi des mailles</figcaption></figure>
+
+  <div class="calc">
+    <div class="calc-h">Les deux énoncés</div>
+    <div class="step"><span class="lab">nœuds</span><span class="eq">\( \sum I_{\text{entrants}} = \sum I_{\text{sortants}} \quad\Longrightarrow\quad I_1 = I_2 + I_3 \)</span></div>
+    <div class="step"><span class="lab">mailles</span><span class="eq">\( \sum U_{\text{récepteurs}} = U_{\text{source}} \quad\Longrightarrow\quad U = U_1 + U_2 \)</span></div>
+  </div>
+  <div class="note">Les deux règles de remontée que tu utilises sans y penser —
+  « même courant en série, même tension en parallèle » — ne sont rien d'autre que ces
+  deux lois appliquées.</div>
+</section>
+
+<!-- ============================================================ 03 -->
+<section id="reconnaitre">
+  <h2><span class="h-num">03</span>Reconnaître avant de calculer</h2>
+  <p>Un <strong>nœud</strong> est un point où se rejoignent au moins trois fils. C'est le
+  seul critère fiable : un même circuit peut être dessiné de dix façons différentes, seuls
+  les nœuds ne mentent pas.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">En série</h3>
+      <ul class="plain">
+        <li>Elles se suivent sur un seul chemin, sans dérivation entre elles.</li>
+        <li>Le <strong>même courant</strong> les traverse.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">En parallèle</h3>
+      <ul class="plain">
+        <li>Elles sont branchées entre les <strong>deux mêmes nœuds</strong>.</li>
+        <li>Elles ont la <strong>même tension</strong> à leurs bornes.</li>
+      </ul>
+    </div>
+  </div>
+
+  <figure>{{SVG:52_reconnaitre}}<figcaption>Repère les nœuds au crayon avant tout calcul</figcaption></figure>
+  <p class="sub">Sur le schéma a), R₂ et R₃ sont en série et leur groupe est en parallèle
+  avec R₁. Sur le b), R₃ et R₄ sont en parallèle, l'ensemble en série avec R₁ et R₂.</p>
+</section>
+
+<!-- ============================================================ 04 -->
+<section id="methode">
+  <h2><span class="h-num">04</span>La méthode pas à pas</h2>
+  <p class="sub">Cinq étapes, toujours dans cet ordre. C'est la compétence évaluée du
+  chapitre (LZ 1923).</p>
+  <ol class="steps">
+    <li>Repérer et nommer les <strong>nœuds</strong>.</li>
+    <li>Trouver le <strong>groupe le plus imbriqué</strong> : celui qui ne contient aucun autre groupe.</li>
+    <li>Le remplacer par sa résistance équivalente et <strong>redessiner</strong> le schéma.</li>
+    <li>Recommencer jusqu'à obtenir <strong>une seule résistance</strong>.</li>
+    <li><strong>Remonter</strong> : calculer U et I de chaque résistance, du total vers le détail.</li>
+  </ol>
+  <div class="note">Redessiner à chaque étape n'est pas une perte de temps : c'est ce qui
+  évite les erreurs. L'étape 3 est celle que tout le monde saute.</div>
+</section>
+
+<!-- ============================================================ 05 -->
+<section id="exa">
+  <h2><span class="h-num">05</span>Exemple A — R₁ en série avec (R₂ // R₃)</h2>
+  <p class="sub">U = 12 V, R₁ = 120 Ω, R₂ = 200 Ω, R₃ = 300 Ω.</p>
+  <figure>{{SVG:40_exemple_A}}<figcaption>Deux nœuds : A et B</figcaption></figure>
+  <figure>{{SVG:48_reduction}}<figcaption>La réduction en trois étapes</figcaption></figure>
+
+  <div class="calc">
+    <div class="calc-h">① Le groupe parallèle</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( R_{23} = \dfrac{R_2 \cdot R_3}{R_2 + R_3} \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( R_{23} = \dfrac{0{,}2 \cdot 10^{3} \cdot 0{,}3 \cdot 10^{3}}{0{,}2 \cdot 10^{3} + 0{,}3 \cdot 10^{3}} = \dfrac{0{,}06 \cdot 10^{6}}{0{,}5 \cdot 10^{3}} = 0{,}12 \cdot 10^{3}\ \Omega \)</span></div>
+    <div class="step is-result"><span class="lab">ingénieur</span><span class="eq">\( R_{23} = 120\ \Omega \)</span></div>
+  </div>
+
+  <div class="calc">
+    <div class="calc-h">② La résistance totale et le courant</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( R_{tot} = R_1 + R_{23} \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( R_{tot} = 0{,}12 \cdot 10^{3} + 0{,}12 \cdot 10^{3} = 0{,}24 \cdot 10^{3}\ \Omega \)</span></div>
+    <div class="step is-result"><span class="lab">ingénieur</span><span class="eq">\( R_{tot} = 240\ \Omega \)</span></div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( I_1 = \dfrac{U}{R_{tot}} \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( I_1 = \dfrac{12}{0{,}24 \cdot 10^{3}} = 50 \cdot 10^{-3}\ \mathrm{A} \)</span></div>
+    <div class="step is-result"><span class="lab">ingénieur</span><span class="eq">\( I_1 = 50\ \mathrm{mA} \)</span></div>
+  </div>
+
+  <div class="calc">
+    <div class="calc-h">③ On remonte : les tensions</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( U_1 = R_1 \cdot I_1 \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( U_1 = 0{,}12 \cdot 10^{3} \cdot 50 \cdot 10^{-3} = 6\ \mathrm{V} \)</span></div>
+    <div class="step is-result"><span class="lab">ingénieur</span><span class="eq">\( U_1 = 6\ \mathrm{V} \)</span></div>
+    <div class="step"><span class="lab">mailles</span><span class="eq">\( U_{23} = U - U_1 = 12 - 6 = 6\ \mathrm{V} \)</span></div>
+  </div>
+
+  <div class="calc">
+    <div class="calc-h">④ Les courants de branche</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( I_2 = \dfrac{U_{23}}{R_2} \qquad I_3 = \dfrac{U_{23}}{R_3} \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( I_2 = \dfrac{6}{0{,}2 \cdot 10^{3}} = 30 \cdot 10^{-3}\ \mathrm{A} \qquad I_3 = \dfrac{6}{0{,}3 \cdot 10^{3}} = 20 \cdot 10^{-3}\ \mathrm{A} \)</span></div>
+    <div class="step is-result"><span class="lab">ingénieur</span><span class="eq">\( I_2 = 30\ \mathrm{mA} \qquad I_3 = 20\ \mathrm{mA} \)</span></div>
+    <div class="step is-check"><span class="lab">nœuds</span><span class="eq">\( I_2 + I_3 = 30 \cdot 10^{-3} + 20 \cdot 10^{-3} = 50 \cdot 10^{-3}\ \mathrm{A} = I_1 \)</span></div>
+  </div>
+  <div class="note">Contrôle de bon sens, à faire <em>avant</em> de calculer : la plus petite
+  résistance prend le plus grand courant.</div>
+</section>
+
+<!-- ============================================================ 06 -->
+<section id="exb">
+  <h2><span class="h-num">06</span>Exemple B — (R₁ + R₂) en parallèle avec R₃</h2>
+  <p class="sub">U = 12 V, R₁ = 100 Ω, R₂ = 200 Ω, R₃ = 600 Ω. Attention : ici le courant
+  total ne traverse aucune résistance seule.</p>
+  <figure>{{SVG:41_exemple_B}}<figcaption>R₁ et R₂ forment une branche, en parallèle avec R₃</figcaption></figure>
+
+  <div class="calc">
+    <div class="calc-h">① La branche série, puis le total</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( R_{12} = R_1 + R_2 \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( R_{12} = 0{,}1 \cdot 10^{3} + 0{,}2 \cdot 10^{3} = 0{,}3 \cdot 10^{3}\ \Omega \)</span></div>
+    <div class="step is-result"><span class="lab">ingénieur</span><span class="eq">\( R_{12} = 300\ \Omega \)</span></div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( R_{tot} = \dfrac{R_{12} \cdot R_3}{R_{12} + R_3} \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( R_{tot} = \dfrac{0{,}3 \cdot 10^{3} \cdot 0{,}6 \cdot 10^{3}}{0{,}9 \cdot 10^{3}} = \dfrac{0{,}18 \cdot 10^{6}}{0{,}9 \cdot 10^{3}} = 0{,}2 \cdot 10^{3}\ \Omega \)</span></div>
+    <div class="step is-result"><span class="lab">ingénieur</span><span class="eq">\( R_{tot} = 200\ \Omega \)</span></div>
+  </div>
+
+  <div class="calc">
+    <div class="calc-h">② Les trois courants</div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( I_1 = \dfrac{U}{R_{tot}} = \dfrac{12}{0{,}2 \cdot 10^{3}} = 60 \cdot 10^{-3}\ \mathrm{A} \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( I_2 = \dfrac{U}{R_{12}} = \dfrac{12}{0{,}3 \cdot 10^{3}} = 40 \cdot 10^{-3}\ \mathrm{A} \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( I_3 = \dfrac{U}{R_3} = \dfrac{12}{0{,}6 \cdot 10^{3}} = 20 \cdot 10^{-3}\ \mathrm{A} \)</span></div>
+    <div class="step is-result"><span class="lab">ingénieur</span><span class="eq">\( I_1 = 60\ \mathrm{mA} \qquad I_2 = 40\ \mathrm{mA} \qquad I_3 = 20\ \mathrm{mA} \)</span></div>
+    <div class="step is-check"><span class="lab">nœuds</span><span class="eq">\( I_2 + I_3 = 40 \cdot 10^{-3} + 20 \cdot 10^{-3} = 60 \cdot 10^{-3}\ \mathrm{A} = I_1 \)</span></div>
+  </div>
+
+  <div class="calc">
+    <div class="calc-h">③ Les tensions de la branche série</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( U_1 = R_1 \cdot I_2 \qquad U_2 = R_2 \cdot I_2 \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( U_1 = 0{,}1 \cdot 10^{3} \cdot 40 \cdot 10^{-3} = 4\ \mathrm{V} \qquad U_2 = 0{,}2 \cdot 10^{3} \cdot 40 \cdot 10^{-3} = 8\ \mathrm{V} \)</span></div>
+    <div class="step is-result"><span class="lab">ingénieur</span><span class="eq">\( U_1 = 4\ \mathrm{V} \qquad U_2 = 8\ \mathrm{V} \)</span></div>
+    <div class="step is-check"><span class="lab">mailles</span><span class="eq">\( U_1 + U_2 = 4 + 8 = 12\ \mathrm{V} = U \)</span></div>
+  </div>
+  <div class="warn"><strong>L'erreur classique.</strong> R₁ et R₂ sont traversées par
+  <strong>I₂</strong>, le courant de leur branche — pas par le courant total I₁.</div>
+</section>
+
+<!-- ============================================================ 07 -->
+<section id="exc">
+  <h2><span class="h-num">07</span>Cinq résistances, deux niveaux d'imbrication</h2>
+  <p class="sub">U = 24 V, R₁ = 150 Ω, R₂ = 300 Ω, R₃ = 200 Ω, R₄ = 400 Ω, R₅ = 50 Ω.</p>
+  <figure>{{SVG:42_exemple_C}}<figcaption>Le groupe le plus imbriqué est R₃ + R₄</figcaption></figure>
+
+  <div class="calc">
+    <div class="calc-h">① La réduction, du plus imbriqué vers l'extérieur</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( R_{34} = R_3 + R_4 \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( R_{34} = 0{,}2 \cdot 10^{3} + 0{,}4 \cdot 10^{3} = 0{,}6 \cdot 10^{3}\ \Omega \)</span></div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( R_{234} = \dfrac{R_2 \cdot R_{34}}{R_2 + R_{34}} \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( R_{234} = \dfrac{0{,}3 \cdot 10^{3} \cdot 0{,}6 \cdot 10^{3}}{0{,}3 \cdot 10^{3} + 0{,}6 \cdot 10^{3}} = \dfrac{0{,}18 \cdot 10^{6}}{0{,}9 \cdot 10^{3}} = 0{,}2 \cdot 10^{3}\ \Omega \)</span></div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( R_{tot} = R_1 + R_{234} + R_5 \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( R_{tot} = 0{,}15 \cdot 10^{3} + 0{,}2 \cdot 10^{3} + 0{,}05 \cdot 10^{3} = 0{,}4 \cdot 10^{3}\ \Omega \)</span></div>
+    <div class="step is-result"><span class="lab">ingénieur</span><span class="eq">\( R_{34} = 600\ \Omega \qquad R_{234} = 200\ \Omega \qquad R_{tot} = 400\ \Omega \)</span></div>
+  </div>
+
+  <div class="calc">
+    <div class="calc-h">② Le courant total, puis les tensions des éléments série</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( I_1 = \dfrac{U}{R_{tot}} \qquad U_1 = R_1 \cdot I_1 \qquad U_2 = R_{234} \cdot I_1 \qquad U_5 = R_5 \cdot I_1 \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( I_1 = \dfrac{24}{0{,}4 \cdot 10^{3}} = 60 \cdot 10^{-3}\ \mathrm{A} \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( U_1 = 0{,}15 \cdot 10^{3} \cdot 60 \cdot 10^{-3} = 9\ \mathrm{V} \qquad U_2 = 0{,}2 \cdot 10^{3} \cdot 60 \cdot 10^{-3} = 12\ \mathrm{V} \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( U_5 = 0{,}05 \cdot 10^{3} \cdot 60 \cdot 10^{-3} = 3\ \mathrm{V} \)</span></div>
+    <div class="step is-result"><span class="lab">ingénieur</span><span class="eq">\( I_1 = 60\ \mathrm{mA} \qquad U_1 = 9\ \mathrm{V} \qquad U_2 = 12\ \mathrm{V} \qquad U_5 = 3\ \mathrm{V} \)</span></div>
+  </div>
+
+  <div class="calc">
+    <div class="calc-h">③ Dans le groupe parallèle</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq">\( I_2 = \dfrac{U_2}{R_2} \qquad I_3 = \dfrac{U_2}{R_{34}} \qquad U_3 = R_3 \cdot I_3 \qquad U_4 = R_4 \cdot I_3 \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( I_2 = \dfrac{12}{0{,}3 \cdot 10^{3}} = 40 \cdot 10^{-3}\ \mathrm{A} \qquad I_3 = \dfrac{12}{0{,}6 \cdot 10^{3}} = 20 \cdot 10^{-3}\ \mathrm{A} \)</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq">\( U_3 = 0{,}2 \cdot 10^{3} \cdot 20 \cdot 10^{-3} = 4\ \mathrm{V} \qquad U_4 = 0{,}4 \cdot 10^{3} \cdot 20 \cdot 10^{-3} = 8\ \mathrm{V} \)</span></div>
+    <div class="step is-result"><span class="lab">ingénieur</span><span class="eq">\( I_2 = 40\ \mathrm{mA} \qquad I_3 = 20\ \mathrm{mA} \qquad U_3 = 4\ \mathrm{V} \qquad U_4 = 8\ \mathrm{V} \)</span></div>
+  </div>
+
+  <h3>Le tableau complet</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th></th><th>R</th><th>U</th><th>I</th><th>P</th></tr></thead>
+    <tbody>
+      <tr><td class="k">R₁</td><td>150 Ω</td><td class="v">9 V</td><td class="v">60 mA (I₁)</td><td class="v">540 mW</td></tr>
+      <tr><td class="k">R₂</td><td>300 Ω</td><td class="v">12 V</td><td class="v">40 mA (I₂)</td><td class="v">480 mW</td></tr>
+      <tr><td class="k">R₃</td><td>200 Ω</td><td class="v">4 V</td><td class="v">20 mA (I₃)</td><td class="v">80 mW</td></tr>
+      <tr><td class="k">R₄</td><td>400 Ω</td><td class="v">8 V</td><td class="v">20 mA (I₃)</td><td class="v">160 mW</td></tr>
+      <tr><td class="k">R₅</td><td>50 Ω</td><td class="v">3 V</td><td class="v">60 mA (I₁)</td><td class="v">180 mW</td></tr>
+      <tr><td class="k">Total</td><td>400 Ω</td><td class="v">24 V</td><td class="v">60 mA</td><td class="v">1,44 W</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="sub">R₄ porte I₃ comme R₃ — même branche. R₅ porte I₁ comme R₁ — en série avec
+  le reste. C'est là que se joue la moitié des erreurs.</p>
+</section>
+
+<!-- ============================================================ 08 -->
+<section id="controles">
+  <h2><span class="h-num">08</span>Cinq contrôles qui sauvent</h2>
+  <ol class="steps">
+    <li>En série, R<sub>tot</sub> est plus <strong>grande</strong> que la plus grande des résistances.</li>
+    <li>En parallèle, R<sub>tot</sub> est plus <strong>petite</strong> que la plus petite.</li>
+    <li><strong>Loi des mailles</strong> : la somme des tensions sur un chemin = celle de la source.</li>
+    <li><strong>Loi des nœuds</strong> : la somme des courants des branches = le courant entrant.</li>
+    <li>La somme des puissances = \( U \cdot I \) de la source.</li>
+  </ol>
+  <div class="warn">Un seul de ces contrôles qui échoue = un calcul faux quelque part.
+  Les deux premiers se font en quelques secondes, <strong>avant</strong> tout calcul détaillé.</div>
+</section>
+
+<!-- ============================================================ 09 -->
+<section id="schema">
+  <h2><span class="h-num">09</span>Dessiner un schéma propre</h2>
+  <p class="sub">Sept règles. Elles servent de grille de correction pour le schéma que tu
+  rends au TP (LZ 1952).</p>
+  <ul class="plain">
+    <li>Traits horizontaux et verticaux uniquement, angles droits.</li>
+    <li>Symboles CEI — jamais le zigzag américain pour la résistance.</li>
+    <li>Jonction de fils : un point bien noir. Croisement sans liaison : pas de point.</li>
+    <li>Chaque composant a son repère (R₁, R₂…) <strong>et</strong> sa valeur.</li>
+    <li>Source à gauche, circuit qui se lit de gauche à droite.</li>
+    <li>Flèches de tension et de courant orientées et nommées.</li>
+    <li>Cartouche : nom, classe, date, titre du montage.</li>
+  </ul>
+  <figure>{{SVG:49_tordu_propre}}<figcaption>Même circuit, mêmes nœuds, mêmes résultats — un seul des deux se corrige</figcaption></figure>
+</section>
+
+<!-- ============================================================ 10 -->
+<section id="mesure">
+  <h2><span class="h-num">10</span>Mesurer sans casser le fusible</h2>
+  <figure>{{SVG:50_montage_mesure}}<figcaption>Ampèremètre en série, voltmètre en parallèle</figcaption></figure>
+  <ul class="plain">
+    <li><strong>Ampèremètre en série</strong> : il faut ouvrir le circuit pour l'insérer.</li>
+    <li><strong>Voltmètre en parallèle</strong> : il se pose sur les bornes, sans rien ouvrir.</li>
+    <li>Calibre le plus grand d'abord, puis on descend.</li>
+  </ul>
+  <figure>{{SVG:51_piege}}<figcaption>L'erreur à ne pas faire</figcaption></figure>
+  <div class="warn"><strong>Un ampèremètre a une résistance quasi nulle.</strong> Branché en
+  parallèle sur un composant, il court-circuite la source : fusible grillé, au mieux.
+  Avant chaque mise sous tension, demande-toi « où est mon ampèremètre ? ».</div>
+
+  <h3>Comparer la mesure et le calcul</h3>
+  <div class="calc">
+    <div class="step"><span class="lab">écart</span><span class="eq">\( \text{écart} = \dfrac{\text{mesure} - \text{calcul}}{\text{calcul}} \cdot 100\ \% \)</span></div>
+  </div>
+  <p>Un écart de quelques pour-cent est <strong>normal</strong> : tolérance des résistances
+  (±5 % en série E12), précision de l'appareil et du calibre, résistance propre des cordons.
+  Un écart de 30 % ou un signe inattendu, ce n'est pas la tolérance — c'est une erreur de
+  montage ou de calcul.</p>
+</section>
+
+<!-- ============================================================ 11 -->
+<section id="pieges">
+  <h2><span class="h-num">11</span>Les quatre pièges classiques</h2>
+  <div class="grid2">
+    <div class="card"><h3 style="margin-top:0">Le produit sur somme à trois</h3>
+      <p style="margin:0">Il ne vaut que pour deux résistances. À trois, somme des inverses.</p></div>
+    <div class="card"><h3 style="margin-top:0">Le mauvais courant</h3>
+      <p style="margin:0">Une résistance dans une branche porte le courant de <em>sa</em> branche, pas le courant total.</p></div>
+    <div class="card"><h3 style="margin-top:0">Les préfixes oubliés</h3>
+      <p style="margin:0">Écris 30 mA, pas 0,03. Le tableau se lit avec les unités et les préfixes.</p></div>
+    <div class="card"><h3 style="margin-top:0">Pas de contrôle</h3>
+      <p style="margin:0">Un résultat sans contrôle visible est un résultat qu'on ne peut pas défendre.</p></div>
+  </div>
+</section>
+
+<!-- ============================================================ 12 -->
+<section id="test">
+  <h2><span class="h-num">12</span>Teste-toi</h2>
+  <p class="sub">Réponds d'abord sur une feuille, puis ouvre la réponse.</p>
+
+  <div class="q">
+    <p>1. Trois résistances de 300 Ω sont en parallèle. Que vaut R<sub>tot</sub> ?</p>
+    <details class="rep"><summary>Voir la réponse</summary><div class="body">
+      <p>Trois résistances <em>égales</em> en parallèle : \( R_{tot} = \dfrac{R_1}{n} = \dfrac{0{,}3 \cdot 10^{3}}{3} = 0{,}1 \cdot 10^{3}\ \Omega = 100\ \Omega \).
+      Contrôle : 100 Ω est bien plus petit que 300 Ω.</p></div></details>
+  </div>
+
+  <div class="q">
+    <p>2. Une source de 24 V alimente R₁ = 400 Ω en série avec un groupe de 200 Ω.
+    Que vaut le courant total, en notation ingénieur ?</p>
+    <details class="rep"><summary>Voir la réponse</summary><div class="body">
+      <p>\( R_{tot} = 0{,}4 \cdot 10^{3} + 0{,}2 \cdot 10^{3} = 0{,}6 \cdot 10^{3}\ \Omega \)
+      puis \( I_1 = \dfrac{24}{0{,}6 \cdot 10^{3}} = 40 \cdot 10^{-3}\ \mathrm{A} = 40\ \mathrm{mA} \).</p></div></details>
+  </div>
+
+  <div class="q">
+    <p>3. Dans un groupe parallèle de 200 Ω et 600 Ω sous 12 V, quelle branche prend le
+    plus de courant, et combien ?</p>
+    <details class="rep"><summary>Voir la réponse</summary><div class="body">
+      <p>La plus petite résistance prend le plus grand courant :
+      \( I_{200} = \dfrac{12}{0{,}2 \cdot 10^{3}} = 60\ \mathrm{mA} \) contre
+      \( I_{600} = \dfrac{12}{0{,}6 \cdot 10^{3}} = 20\ \mathrm{mA} \).</p></div></details>
+  </div>
+
+  <div class="q">
+    <p>4. Une résistance de 220 Ω est traversée par 18,5 mA. Quelle puissance dissipe-t-elle,
+    et une résistance 1/4 W suffit-elle ?</p>
+    <details class="rep"><summary>Voir la réponse</summary><div class="body">
+      <p>\( P = R \cdot I^{2} = 0{,}22 \cdot 10^{3} \cdot (18{,}5 \cdot 10^{-3})^{2}
+      = 75 \cdot 10^{-3}\ \mathrm{W} = 75\ \mathrm{mW} \).
+      C'est bien en dessous de 250 mW : une 1/4 W convient largement.</p></div></details>
+  </div>
+
+  <div class="q">
+    <p>5. Tu mesures 4,3 V là où ton calcul donnait 4,08 V. Faut-il s'inquiéter ?</p>
+    <details class="rep"><summary>Voir la réponse</summary><div class="body">
+      <p>\( \text{écart} = \dfrac{4{,}3 - 4{,}08}{4{,}08} \cdot 100 = 5{,}4\ \% \).
+      C'est l'ordre de grandeur de la tolérance ±5 % des résistances : normal, à justifier
+      dans la conclusion du protocole.</p></div></details>
+  </div>
+</section>
+
+<!-- ============================================================ 13 -->
+<section id="bilan">
+  <h2><span class="h-num">13</span>Où j'en suis</h2>
+  <p class="sub">Coche honnêtement — c'est pour toi. Ton navigateur garde tes coches sur cet
+  appareil.</p>
+  <div class="card check" id="check">
+    <label><input type="checkbox" data-k="c1"><span>Je repère série et parallèle sur un schéma inhabituel</span><span class="lz">LZ 1923</span></label>
+    <label><input type="checkbox" data-k="c2"><span>Je réduis un circuit de 5 résistances en montrant chaque étape</span><span class="lz">LZ 1923</span></label>
+    <label><input type="checkbox" data-k="c3"><span>J'applique les lois des nœuds et des mailles pour contrôler</span><span class="lz">LZ 1924</span></label>
+    <label><input type="checkbox" data-k="c4"><span>Je pose mes calculs en trois temps : formule, nombres, résultat</span><span class="lz">LZ 1924</span></label>
+    <label><input type="checkbox" data-k="c5"><span>Mon tableau R/U/I/P est complet, avec unités et préfixes</span><span class="lz">LZ 1924</span></label>
+    <label><input type="checkbox" data-k="c6"><span>Mon schéma respecte les sept règles de dessin</span><span class="lz">LZ 1952</span></label>
+    <label><input type="checkbox" data-k="c7"><span>Je câble et je mesure sans faute de branchement</span><span class="lz">LZ 1949</span></label>
+    <label><input type="checkbox" data-k="c8"><span>Mon protocole est complet et ma conclusion justifie l'écart</span><span class="lz">LZ 7857/7995</span></label>
+  </div>
+  <div class="tools"><button class="btn" id="resetBtn">Tout décocher</button></div>
+</section>
+
+<footer>
+  ETML — Formation des électroniciens · El Dim1, Circuits mixtes et simplification ·
+  symboles CEI · version 08.2026
+</footer>
+
+</main>
+</div>
+</div>
+
+<script>
+(function () {
+  var body = document.body;
+  var btn = document.getElementById('quizBtn');
+  btn.addEventListener('click', function () {
+    var on = body.classList.toggle('quiz');
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.textContent = on ? 'Afficher les résultats' : 'Masquer les résultats';
+    if (!on) {
+      document.querySelectorAll('.revealed').forEach(function (el) {
+        el.classList.remove('revealed');
+      });
+    }
+  });
+  document.addEventListener('click', function (e) {
+    if (!body.classList.contains('quiz')) return;
+    var st = e.target.closest('.step.is-result, .step.is-check, td.v');
+    if (st) st.classList.add('revealed');
+  });
+
+  var KEY = 'elec140-bilan';
+  var boxes = document.querySelectorAll('#check input');
+  function load() {
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { saved = {}; }
+    boxes.forEach(function (b) { b.checked = !!saved[b.dataset.k]; });
+  }
+  function save() {
+    var o = {};
+    boxes.forEach(function (b) { if (b.checked) o[b.dataset.k] = 1; });
+    try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) { /* rien à faire */ }
+  }
+  boxes.forEach(function (b) { b.addEventListener('change', save); });
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    boxes.forEach(function (b) { b.checked = false; });
+    save();
+  });
+  load();
+})();
+</script>

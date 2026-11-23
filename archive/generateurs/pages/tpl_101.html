@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>101 Familles de circuits logiques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+__CSS__
+.ref { font: 700 30px var(--font-mono); letter-spacing: .04em; color: var(--head); }
+.decode { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.decode label { display: grid; gap: 4px; font-weight: 700; font-size: 14px; min-width: 0; }
+.decode select { width: 100%; min-width: 0; }
+.legend { font-size: 14px; }
+.legend td { padding: 2px 10px 2px 0; vertical-align: top; }
+.legend td:first-child { font: 700 15px var(--font-mono); color: var(--head); white-space: nowrap; }
+.big { font: 700 34px var(--font-body); color: var(--head); font-variant-numeric: tabular-nums; }
+.state { display: inline-block; min-width: 140px; text-align: center; padding: 6px 12px; border-radius: 10px; font-weight: 700; font-size: 20px; }
+.state.s1 { background: var(--one); color: #fff; } .state.s0 { background: var(--zero); color: var(--surface); } .state.sx { background: var(--warn-bg); color: var(--warn); border: 2px dashed var(--warn); }
+.meas { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.meas .case { text-align: center; }
+.meas .v { font: 700 26px var(--font-mono); color: var(--head); }
+</style>
+</head>
+<body>
+<!--GABARIT--><div style="background:#242852;color:#fff;padding:14px 20px;font:700 16px/1.45 Arial,sans-serif">GABARIT du générateur (build_pages_w1.py), pas la page finale. Ouvre plutôt « pages-interactives/101 Familles de circuits logiques.html » dans le projet, ou l'artefact « 101 Familles de circuits logiques ».</div><!--/GABARIT-->
+<div id="jsx" class="jsx" role="alert">Cette page a besoin de JavaScript pour afficher les animations et les exercices. Si ce message reste affiché, ouvre la page depuis le lien de l'artefact sur claude.ai, ou ouvre le fichier .html dans Edge, Chrome ou Safari (pas dans un aperçu de fichier).</div>
+<header class="top"><div class="in">
+  <div class="eyebrow">Test et Mesure 1 – El DT 1 · page interactive 101</div>
+  <img src="__LOGO__" alt="ETML">
+  <h1>Familles de circuits logiques</h1>
+  <p>Cinq étapes tirées de l'atelier, du magasin et du dépannage : lire une référence, mesurer un niveau, relier deux familles, estimer un retard, choisir un CI. Chaque étape commence par une animation reprise de la présentation 100 (« Comprendre »), puis tu t'exerces (« À toi »). Va avec l'animation 105 et la fiche 110.</p>
+</div></header>
+<div class="bar"><div class="in">
+  <nav aria-label="Exercices"><a href="#ex1">N°1</a><a href="#ex2">N°2</a><a href="#ex3">N°3</a><a href="#ex4">N°4</a><a href="#ex5">N°5</a></nav>
+  <div class="score">Exercices réussis : <span id="score-n">0</span> / 5
+    <span class="dots"><i data-id="t1"></i><i data-id="t2"></i><i data-id="t3"></i><i data-id="t4"></i><i data-id="t5"></i></span></div>
+</div></div>
+
+<main>
+<!-- ============================================ N°1 -->
+<section class="ex" id="ex1">
+  <header><span class="num">N°1</span><h2>Lis la référence sur le CI</h2>
+    <span class="refs"><a href="__T100__">Présentation 100, diapo 5</a><a href="__FL3__">Floyd 3-8 p. 146</a><span>Fiche 110, N°1</span><a href="__LZ4256__">LZ_4256</a></span></header>
+  <div class="lesson" id="L1"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Trois familles, une référence à décoder</h3><span class="refs"><a href="__T100__">Présentation 100, diapos 3 et 5</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> au magasin ou chez un distributeur, on cherche d'abord la fonction (74HCT00), puis on choisit le boîtier : DIP pour la breadboard, SOIC pour une carte fabriquée en série. Le 74HC est la famille la plus courante en atelier ; le TTL pur ne se voit plus guère qu'en maintenance d'anciens appareils.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>À l'atelier :</b> tu répares une ancienne machine d'emballage. Dans le tiroir de pièces de rechange, trois CI attendent. Avant de les monter, tu décodes leur référence.</div>
+  <div class="grid2">
+    <div class="panel"><h3>Rappel</h3>
+      <table class="legend">
+        <tr><td>SN</td><td>fabricant : Texas Instruments</td></tr>
+        <tr><td>74 / 54</td><td>plage de température : commerciale / militaire</td></tr>
+        <tr><td>LS, HC, HCT</td><td>technologie</td></tr>
+        <tr><td>00, 04, 08…</td><td>fonction</td></tr>
+        <tr><td>N, D, J</td><td>boîtier : DIP plastique, SOIC (CMS), DIP céramique</td></tr>
+      </table>
+    </div>
+    <div class="cases" id="t1-list"></div>
+  </div>
+  <div class="row"><button class="btn" id="t1-check">Vérifier</button></div>
+  <div class="fb" id="t1-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°2 -->
+<section class="ex" id="ex2">
+  <header><span class="num">N°2</span><h2>Que lit l'entrée ?</h2>
+    <span class="refs"><a href="__T100__">Présentation 100, diapo 16</a><a href="__FL3__">Floyd 3-8 p. 154</a><span>Fiche 110, N°5</span><a href="__LZ4255__">LZ_4255</a></span></header>
+  <div class="lesson" id="L2"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Ce que voit l'entrée d'une porte</h3><span class="refs"><a href="__T100__">Présentation 100, diapo 16</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> en dépannage, on mesure la tension d'une entrée au multimètre et on la compare à V<sub>IL</sub> et V<sub>IH</sub>. Une tension coincée entre les deux signale souvent une entrée en l'air ou une mauvaise soudure.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>En dépannage :</b> une carte de commande de la ligne ne réagit plus. Tu mesures au multimètre la tension sur les entrées d'un 74HC alimenté en 5 V et tu compares à V<sub>IL</sub> et V<sub>IH</sub>.</div>
+  <div class="grid2">
+    <div>
+      <p class="q">a) Essaie : choisis la famille et déplace la tension.</p>
+      <div class="chips" id="t2-fam" role="group" aria-label="Famille"></div>
+      <div class="row" style="margin-top:8px"><label for="t2-v" class="muted">Tension mesurée</label><span class="big" id="t2-vtxt">2,6 V</span></div>
+      <input type="range" id="t2-v" min="0" max="5" step="0.1" value="2.6" aria-label="Tension mesurée en volts">
+      <p style="margin:8px 0 0">L'entrée lit : <span class="state" id="t2-state" aria-live="polite"></span></p>
+      <p class="muted" id="t2-why"></p>
+    </div>
+    <div class="svgbox" id="t2-svg"></div>
+  </div>
+  <p class="q">b) Sur le 74HC (V<sub>CC</sub> = 5 V), que lit chaque entrée ?</p>
+  <div class="meas" id="t2-list"></div>
+  <div class="row"><button class="btn" id="t2-check">Vérifier</button></div>
+  <div class="fb" id="t2-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°3 -->
+<section class="ex" id="ex3">
+  <header><span class="num">N°3</span><h2>Peut-on relier ces deux circuits ?</h2>
+    <span class="refs"><a href="__T100__">Présentation 100, diapos 12 et 17</a><a href="__FL3__">Floyd 3-8 p. 154</a><span>Fiche 110, N°3</span><a href="__LZ4255__">LZ_4255</a></span></header>
+  <div class="lesson" id="L3"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Parasites et marge de bruit</h3><span class="refs"><a href="__T100__">Présentation 100, diapos 12 et 17</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> un câble long dans une machine capte les parasites des moteurs et des contacteurs : plus la marge de bruit est grande, plus la liaison est fiable. Quand une vieille carte TTL pilote une nouvelle carte, on choisit du 74HCT, pas du 74HC.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Au bureau technique :</b> une nouvelle carte doit recevoir les signaux d'une carte existante. Une sortie peut piloter une entrée si V<sub>OH</sub>(sortie) ≥ V<sub>IH</sub>(entrée) et V<sub>OL</sub>(sortie) ≤ V<sub>IL</sub>(entrée). L'écart restant est la marge de bruit.</div>
+  <div class="grid2">
+    <div>
+      <p class="q">a) Essaie : choisis la famille de la sortie et celle de l'entrée.</p>
+      <div class="row"><span class="muted" style="min-width:66px">Sortie</span><div class="chips" id="t3-src" role="group" aria-label="Famille de la sortie"></div></div>
+      <div class="row" style="margin-top:6px"><span class="muted" style="min-width:66px">Entrée</span><div class="chips" id="t3-dst" role="group" aria-label="Famille de l'entrée"></div></div>
+      <div class="kv" style="margin-top:12px" id="t3-kv" aria-live="polite"></div>
+    </div>
+    <div class="svgbox" id="t3-svg"></div>
+  </div>
+  <p class="q">b) Pour chaque liaison, peut-on relier directement ?</p>
+  <div class="cases" id="t3-list"></div>
+  <div class="row"><button class="btn" id="t3-check">Vérifier</button></div>
+  <div class="fb" id="t3-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°4 -->
+<section class="ex" id="ex4">
+  <header><span class="num">N°4</span><h2>Le retard d'une chaîne de portes</h2>
+    <span class="refs"><a href="__T100__">Présentation 100, diapo 18</a><a href="__FL3__">Floyd 3-8 p. 152</a><a href="__LZ4256__">LZ_4256</a></span></header>
+  <div class="lesson" id="L4"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Le signal traverse les portes, au ralenti</h3><span class="refs"><a href="__T100__">Présentation 100, diapo 18</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> dix portes en série font 120 ns de retard. Dans un processeur, tout le calcul entre deux tops d'horloge doit être terminé avant le top suivant : ce retard limite la fréquence maximale.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Sur la ligne de remplissage :</b> le signal du capteur de bouteille traverse plusieurs portes 74HCT00 avant d'ouvrir la vanne. Chaque porte retarde le signal de t<sub>PD</sub> = 12 ns (valeur typique à V<sub>CC</sub> = 4,5 V).</div>
+  <div class="grid2">
+    <div>
+      <p class="q">a) Essaie : nombre de portes en série.</p>
+      <div class="row"><input type="range" id="t4-n" min="1" max="20" step="1" value="4" aria-label="Nombre de portes"><span class="big" id="t4-ntxt">4</span></div>
+      <p style="margin:6px 0 0">Retard total : <span class="big" id="t4-tot">48 ns</span></p>
+    </div>
+    <div class="svgbox" id="t4-svg"></div>
+  </div>
+  <div class="cases">
+    <div class="case"><div><b>b)</b> Le signal traverse 6 portes NON-ET. Quel est le retard total ?</div>
+      <div class="row"><input type="number" id="t4-a" min="0" step="1" style="width:110px" aria-label="Retard en nanosecondes"><span>ns</span><span id="t4-ra"></span></div></div>
+    <div class="case"><div><b>c)</b> Une bouteille passe toutes les 100 ms. Ce retard gêne-t-il le remplissage ?</div>
+      <div class="row"><select id="t4-b" aria-label="Le retard gêne-t-il ?"><option value="">choisir…</option><option value="non">Non, il est négligeable</option><option value="oui">Oui, la vanne s'ouvrira trop tard</option></select><span id="t4-rb"></span></div></div>
+    <div class="case"><div><b>d)</b> Sur une autre carte, le cahier des charges impose un retard de moins de 50 ns. Combien de portes peut-on mettre en série au plus ?</div>
+      <div class="row"><input type="number" id="t4-c" min="0" step="1" style="width:110px" aria-label="Nombre de portes au plus"><span>portes</span><span id="t4-rc"></span></div></div>
+  </div>
+  <div class="row"><button class="btn" id="t4-check">Vérifier</button></div>
+  <div class="fb" id="t4-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°5 -->
+<section class="ex" id="ex5">
+  <header><span class="num">N°5</span><h2>Choisis la bonne famille, le bon boîtier</h2>
+    <span class="refs"><a href="__T100__">Présentation 100, diapos 3, 7, 8, 10 et 12</a><a href="__NXFAM__">nextecmedia 4.1</a><span>Fiche 110, N°2</span><a href="__LZ4256__">LZ_4256</a></span></header>
+  <div class="lesson" id="L5"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Température de service et boîtier</h3><span class="refs"><a href="__T100__">Présentation 100, diapos 8 et 10</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> une électronique de voiture ou de machine en extérieur doit fonctionner de −40 °C à 85 °C : on commande des CI « Industrial » ou « Automotive ». Un jouet ou un appareil de salon peut se contenter de la plage « Consumer ».</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Au magasin et au bureau technique :</b> pour chaque projet, choisis ce qu'il faut commander.</div>
+  <div class="cases" id="t5-list"></div>
+  <div class="row"><button class="btn" id="t5-check">Vérifier</button></div>
+  <div class="fb" id="t5-fb" aria-live="polite"></div>
+</section>
+</main>
+
+<footer>
+  <span>Classe XLO1 · 2026-2027 · Test et Mesure 1 – El DT 1 · champ <a href="__CHAMP__">LFB_El_DT1</a></span>
+  <span>Objectifs : <a href="__LZ4255__">LZ_4255</a>, <a href="__LZ4256__">LZ_4256</a></span>
+  <span><a href="__FL3__">Floyd, chap. 3 (3-8 Logique à fonction fixe, p. 146-155)</a> · <a href="__NXFAM__">nextecmedia 4.1 Familles de circuits</a> · <a href="__T100__">Présentation 100</a></span>
+  <span>Liens Floyd : __FLNOTE__</span>
+</footer>
+
+<script>
+window.addEventListener("error", (e) => { const b = document.getElementById("jsx"); if (b) { b.hidden = false; b.textContent = "Erreur dans la page : " + e.message + " (ligne " + e.lineno + "). Envoie ce message à l'enseignant."; } });
+__COMMONJS__
+const D = __DATA__;
+const FAMN = { TTL: "TTL (74LS)", HC: "74HC", HCT: "74HCT" };
+const nb = (x, d = 2) => String(+x.toFixed(d)).replace(".", ",");
+
+// ---------------------------------------------- N°1 références
+const REFS = [
+  { ref: "SN74HCT32N", plage: "c", tech: "HCT", fn: "32", boit: "N" },
+  { ref: "SN74LS04D", plage: "c", tech: "LS", fn: "04", boit: "D" },
+  { ref: "SN54LS08J", plage: "m", tech: "LS", fn: "08", boit: "J" },
+];
+const OPT1 = {
+  plage: [["c", "Commerciale, 0 … 70 °C"], ["m", "Militaire, −55 … 125 °C"]],
+  tech: [["LS", "TTL Schottky basse consommation"], ["HC", "CMOS rapide"], ["HCT", "CMOS, entrées compatibles TTL"]],
+  fn: [["00", "4 portes NON-ET"], ["02", "4 portes NON-OU"], ["04", "6 inverseurs (NON)"], ["08", "4 portes ET"], ["32", "4 portes OU"], ["86", "4 portes OU exclusif"]],
+  boit: [["N", "DIP plastique (traversant)"], ["D", "SOIC (CMS)"], ["J", "DIP céramique"]],
+};
+const LAB1 = { plage: "Plage", tech: "Technologie", fn: "Fonction", boit: "Boîtier" };
+REFS.forEach((r, i) => {
+  const div = document.createElement("div"); div.className = "case";
+  div.innerHTML = `<div class="row"><span class="ref">${r.ref}</span><span id="t1-r${i}"></span></div><div class="decode">` +
+    Object.keys(OPT1).map((k) => `<label>${LAB1[k]}<select id="t1-${k}${i}"><option value="">choisir…</option>${OPT1[k].map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select></label>`).join("") + "</div>";
+  $("t1-list").appendChild(div);
+});
+$("t1-check").onclick = () => {
+  let ok = 0, tot = 0, empty = 0;
+  REFS.forEach((r, i) => {
+    let good = 0;
+    Object.keys(OPT1).forEach((k) => {
+      const s = $(`t1-${k}${i}`), v = s.value; tot++;
+      if (!v) empty++;
+      const g = v === r[k]; if (g) { ok++; good++; }
+      s.style.borderColor = v ? (g ? "var(--ok)" : "var(--bad)") : "";
+    });
+    $(`t1-r${i}`).innerHTML = good === 4 ? '<span class="tag ok">juste</span>' : "";
+  });
+  if (empty) { feedback($("t1-fb"), "info", "Il manque des réponses.", ` ${empty} case${empty > 1 ? "s" : ""} encore vide${empty > 1 ? "s" : ""}.`); return; }
+  if (ok === tot) { feedback($("t1-fb"), "ok", "Tout est juste.", " Le SN54LS08J est la version militaire en boîtier céramique : on la trouve dans l'aviation ou l'armement, rarement en atelier. Pour remplacer ces CI sur une carte TTL, on choisit aujourd'hui un 74HCT de même fonction."); markDone("t1", true); }
+  else { feedback($("t1-fb"), "bad", `${ok} sur ${tot}.`, " Les cases en rouge sont à revoir. Découpe la référence de gauche à droite : fabricant, plage, technologie, fonction, boîtier."); markDone("t1", false); }
+};
+
+// ---------------------------------------------- N°2 niveaux d'entrée
+let fam2 = "HC";
+function levelSVG(fam, v) {
+  const [vil, vih] = D.NIV[fam], H = 300, T = 18, x = 150, w = 70, Y = (u) => T + H * (1 - u / 5);
+  let s = `<svg viewBox="0 0 440 ${H + 2 * T + 10}" width="440" role="img" aria-label="Zones d'entrée de la famille ${FAMN[fam]}">`;
+  s += `<rect x="${x}" y="${Y(5)}" width="${w}" height="${Y(vih) - Y(5)}" style="fill:var(--one);opacity:.28"/>`;
+  s += `<rect x="${x}" y="${Y(vih)}" width="${w}" height="${Y(vil) - Y(vih)}" style="fill:var(--warn-bg);stroke:var(--warn);stroke-width:2;stroke-dasharray:6 4"/>`;
+  s += `<rect x="${x}" y="${Y(vil)}" width="${w}" height="${Y(0) - Y(vil)}" style="fill:var(--zero);opacity:.28"/>`;
+  s += `<rect x="${x}" y="${Y(5)}" width="${w}" height="${H}" style="fill:none;stroke:var(--ink);stroke-width:2"/>`;
+  s += `<text x="${x + w / 2}" y="${(Y(5) + Y(vih)) / 2 + 9}" text-anchor="middle" font-size="26" font-weight="700" style="fill:var(--ink)">1</text>`;
+  s += `<text x="${x + w / 2}" y="${(Y(vil) + Y(0)) / 2 + 9}" text-anchor="middle" font-size="26" font-weight="700" style="fill:var(--ink)">0</text>`;
+  [[5, "5 V"], [vih, `V<tspan font-size="12" dy="4">IH</tspan><tspan dy="-4"> min = ${nb(vih)} V</tspan>`], [vil, `V<tspan font-size="12" dy="4">IL</tspan><tspan dy="-4"> max = ${nb(vil)} V</tspan>`], [0, "0 V"]].forEach(([u, t]) => {
+    s += `<line x1="${x + w}" y1="${Y(u)}" x2="${x + w + 12}" y2="${Y(u)}" style="stroke:var(--ink);stroke-width:2"/>`;
+    s += `<text x="${x + w + 18}" y="${Y(u) + 6}" font-size="16" style="fill:var(--ink)">${t}</text>`;
+  });
+  const ym = Y(v);
+  s += `<line x1="${x - 8}" y1="${ym}" x2="${x + w + 4}" y2="${ym}" style="stroke:var(--bad);stroke-width:4"/>`;
+  s += `<path d="M ${x - 8} ${ym} l -16 -10 v 20 z" style="fill:var(--bad)"/>`;
+  s += `<text x="${x - 30}" y="${ym + 6}" text-anchor="end" font-size="18" font-weight="700" style="fill:var(--bad)">${nb(v, 1)} V</text>`;
+  return s + "</svg>";
+}
+function read2(fam, v) { const [vil, vih] = D.NIV[fam]; return v <= vil ? "0" : (v >= vih ? "1" : "x"); }
+function draw2() {
+  const v = +$("t2-v").value, [vil, vih] = D.NIV[fam2], st = read2(fam2, v);
+  $("t2-vtxt").textContent = nb(v, 1) + " V";
+  $("t2-svg").innerHTML = levelSVG(fam2, v);
+  $("t2-state").className = "state " + (st === "1" ? "s1" : st === "0" ? "s0" : "sx");
+  $("t2-state").textContent = st === "x" ? "non garanti" : st;
+  $("t2-why").innerHTML = st === "1" ? `${nb(v, 1)} V ≥ V<sub>IH</sub> = ${nb(vih)} V : reconnu comme 1.` :
+    st === "0" ? `${nb(v, 1)} V ≤ V<sub>IL</sub> = ${nb(vil)} V : reconnu comme 0.` :
+    `${nb(v, 1)} V est entre ${nb(vil)} V et ${nb(vih)} V : la porte peut lire 0 ou 1. Il faut chercher la panne en amont.`;
+  document.querySelectorAll("#t2-fam .chip").forEach((c) => c.setAttribute("aria-pressed", c.dataset.k === fam2 ? "true" : "false"));
+}
+["HC", "HCT", "TTL"].forEach((k) => {
+  const b = document.createElement("button"); b.className = "chip"; b.dataset.k = k; b.textContent = FAMN[k];
+  b.onclick = () => { fam2 = k; draw2(); }; $("t2-fam").appendChild(b);
+});
+$("t2-v").oninput = draw2; draw2();
+const MEAS = [0.2, 4.1, 2.6, 1.4, 3.6];
+MEAS.forEach((v, i) => {
+  const div = document.createElement("div"); div.className = "case";
+  div.innerHTML = `<div class="muted">Entrée ${i + 1}</div><div class="v">${nb(v, 1)} V</div>
+    <select id="t2-s${i}" aria-label="État lu pour ${nb(v, 1)} V"><option value="">choisir…</option><option value="0">0</option><option value="1">1</option><option value="x">non garanti</option></select><span id="t2-r${i}"></span>`;
+  $("t2-list").appendChild(div);
+});
+$("t2-check").onclick = () => {
+  let ok = 0, notes = [], empty = 0;
+  const [vil, vih] = D.NIV.HC;
+  MEAS.forEach((v, i) => {
+    const a = $(`t2-s${i}`).value, r = read2("HC", v), g = a === r;
+    if (!a) { empty++; return; }
+    if (g) ok++; else notes.push(`${nb(v, 1)} V : ${r === "1" ? `≥ ${nb(vih)} V, donc 1` : r === "0" ? `≤ ${nb(vil)} V, donc 0` : `entre ${nb(vil)} V et ${nb(vih)} V, état non garanti`}.`);
+    $(`t2-r${i}`).innerHTML = ` <span class="tag ${g ? "ok" : "bad"}">${g ? "juste" : "à revoir"}</span>`;
+  });
+  if (empty) { feedback($("t2-fb"), "info", "Il manque des réponses.", " Choisis un état pour chaque entrée."); return; }
+  if (ok === MEAS.length) { feedback($("t2-fb"), "ok", "Tout est juste.", " L'entrée 3 (2,6 V) est suspecte : une sortie saine donne au moins 4,4 V ou au plus 0,33 V. Une tension intermédiaire indique souvent une entrée en l'air, un court-circuit ou une sortie surchargée."); markDone("t2", true); }
+  else { feedback($("t2-fb"), "bad", `${ok} sur ${MEAS.length}.`, " " + notes.join(" ")); markDone("t2", false); }
+};
+
+// ---------------------------------------------- N°3 compatibilité
+let src3 = "TTL", dst3 = "HC";
+function compatSVG(s, d) {
+  const [, , vol, voh] = D.NIV[s], [vil, vih] = D.NIV[d], H = 300, T = 18, xs = 120, xd = 330, w = 60, Y = (u) => T + H * (1 - u / 5);
+  const okH = voh >= vih, okL = vol <= vil;
+  let g = `<svg viewBox="0 0 560 ${H + 2 * T + 30}" width="560" role="img" aria-label="Niveaux de sortie ${FAMN[s]} et d'entrée ${FAMN[d]}">`;
+  // sortie : plages garanties
+  g += `<rect x="${xs}" y="${Y(5)}" width="${w}" height="${Y(voh) - Y(5)}" style="fill:var(--one);opacity:.28"/>`;
+  g += `<rect x="${xs}" y="${Y(vol)}" width="${w}" height="${Y(0) - Y(vol)}" style="fill:var(--zero);opacity:.28"/>`;
+  g += `<rect x="${xs}" y="${Y(5)}" width="${w}" height="${H}" style="fill:none;stroke:var(--ink);stroke-width:2"/>`;
+  // entrée : zones
+  g += `<rect x="${xd}" y="${Y(5)}" width="${w}" height="${Y(vih) - Y(5)}" style="fill:var(--one);opacity:.28"/>`;
+  g += `<rect x="${xd}" y="${Y(vih)}" width="${w}" height="${Y(vil) - Y(vih)}" style="fill:var(--warn-bg);stroke:var(--warn);stroke-width:2;stroke-dasharray:6 4"/>`;
+  g += `<rect x="${xd}" y="${Y(vil)}" width="${w}" height="${Y(0) - Y(vil)}" style="fill:var(--zero);opacity:.28"/>`;
+  g += `<rect x="${xd}" y="${Y(5)}" width="${w}" height="${H}" style="fill:none;stroke:var(--ink);stroke-width:2"/>`;
+  g += `<text x="${xs + w / 2}" y="${H + 2 * T + 18}" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--ink)">sortie ${FAMN[s]}</text>`;
+  g += `<text x="${xd + w / 2}" y="${H + 2 * T + 18}" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--ink)">entrée ${FAMN[d]}</text>`;
+  const sub = (n, i) => `${n}<tspan font-size="11" dy="4">${i}</tspan><tspan dy="-4">`;
+  [[voh, "OH min"], [vol, "OL max"]].forEach(([u, i]) => {
+    g += `<text x="${xs - 8}" y="${Y(u) + 5}" text-anchor="end" font-size="14" style="fill:var(--ink)">${sub("V", i.split(" ")[0])} ${i.split(" ")[1]} = ${nb(u)} V</tspan></text>`;
+  });
+  [[vih, "IH min"], [vil, "IL max"]].forEach(([u, i]) => {
+    g += `<text x="${xd + w + 8}" y="${Y(u) + 5}" font-size="14" style="fill:var(--ink)">${sub("V", i.split(" ")[0])} ${i.split(" ")[1]} = ${nb(u)} V</tspan></text>`;
+  });
+  // liaisons
+  [[voh, okH], [vol, okL]].forEach(([u, ok]) => {
+    g += `<line x1="${xs + w}" y1="${Y(u)}" x2="${xd}" y2="${Y(u)}" style="stroke:${ok ? "var(--ok)" : "var(--bad)"};stroke-width:3;stroke-dasharray:8 5"/>`;
+  });
+  const xm = xd - 26;
+  g += `<line x1="${xm}" y1="${Y(voh)}" x2="${xm}" y2="${Y(vih)}" style="stroke:${okH ? "var(--ok)" : "var(--bad)"};stroke-width:4"/>`;
+  g += `<line x1="${xm}" y1="${Y(vol)}" x2="${xm}" y2="${Y(vil)}" style="stroke:${okL ? "var(--ok)" : "var(--bad)"};stroke-width:4"/>`;
+  return g + "</svg>";
+}
+function draw3() {
+  const [, , vol, voh] = D.NIV[src3], [vil, vih] = D.NIV[dst3], nh = voh - vih, nl = vil - vol, okH = nh >= 0, okL = nl >= 0;
+  $("t3-svg").innerHTML = compatSVG(src3, dst3);
+  $("t3-kv").innerHTML =
+    `<span>État 1</span><span>V<sub>OH</sub> = ${nb(voh)} V ${okH ? "≥" : "<"} V<sub>IH</sub> = ${nb(vih)} V <span class="tag ${okH ? "ok" : "bad"}">${okH ? "marge " + nb(nh) + " V" : "pas reconnu"}</span></span>` +
+    `<span>État 0</span><span>V<sub>OL</sub> = ${nb(vol)} V ${okL ? "≤" : ">"} V<sub>IL</sub> = ${nb(vil)} V <span class="tag ${okL ? "ok" : "bad"}">${okL ? "marge " + nb(nl) + " V" : "pas reconnu"}</span></span>` +
+    `<span><b>Verdict</b></span><span><b>${okH && okL ? "On peut relier directement." : "Liaison directe impossible : choisir un 74HCT ou un convertisseur de niveaux."}</b></span>`;
+  document.querySelectorAll("#t3-src .chip").forEach((c) => c.setAttribute("aria-pressed", c.dataset.k === src3 ? "true" : "false"));
+  document.querySelectorAll("#t3-dst .chip").forEach((c) => c.setAttribute("aria-pressed", c.dataset.k === dst3 ? "true" : "false"));
+}
+["TTL", "HC", "HCT"].forEach((k) => {
+  [["t3-src", (x) => (src3 = x)], ["t3-dst", (x) => (dst3 = x)]].forEach(([id, set]) => {
+    const b = document.createElement("button"); b.className = "chip"; b.dataset.k = k; b.textContent = FAMN[k];
+    b.onclick = () => { set(k); draw3(); }; $(id).appendChild(b);
+  });
+});
+draw3();
+const LINKS3 = [
+  ["Une ancienne carte TTL (74LS) pilote une nouvelle carte en 74HC.", "non", "V<sub>OH</sub> = 2,4 V < V<sub>IH</sub> = 3,5 V : le 1 de la carte TTL n'est pas reconnu. Solution : monter des 74HCT sur la nouvelle carte."],
+  ["Une sortie 74HCT pilote une entrée 74HC, tous deux en 5 V.", "oui", "V<sub>OH</sub> = 4,4 V ≥ 3,5 V et V<sub>OL</sub> = 0,33 V ≤ 1,5 V : marges de 0,9 V et 1,17 V."],
+  ["Un microcontrôleur alimenté en 3,3 V (sortie 1 ≈ 3,3 V) pilote une entrée 74HC alimentée en 5 V.", "non", "3,3 V < V<sub>IH</sub> = 3,5 V : le 1 n'est pas garanti. Solution : un 74HCT (V<sub>IH</sub> = 2 V) ou un convertisseur de niveaux."],
+  ["Le même microcontrôleur 3,3 V (sortie 0 ≤ 0,4 V) pilote une entrée 74HCT alimentée en 5 V.", "oui", "3,3 V ≥ V<sub>IH</sub> = 2 V et 0,4 V ≤ V<sub>IL</sub> = 0,8 V : les deux états sont reconnus. C'est un usage courant du 74HCT."],
+  ["Une sortie 74HC alimentée en 5 V pilote l'entrée d'un capteur alimenté en 3,3 V (limite absolue de l'entrée : 3,6 V).", "non", "Le 1 vaut environ 5 V et dépasse la limite absolue de 3,6 V : l'entrée du capteur peut être détruite. Solution : un convertisseur de niveaux."],
+];
+LINKS3.forEach(([t], i) => {
+  const div = document.createElement("div"); div.className = "case";
+  div.innerHTML = `<div>${i + 1}. ${t}</div><div class="row"><select id="t3-s${i}" aria-label="Liaison ${i + 1}"><option value="">choisir…</option><option value="oui">Oui, directement</option><option value="non">Non</option></select><span id="t3-r${i}"></span></div><div class="muted" id="t3-e${i}" hidden></div>`;
+  $("t3-list").appendChild(div);
+});
+$("t3-check").onclick = () => {
+  let ok = 0, empty = 0;
+  LINKS3.forEach(([, r, e], i) => {
+    const a = $(`t3-s${i}`).value;
+    if (!a) { empty++; $(`t3-r${i}`).innerHTML = ""; $(`t3-e${i}`).hidden = true; return; }
+    const g = a === r; if (g) ok++;
+    $(`t3-r${i}`).innerHTML = `<span class="tag ${g ? "ok" : "bad"}">${g ? "juste" : "à revoir"}</span>`;
+    $(`t3-e${i}`).innerHTML = e; $(`t3-e${i}`).hidden = false;
+  });
+  if (empty) { feedback($("t3-fb"), "info", "Il manque des réponses.", ` ${empty} liaison${empty > 1 ? "s" : ""} sans réponse.`); return; }
+  if (ok === LINKS3.length) { feedback($("t3-fb"), "ok", "Tout est juste.", " Retiens les deux vérifications : le 1 de la sortie doit dépasser V<sub>IH</sub> de l'entrée, et la tension ne doit jamais dépasser la limite absolue de l'entrée."); markDone("t3", true); }
+  else { feedback($("t3-fb"), "bad", `${ok} sur ${LINKS3.length}.`, " L'explication s'affiche sous chaque liaison. Compare avec l'explorateur en haut."); markDone("t3", false); }
+};
+
+// ---------------------------------------------- N°4 propagation
+const TPD = 12;
+function propSVG(n) {
+  const tot = n * TPD, tmax = 260, x0 = 90, W = 470, X = (t) => x0 + W * t / tmax, t0 = 10;
+  let s = `<svg viewBox="0 0 580 210" width="580" role="img" aria-label="Signal d'entrée et de sortie retardé de ${tot} ns">`;
+  for (let t = 0; t <= tmax; t += 50) {
+    s += `<line x1="${X(t)}" y1="20" x2="${X(t)}" y2="170" style="stroke:var(--line);stroke-dasharray:3 4"/>`;
+    s += `<text x="${X(t)}" y="190" text-anchor="middle" font-size="13" style="fill:var(--muted)">${t}</text>`;
+  }
+  s += `<text x="${x0 + W}" y="206" text-anchor="end" font-size="13" style="fill:var(--muted)">t en ns</text>`;
+  const wave = (yb, tr, col) => `<path d="M ${x0} ${yb} L ${X(tr)} ${yb} L ${X(tr)} ${yb - 40} L ${x0 + W} ${yb - 40}" fill="none" style="stroke:${col};stroke-width:3"/>`;
+  s += `<text x="${x0 - 12}" y="62" text-anchor="end" font-size="17" font-weight="700" font-style="italic" style="fill:var(--ink)">entrée</text>` + wave(75, t0, "var(--ink)");
+  s += `<text x="${x0 - 12}" y="142" text-anchor="end" font-size="17" font-weight="700" font-style="italic" style="fill:var(--ink)">vanne</text>` + wave(155, Math.min(t0 + tot, tmax), "var(--one)");
+  if (t0 + tot < tmax) {
+    s += `<line x1="${X(t0)}" y1="98" x2="${X(t0 + tot)}" y2="98" style="stroke:var(--bad);stroke-width:2.5"/>`;
+    s += `<path d="M ${X(t0 + tot)} 98 l -9 -5 v 10 z" style="fill:var(--bad)"/>`;
+    s += `<text x="${(X(t0) + X(t0 + tot)) / 2}" y="92" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--bad)">${tot} ns</text>`;
+  }
+  return s + "</svg>";
+}
+function draw4() { const n = +$("t4-n").value; $("t4-ntxt").textContent = n + (n > 1 ? " portes" : " porte"); $("t4-tot").textContent = n + " × 12 ns = " + n * TPD + " ns"; $("t4-svg").innerHTML = propSVG(n); }
+$("t4-n").oninput = draw4; draw4();
+$("t4-check").onclick = () => {
+  const a = $("t4-a").value, b = $("t4-b").value, c = $("t4-c").value;
+  if (a === "" || !b || c === "") { feedback($("t4-fb"), "info", "Il manque des réponses.", " Réponds aux trois questions b), c) et d)."); return; }
+  const ga = +a === 72, gb = b === "non", gc = +c === 4;
+  [["t4-ra", ga], ["t4-rb", gb], ["t4-rc", gc]].forEach(([id, g]) => ($(id).innerHTML = ` <span class="tag ${g ? "ok" : "bad"}">${g ? "juste" : "à revoir"}</span>`));
+  const notes = [];
+  if (!ga) notes.push("b) 6 × 12 ns = 72 ns.");
+  if (!gb) notes.push("c) 100 ms = 100 000 000 ns : le retard de 72 ns est plus d'un million de fois plus petit.");
+  if (!gc) notes.push("d) 4 portes donnent 48 ns ; 5 portes donnent 60 ns, c'est trop.");
+  const ok = ga && gb && gc;
+  feedback($("t4-fb"), ok ? "ok" : "bad", ok ? "Tout est juste." : "Pas encore.", ok ? " Sur la ligne, le retard des portes ne compte pas. Il devient important dans un processeur, où le signal doit traverser toute la logique en moins d'une période d'horloge (moins de 1 ns à 1 GHz)." : " " + notes.join(" "));
+  markDone("t4", ok);
+};
+
+// ---------------------------------------------- N°5 choix
+const CHOIX = [
+  ["Le 74LS00 d'une ancienne carte TTL est défectueux et n'est plus en stock. Tu le remplaces sans modifier le reste de la carte.",
+    [["74HC00", "Ses entrées attendent 3,5 V pour un 1 ; les sorties TTL voisines ne donnent que 2,4 V."], ["74HCT00", ""], ["CD4011BE", "Même fonction, mais série 4000 : brochage différent du 7400."], ["74LS08", "C'est une porte ET, pas une NON-ET."]], "74HCT00",
+    "Le 74HCT00 a le même brochage et des entrées compatibles TTL."],
+  ["Un thermomètre sans fil fonctionne sur pile et doit tenir plusieurs années.",
+    [["TTL (74LS)", "Le TTL consomme même au repos : la pile serait vite vide."], ["CMOS basse consommation", ""]], "CMOS basse consommation",
+    "Au repos, un CI CMOS ne consomme presque rien."],
+  ["Un capteur de pluie est monté sur un toit à Lausanne : de −25 °C en hiver à 45 °C au soleil.",
+    [["Consumer, 0 … 70 °C", "Il ne fonctionne pas garanti sous 0 °C."], ["Industrial, −40 … 85 °C", ""], ["Military, −55 … 125 °C", "Cela fonctionne, mais c'est bien plus cher et difficile à trouver pour ce besoin."]], "Industrial, −40 … 85 °C",
+    "La plage Industrial couvre −25 … 45 °C avec de la marge."],
+  ["Tu montes un prototype sur breadboard au laboratoire.",
+    [["DIP (N)", ""], ["SOIC (D)", "Un CMS ne s'enfiche pas dans une breadboard sans adaptateur."], ["BGA", "Billes sous le boîtier : il faut un four de soudage."]], "DIP (N)",
+    "Le DIP s'enfiche directement dans la breadboard."],
+  ["Un Arduino Uno (5 V) dialogue avec un capteur 3,3 V sur un bus I²C, où les données vont dans les deux sens.",
+    [["Liaison directe", "Le 5 V de l'Arduino peut détruire l'entrée 3,3 V du capteur."], ["Convertisseur unidirectionnel", "Il ne passe les signaux que dans un sens."], ["Convertisseur bidirectionnel", ""]], "Convertisseur bidirectionnel",
+    "Sur un bus I²C, les données circulent dans les deux sens."],
+];
+CHOIX.forEach(([t, opts], i) => {
+  const div = document.createElement("div"); div.className = "case";
+  div.innerHTML = `<div>${i + 1}. ${t}</div><div class="row"><select id="t5-s${i}" aria-label="Choix ${i + 1}"><option value="">choisir…</option>${opts.map(([o]) => `<option value="${o}">${o}</option>`).join("")}</select><span id="t5-r${i}"></span></div><div class="muted" id="t5-e${i}" hidden></div>`;
+  $("t5-list").appendChild(div);
+});
+$("t5-check").onclick = () => {
+  let ok = 0, empty = 0;
+  CHOIX.forEach(([, opts, good, why], i) => {
+    const a = $(`t5-s${i}`).value;
+    if (!a) { empty++; $(`t5-r${i}`).innerHTML = ""; $(`t5-e${i}`).hidden = true; return; }
+    const g = a === good; if (g) ok++;
+    $(`t5-r${i}`).innerHTML = `<span class="tag ${g ? "ok" : "bad"}">${g ? "juste" : "à revoir"}</span>`;
+    $(`t5-e${i}`).textContent = g ? why : opts.find(([o]) => o === a)[1];
+    $(`t5-e${i}`).hidden = false;
+  });
+  if (empty) { feedback($("t5-fb"), "info", "Il manque des réponses.", ` ${empty} projet${empty > 1 ? "s" : ""} sans réponse.`); return; }
+  if (ok === CHOIX.length) { feedback($("t5-fb"), "ok", "Tout est juste.", " Pour commander un CI, on fixe dans l'ordre : la fonction, la famille (niveaux, consommation), la plage de température, puis le boîtier."); markDone("t5", true); }
+  else { feedback($("t5-fb"), "bad", `${ok} sur ${CHOIX.length}.`, " L'indication sous chaque projet explique pourquoi ton choix ne convient pas."); markDone("t5", false); }
+};
+__LESSONS__
+$("jsx").hidden = true;
+</script>
+</body>
+</html>

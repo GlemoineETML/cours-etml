@@ -1,0 +1,837 @@
+<title>Mesurer sans fausser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F2F5FA; --surface:#FFFFFF; --surface-2:#E9EEF7;
+  --ink:#1D2440; --ink-2:#4A5570; --ink-3:#77839E;
+  --rule:#CBD5E8; --rule-strong:#9FB0CE;
+  --accent:#1E6FC4; --accent-soft:#DCE9F9;
+  --result:#C4161C; --result-soft:#FBE7E7;
+  --valid:#26663F; --valid-soft:#E0EFE5;
+  --planche:#FFFFFF; --planche-rule:#D6DEEC;
+  --shadow:0 1px 2px rgba(29,36,64,.06),0 8px 24px -12px rgba(29,36,64,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#11141F; --surface:#1A1E2C; --surface-2:#232839;
+    --ink:#E8ECF6; --ink-2:#B4BCD2; --ink-3:#8791A9;
+    --rule:#2E3448; --rule-strong:#454D66;
+    --accent:#6BA8E8; --accent-soft:#1C2C42;
+    --result:#FF7B7B; --result-soft:#38222A;
+    --valid:#7FCB9C; --valid-soft:#1B3026;
+    --planche:#F4F6FA; --planche-rule:#C9D3E5;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#11141F; --surface:#1A1E2C; --surface-2:#232839;
+  --ink:#E8ECF6; --ink-2:#B4BCD2; --ink-3:#8791A9;
+  --rule:#2E3448; --rule-strong:#454D66;
+  --accent:#6BA8E8; --accent-soft:#1C2C42;
+  --result:#FF7B7B; --result-soft:#38222A;
+  --valid:#7FCB9C; --valid-soft:#1B3026;
+  --planche:#F4F6FA; --planche-rule:#C9D3E5;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding-block:0 96px;padding-left:20px;padding-right:20px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.cols>*{min-width:0}
+@media(min-width:1020px){
+  .cols{grid-template-columns:206px minmax(0,1fr);gap:52px;align-items:start}
+  nav.index{position:sticky;top:24px;padding-top:40px}
+}
+/* ---------- en-tête ---------- */
+header.top{padding-block:52px 30px;border-bottom:2px solid var(--ink);margin-bottom:34px}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 14px
+}
+h1{
+  font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:clamp(2.1rem,5.4vw,3.3rem);
+  line-height:1.05;letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance
+}
+.lede{font-size:1.06rem;color:var(--ink-2);max-width:62ch;margin:0}
+/* ---------- index ---------- */
+nav.index ol{list-style:none;margin:0;padding:0;font-size:13.5px}
+nav.index li{margin:0 0 3px}
+nav.index a{
+  display:block;padding:4px 8px;border-radius:4px;color:var(--ink-2);text-decoration:none;
+  border-left:2px solid transparent
+}
+nav.index a:hover,nav.index a:focus-visible{color:var(--ink);background:var(--surface-2);border-left-color:var(--accent)}
+nav.index .num{font-family:"IBM Plex Mono",monospace;color:var(--ink-3);margin-right:7px;font-size:12px}
+/* ---------- sections ---------- */
+section{margin:0 0 54px;scroll-margin-top:20px}
+h2{
+  font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:1.55rem;letter-spacing:-.01em;
+  margin:0 0 6px;text-wrap:balance;display:flex;align-items:baseline;gap:12px
+}
+h2 .h-num{
+  font-family:"IBM Plex Mono",monospace;font-size:.72em;font-weight:400;color:var(--accent);
+  letter-spacing:.06em
+}
+h3{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:1.06rem;margin:26px 0 8px}
+p{max-width:66ch;margin:0 0 14px}
+.sub{color:var(--ink-2);font-size:.96rem;max-width:66ch;margin:0 0 20px}
+strong{font-weight:600}
+/* ---------- planches ---------- */
+figure{margin:20px 0;background:var(--planche);border:1px solid var(--planche-rule);border-radius:3px;padding:16px 18px;overflow-x:auto;box-shadow:var(--shadow)}
+figure svg{display:block;width:100%;max-width:100%;height:auto;min-width:420px}
+figcaption{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:#66718C;margin-top:12px
+}
+/* ---------- encadrés ---------- */
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:5px;padding:20px 22px;box-shadow:var(--shadow)}
+.grid2{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:720px){.grid2{grid-template-columns:1fr 1fr}}
+.grid3{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:760px){.grid3{grid-template-columns:repeat(3,1fr)}}
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:13px 16px;border-radius:0 4px 4px 0;margin:18px 0;font-size:.96rem}
+.warn{border-left:3px solid var(--result);background:var(--result-soft);padding:13px 16px;border-radius:0 4px 4px 0;margin:18px 0;font-size:.96rem}
+.note p,.warn p{margin:0;max-width:none}
+/* ---------- listes ---------- */
+ul.plain{list-style:none;padding:0;margin:0 0 14px}
+ul.plain li{padding:6px 0 6px 22px;position:relative;max-width:66ch}
+ul.plain li::before{content:"";position:absolute;left:4px;top:15px;width:6px;height:6px;background:var(--accent);border-radius:1px}
+ol.steps{list-style:none;counter-reset:st;padding:0;margin:0}
+ol.steps li{counter-increment:st;position:relative;padding:12px 0 12px 52px;border-bottom:1px solid var(--rule);max-width:70ch}
+ol.steps li:last-child{border-bottom:0}
+ol.steps li::before{
+  content:counter(st);position:absolute;left:0;top:12px;width:30px;height:30px;
+  display:grid;place-items:center;border:1.5px solid var(--accent);color:var(--accent);
+  border-radius:50%;font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:500
+}
+/* ---------- formules ---------- */
+.m{font-family:"IBM Plex Mono",monospace;font-size:.97em;white-space:nowrap}
+.v{font-style:italic}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .18em;line-height:1.25}
+.fr>span:first-child{border-bottom:1.2px solid currentColor;padding:0 .4em}
+.fr>span:last-child{padding:.08em .4em 0}
+/* ---------- calcul en trois temps ---------- */
+.calc{border:1px solid var(--rule);border-radius:5px;background:var(--surface);margin:18px 0;overflow:hidden}
+.calc>.calc-h{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-2);background:var(--surface-2);padding:9px 16px;border-bottom:1px solid var(--rule)
+}
+.step{display:grid;grid-template-columns:104px minmax(0,1fr);gap:14px;align-items:center;padding:11px 16px;border-bottom:1px dashed var(--rule)}
+.step:last-child{border-bottom:0}
+.step .lab{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);padding-top:2px
+}
+.step .eq{overflow-x:auto;color:var(--ink)}
+.step.is-result{background:var(--result-soft)}
+.step.is-result .lab{color:var(--result)}
+.step.is-result .eq{color:var(--result);font-weight:500}
+.step.is-check{background:var(--valid-soft)}
+.step.is-check .lab,.step.is-check .eq{color:var(--valid)}
+@media(max-width:620px){.step{grid-template-columns:1fr;gap:2px}}
+body.quiz .step.is-result .eq,body.quiz .step.is-check .eq{visibility:hidden}
+body.quiz .step.is-result,body.quiz .step.is-check{position:relative}
+body.quiz .step.is-result::after,body.quiz .step.is-check::after{
+  content:"masqué";position:absolute;left:134px;font-family:"IBM Plex Mono",monospace;
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)
+}
+.step.revealed .eq{visibility:visible !important}
+body.quiz .step.revealed::after{content:none}
+@media(max-width:620px){body.quiz .step.is-result::after,body.quiz .step.is-check::after{left:16px}}
+/* ---------- tableau ---------- */
+.tw{overflow-x:auto;margin:18px 0}
+table{border-collapse:collapse;width:100%;min-width:460px;font-size:.94rem}
+th,td{border:1px solid var(--rule);padding:8px 12px;text-align:center;font-variant-numeric:tabular-nums}
+th{background:var(--surface-2);font-weight:600;font-family:Archivo,sans-serif}
+td.k{font-family:"IBM Plex Mono",monospace;font-weight:500;background:var(--surface-2)}
+/* ---------- calculateurs ---------- */
+.tool{border:1px solid var(--rule-strong);border-radius:6px;background:var(--surface);margin:20px 0;overflow:hidden;box-shadow:var(--shadow)}
+.tool-h{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink);background:var(--surface-2);padding:10px 16px;border-bottom:1px solid var(--rule);
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline
+}
+.tool-h .hint{text-transform:none;letter-spacing:0;color:var(--ink-3);font-family:"IBM Plex Sans",sans-serif;font-size:12.5px}
+.fields{display:grid;gap:12px;grid-template-columns:1fr;padding:16px}
+@media(min-width:560px){.fields{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:860px){.fields.f4{grid-template-columns:repeat(4,1fr)}.fields.f3{grid-template-columns:repeat(3,1fr)}}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.f input{
+  font-family:"IBM Plex Mono",monospace;font-size:15px;padding:9px 11px;width:100%;
+  border:1px solid var(--rule-strong);border-radius:4px;background:var(--ground);color:var(--ink);
+  font-variant-numeric:tabular-nums
+}
+.f input:focus{border-color:var(--accent);outline:2px solid var(--accent);outline-offset:1px}
+.out{border-top:1px solid var(--rule);padding:4px 16px 16px}
+.orow{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px dashed var(--rule);align-items:baseline}
+.orow:last-child{border-bottom:0}
+.orow .ok{font-size:.93rem;color:var(--ink-2)}
+.orow .ov{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.orow.hi .ov{color:var(--result);font-weight:500;font-size:1.06rem}
+.verdict{margin:14px 16px 16px;padding:11px 14px;border-radius:4px;font-size:.95rem;border-left:3px solid}
+.verdict.good{background:var(--valid-soft);border-color:var(--valid);color:var(--valid)}
+.verdict.bad{background:var(--result-soft);border-color:var(--result);color:var(--result)}
+/* ---------- quiz ---------- */
+.q{border-top:1px solid var(--rule);padding:16px 0}
+.q:first-of-type{border-top:0}
+.q p{margin:0 0 10px;font-weight:500}
+details.rep{margin:0}
+details.rep summary{
+  cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-family:"IBM Plex Mono",monospace;
+  font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);
+  border:1px solid var(--accent);border-radius:3px;padding:5px 11px;list-style:none
+}
+details.rep summary::-webkit-details-marker{display:none}
+details.rep summary:hover{background:var(--accent-soft)}
+details.rep[open] summary{color:var(--ink-3);border-color:var(--rule)}
+details.rep .body{margin-top:12px;padding-left:14px;border-left:2px solid var(--result);color:var(--ink-2)}
+details.rep .body p{margin:0 0 8px}
+details.rep .body p:last-child{margin:0}
+/* ---------- auto-évaluation ---------- */
+.check{display:grid;gap:0}
+.check label{
+  display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:12px;align-items:start;
+  padding:11px 4px;border-bottom:1px solid var(--rule);cursor:pointer
+}
+.check label:last-child{border-bottom:0}
+.check input{margin:4px 0 0;width:17px;height:17px;accent-color:var(--accent)}
+.check .lz{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);white-space:nowrap}
+.check input:checked+span{color:var(--ink-3);text-decoration:line-through}
+/* ---------- barre d'outils ---------- */
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 6px;align-items:center}
+button.btn{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.07em;text-transform:uppercase;
+  background:var(--surface);color:var(--ink);border:1px solid var(--rule-strong);border-radius:3px;
+  padding:8px 14px;cursor:pointer
+}
+button.btn:hover{border-color:var(--accent);color:var(--accent)}
+button.btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+footer{border-top:1px solid var(--rule);margin-top:46px;padding-top:18px;color:var(--ink-3);font-size:.86rem}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <p class="eyebrow">El Dim1 · Intelec · semaine 5 · LZ 1951</p>
+  <h1>Mesurer sans fausser</h1>
+  <p class="lede">Un appareil de mesure ne se contente pas de regarder : dès qu'il est
+  branché, il fait partie du circuit. Cette fiche te donne ce qu'il y a dans un voltmètre,
+  un ampèremètre et un ohmmètre, de combien chacun fausse ta mesure, et les deux règles
+  qui te disent quand tu peux faire confiance à l'affichage.</p>
+</header>
+
+<div class="cols">
+<nav class="index" aria-label="Sommaire">
+  <ol>
+    <li><a href="#dedans"><span class="num">01</span>Ce qu'il y a dedans</a></li>
+    <li><a href="#voltmetre"><span class="num">02</span>Le voltmètre</a></li>
+    <li><a href="#amperemetre"><span class="num">03</span>L'ampèremètre</a></li>
+    <li><a href="#regles"><span class="num">04</span>Les deux règles</a></li>
+    <li><a href="#ohmmetre"><span class="num">05</span>L'ohmmètre</a></li>
+    <li><a href="#annum"><span class="num">06</span>Analogique ou numérique</a></li>
+    <li><a href="#ecart"><span class="num">07</span>L'écart</a></li>
+    <li><a href="#precision"><span class="num">08</span>La précision</a></li>
+    <li><a href="#synthese"><span class="num">09</span>Précision ≠ influence</a></li>
+    <li><a href="#outils"><span class="num">10</span>Les calculateurs</a></li>
+    <li><a href="#reflexes"><span class="num">11</span>Réflexes et formulaire</a></li>
+    <li><a href="#test"><span class="num">12</span>Teste-toi</a></li>
+    <li><a href="#bilan"><span class="num">13</span>Où j'en suis</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<div class="tools">
+  <button class="btn" id="quizBtn" aria-pressed="false">Masquer les résultats</button>
+  <span style="font-size:.86rem;color:var(--ink-3)">Clique sur une ligne masquée pour la révéler.</span>
+</div>
+
+<!-- ============================================================ 01 -->
+<section id="dedans">
+  <h2><span class="h-num">01</span>Ce qu'il y a dans un appareil</h2>
+  <p class="sub">Entre ses deux bornes, chaque appareil est une résistance. C'est tout ce
+  que le circuit en voit — et c'est tout ce dont tu as besoin pour calculer.</p>
+
+  <figure>{{SVG:V1_dans_voltmetre}}<figcaption>Le voltmètre : une grande résistance, mais finie</figcaption></figure>
+  <figure>{{SVG:A1_dans_amperemetre}}<figcaption>L'ampèremètre : une petite résistance, mais pas nulle</figcaption></figure>
+  <figure>{{SVG:O1_dans_ohmmetre}}<figcaption>L'ohmmètre : le seul des trois qui fabrique son propre courant</figcaption></figure>
+
+  <div class="grid3">
+    <div class="card">
+      <h3 style="margin-top:0">Voltmètre</h3>
+      <p class="sub" style="margin:0">Idéal : <span class="m"><span class="v">R</span><sub>V</sub> → ∞</span>, il ne prend aucun courant.<br>
+      Réel : 10 MΩ sur un numérique.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Ampèremètre</h3>
+      <p class="sub" style="margin:0">Idéal : <span class="m"><span class="v">R</span><sub>A</sub> → 0</span>, aucune tension perdue.<br>
+      Réel : de quelques ohms à quelques dizaines.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Ohmmètre</h3>
+      <p class="sub" style="margin:0">Il injecte son propre courant.<br>
+      D'où : circuit hors tension, toujours.</p>
+    </div>
+  </div>
+
+  <div class="note"><p>Les deux idéaux sont opposés : l'infini d'un côté, le zéro de l'autre.
+  Aucun appareil réel n'y arrive. Toute la question du chapitre est : <strong>de combien
+  s'en écarte-t-il ?</strong></p></div>
+</section>
+
+<!-- ============================================================ 02 -->
+<section id="voltmetre">
+  <h2><span class="h-num">02</span>Le voltmètre change ce qu'il mesure</h2>
+  <p class="sub">Branché en parallèle, il ajoute sa résistance au groupe qu'il mesure.
+  Le groupe devient plus petit, donc la tension tombe et le courant total monte.</p>
+
+  <figure>{{SVG:V2_avant_apres}}<figcaption>Diviseur 5 MΩ / 5 MΩ sous 10 V, voltmètre numérique de 10 MΩ</figcaption></figure>
+
+  <div class="calc">
+    <div class="calc-h">La méthode, en deux étapes</div>
+    <div class="step"><span class="lab">① le groupe</span><span class="eq m"><span class="v">R</span><sub>2V</sub> = <span class="fr"><span><span class="v">R</span><sub>2</sub> · <span class="v">R</span><sub>V</sub></span><span><span class="v">R</span><sub>2</sub> + <span class="v">R</span><sub>V</sub></span></span> &nbsp; [Ω]</span></div>
+    <div class="step"><span class="lab">② le diviseur</span><span class="eq m"><span class="v">U</span><sub>mes</sub> = <span class="v">U</span> · <span class="fr"><span><span class="v">R</span><sub>2V</sub></span><span><span class="v">R</span><sub>1</sub> + <span class="v">R</span><sub>2V</sub></span></span> &nbsp; [V]</span></div>
+  </div>
+  <p class="sub">Rien de nouveau : une réduction parallèle, puis un diviseur de tension.
+  Le voltmètre est une résistance de plus, pas un cas particulier.</p>
+
+  <div class="calc">
+    <div class="calc-h">L'exemple en entier</div>
+    <div class="step"><span class="lab">numérique</span><span class="eq m"><span class="v">R</span><sub>2V</sub> = <span class="fr"><span>5 · 10<sup>6</sup> · 10 · 10<sup>6</sup></span><span>15 · 10<sup>6</sup></span></span> = 3,33 · 10<sup>6</sup> [Ω]</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq m"><span class="v">U</span><sub>mes</sub> = 10 · <span class="fr"><span>3,33 · 10<sup>6</sup></span><span>8,33 · 10<sup>6</sup></span></span> = 4,00 [V]</span></div>
+    <div class="step is-result"><span class="lab">résultat</span><span class="eq m"><span class="v">U</span><sub>mes</sub> = 4,00 [V] au lieu de 5,00 [V]</span></div>
+    <div class="step is-check"><span class="lab">contrôle · nœuds</span><span class="eq m"><span class="v">I</span><sub>2</sub> + <span class="v">I</span><sub>V</sub> = 0,80 + 0,40 = 1,20 [µA] = <span class="v">I</span><sub>1</sub></span></div>
+  </div>
+
+  <div class="warn"><p><strong>Le point à retenir.</strong> 10 MΩ, c'est un bon appareil —
+  et la mesure est quand même fausse de 20 %, parce que le diviseur est en mégohms.
+  Ce n'est pas l'appareil qui est mauvais, c'est le circuit qui est trop résistant pour lui.</p></div>
+</section>
+
+<!-- ============================================================ 03 -->
+<section id="amperemetre">
+  <h2><span class="h-num">03</span>L'ampèremètre aussi</h2>
+  <p class="sub">Branché en série, il ajoute sa résistance à celle du circuit. Le courant
+  tombe, et une partie de la tension reste dans l'appareil.</p>
+
+  <figure>{{SVG:A2_avant_apres}}<figcaption>Boucle 10 V / 180 Ω, ampèremètre de 20 Ω</figcaption></figure>
+
+  <div class="calc">
+    <div class="calc-h">La méthode et l'exemple</div>
+    <div class="step"><span class="lab">courant</span><span class="eq m"><span class="v">I</span><sub>mes</sub> = <span class="fr"><span><span class="v">U</span></span><span><span class="v">R</span> + <span class="v">R</span><sub>A</sub></span></span> &nbsp; [A]</span></div>
+    <div class="step"><span class="lab">tension volée</span><span class="eq m"><span class="v">U</span><sub>A</sub> = <span class="v">R</span><sub>A</sub> · <span class="v">I</span><sub>mes</sub> &nbsp; [V]</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq m"><span class="v">I</span><sub>vrai</sub> = <span class="fr"><span>10</span><span>180</span></span> = 55,6 [mA] &nbsp;&nbsp; <span class="v">I</span><sub>mes</sub> = <span class="fr"><span>10</span><span>200</span></span> = 50,0 [mA]</span></div>
+    <div class="step is-result"><span class="lab">résultat</span><span class="eq m"><span class="v">I</span><sub>mes</sub> = 50,0 [mA] &nbsp;·&nbsp; <span class="v">U</span><sub>A</sub> = 1,00 [V]</span></div>
+    <div class="step is-check"><span class="lab">contrôle · mailles</span><span class="eq m"><span class="v">U</span><sub>A</sub> + <span class="v">U</span><sub>R</sub> = 1,00 + 9,00 = 10,0 [V] = <span class="v">U</span></span></div>
+  </div>
+
+  <div class="note"><p>Ce volt perdu porte un nom dans les fiches techniques : la
+  <strong>chute de tension de l'ampèremètre</strong>, ou <em>burden voltage</em>. Si ton
+  montage a besoin de ses 10 V entiers, il ne les a plus.</p></div>
+</section>
+
+<!-- ============================================================ 04 -->
+<section id="regles">
+  <h2><span class="h-num">04</span>Les deux règles, et le piège</h2>
+
+  <div class="calc">
+    <div class="calc-h">À vérifier AVANT de brancher</div>
+    <div class="step"><span class="lab">voltmètre</span><span class="eq m"><span class="v">R</span><sub>V</sub> ≥ 100 · <span class="v">R</span> &nbsp; [Ω] &nbsp;— beaucoup PLUS GRAND que ce qu'il mesure</span></div>
+    <div class="step"><span class="lab">ampèremètre</span><span class="eq m"><span class="v">R</span><sub>A</sub> ≤ <span class="fr"><span><span class="v">R</span></span><span>100</span></span> &nbsp; [Ω] &nbsp;— beaucoup PLUS PETIT que ce qu'il traverse</span></div>
+  </div>
+  <p class="sub">Le facteur 100 n'est pas magique : c'est celui qui garde l'erreur sous 1 %.
+  En dessous de 10 kΩ on ne se pose pas la question ; au-dessus de 100 kΩ on la pose toujours.</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Résistance mesurée</th><th>Il faudrait <span class="m"><span class="v">R</span><sub>V</sub></span></th><th>Un 10 MΩ suffit-il ?</th></tr></thead>
+    <tbody>
+      <tr><td class="k">10 kΩ</td><td>1 MΩ</td><td>oui, très largement</td></tr>
+      <tr><td class="k">100 kΩ</td><td>10 MΩ</td><td>tout juste</td></tr>
+      <tr><td class="k">5 MΩ</td><td>500 MΩ</td><td>non — écart de 20 %</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="warn"><p><strong>Le piège mortel.</strong> Un ampèremètre a une résistance
+  quasi nulle. Branché <em>en parallèle</em> sur une résistance, il la court-circuite : tout
+  le courant de la source passe dans l'appareil, et le fusible saute. Avant chaque mise sous
+  tension : « où est mon ampèremètre, et ma fiche est-elle encore dans la borne A ? »</p></div>
+</section>
+
+<!-- ============================================================ 05 -->
+<section id="ohmmetre">
+  <h2><span class="h-num">05</span>L'ohmmètre sur un circuit monté</h2>
+  <p class="sub">Le reste du circuit se met en parallèle sur la résistance mesurée. Et un
+  groupe parallèle est toujours plus petit que la plus petite de ses résistances.</p>
+
+  <figure>{{SVG:94_ohmmetre}}<figcaption>À gauche la mesure correcte, à droite ce qui se passe vraiment sur une carte</figcaption></figure>
+
+  <div class="calc">
+    <div class="calc-h">Ce qu'on lit vraiment</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq m"><span class="v">R</span><sub>lue</sub> = <span class="fr"><span><span class="v">R</span> · <span class="v">R</span><sub>reste</sub></span><span><span class="v">R</span> + <span class="v">R</span><sub>reste</sub></span></span> &nbsp; [Ω]</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq m"><span class="v">R</span><sub>lue</sub> = <span class="fr"><span>12 · 10<sup>3</sup> · 4 · 10<sup>3</sup></span><span>16 · 10<sup>3</sup></span></span> = 3 · 10<sup>3</sup> [Ω]</span></div>
+    <div class="step is-result"><span class="lab">résultat</span><span class="eq m"><span class="v">R</span><sub>lue</sub> = 3 [kΩ] au lieu de 12 [kΩ]</span></div>
+  </div>
+
+  <h3>Les trois règles absolues</h3>
+  <ol class="steps">
+    <li>Circuit <strong>hors tension</strong> — l'ohmmètre injecte son propre courant.</li>
+    <li>Composant <strong>isolé</strong> — au moins une patte dessoudée.</li>
+    <li>Ne pas tenir les deux pointes entre les doigts — ton corps vaut quelques dizaines de kΩ,
+    et il se met en parallèle comme le reste.</li>
+  </ol>
+</section>
+
+<!-- ============================================================ 06 -->
+<section id="annum">
+  <h2><span class="h-num">06</span>Analogique ou numérique</h2>
+  <p class="sub">Une seule différence compte pour l'effet de charge : sur un analogique,
+  la résistance d'entrée <strong>change avec le calibre</strong> ; sur un numérique, elle
+  est fixe.</p>
+
+  <figure>{{SVG:AN1_comparaison}}<figcaption>Sensibilité 20 kΩ/V contre impédance fixe de 10 MΩ</figcaption></figure>
+
+  <div class="calc">
+    <div class="calc-h">La résistance d'entrée d'un analogique</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq m"><span class="v">R</span><sub>V</sub> = <span class="v">S</span> · <span class="v">U</span><sub>calibre</sub> &nbsp; [Ω]</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq m"><span class="v">R</span><sub>V</sub> = 20 · 10<sup>3</sup> · 10 = 200 · 10<sup>3</sup> [Ω] = 200 [kΩ]</span></div>
+  </div>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Sur la même mesure de 4,00 V</th><th>Analogique 20 kΩ/V, calibre 10 V</th><th>Fluke 87</th></tr></thead>
+    <tbody>
+      <tr><td class="k">influence</td><td>200 kΩ</td><td>10 MΩ, fixes</td></tr>
+      <tr><td class="k">précision</td><td>classe 1,5 → ± 0,15 V (± 3,75 %)</td><td>± 0,003 V (± 0,075 %)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="sub">Le numérique gagne des deux côtés, d'un facteur 50 chaque fois. Mais aucun
+  des deux ne supprime l'influence — il la rend seulement plus petite.</p>
+</section>
+
+<!-- ============================================================ 07 -->
+<section id="ecart">
+  <h2><span class="h-num">07</span>Chiffrer ce que l'appareil a faussé</h2>
+
+  <div class="calc">
+    <div class="calc-h">L'écart</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq m">écart = <span class="fr"><span>mesure − valeur vraie</span><span>valeur vraie</span></span> · 100 &nbsp; [%]</span></div>
+    <div class="step is-result"><span class="lab">voltmètre</span><span class="eq m"><span class="fr"><span>4,00 − 5,00</span><span>5,00</span></span> · 100 = − 20 [%]</span></div>
+    <div class="step is-result"><span class="lab">ampèremètre</span><span class="eq m"><span class="fr"><span>50,0 − 55,6</span><span>55,6</span></span> · 100 = − 10 [%]</span></div>
+  </div>
+
+  <div class="note"><p>L'écart d'influence est <strong>toujours négatif</strong> : un appareil
+  ne peut que faire baisser la grandeur qu'il mesure. Si tu trouves un écart positif, c'est
+  une erreur de calcul, pas un effet de charge.</p></div>
+  <p class="sub">Et ce n'est pas une incertitude : c'est une <strong>erreur systématique</strong>,
+  calculable à l'avance. La tolérance des résistances, elle, est aléatoire — les deux causes
+  se cumulent mais ne se traitent pas pareil.</p>
+</section>
+
+<!-- ============================================================ 08 -->
+<section id="precision">
+  <h2><span class="h-num">08</span>La précision : lire la fiche technique</h2>
+  <p class="sub">Trois mots à connaître : l'<strong>échelle</strong> que tu choisis, la
+  <strong>résolution</strong> qu'elle impose, la <strong>précision</strong> qui en découle.</p>
+
+  <figure>{{SVG:F1_fiche_fluke87}}<figcaption>Fluke, Users Manual 80 Series V, table 12 — colonne Model 87</figcaption></figure>
+
+  <div class="calc">
+    <div class="calc-h">Exemple de calcul — U lue = 9,56 V sur l'échelle 60,00 V</div>
+    <div class="step"><span class="lab">algébrique</span><span class="eq m">Précision = ± ( <span class="v">p</span> % de <span class="v">U</span><sub>lue</sub> + <span class="v">n</span> × résolution )</span></div>
+    <div class="step"><span class="lab">numérique</span><span class="eq m">± ( 0,05 % de 9,56 + 1 × 0,01 ) = ± ( 4,78 · 10<sup>−3</sup> + 10 · 10<sup>−3</sup> )</span></div>
+    <div class="step is-result"><span class="lab">résultat</span><span class="eq m"><span class="v">U</span> = 9,56 [V] ± 15 [mV] — entre 9,545 [V] et 9,575 [V]</span></div>
+  </div>
+
+  <div class="warn"><p><strong>Le pourcentage suit la lecture, le « + 1 » suit l'échelle.</strong>
+  Une fois la résolution, c'est-à-dire une unité du dernier chiffre affiché — dix fois plus
+  grosse sur l'échelle 60 V que sur l'échelle 6 V. D'où la règle : <strong>la plus petite
+  échelle qui contient la mesure</strong>.</p></div>
+</section>
+
+<!-- ============================================================ 09 -->
+<section id="synthese">
+  <h2><span class="h-num">09</span>Précision n'est pas influence</h2>
+
+  <div class="calc">
+    <div class="calc-h">Sur notre mesure de 4,00 V, échelle 6,000 V</div>
+    <div class="step is-check"><span class="lab">précision</span><span class="eq m">± ( 0,05 % de 4,00 + 1 × 0,001 ) = ± 3,00 [mV] &nbsp; soit &nbsp; ± 0,075 [%]</span></div>
+    <div class="step is-result"><span class="lab">influence</span><span class="eq m"><span class="fr"><span>4,00 − 5,00</span><span>5,00</span></span> · 100 = − 20 [%]</span></div>
+  </div>
+
+  <p>La <strong>précision</strong>, c'est l'erreur de l'affichage. L'<strong>influence</strong>,
+  c'est l'erreur du branchement. Ici, l'influence est près de <strong>270 fois</strong> plus
+  grande que la précision.</p>
+  <div class="warn"><p>Un appareil très précis branché au mauvais endroit reste très faux —
+  et aucune fiche technique ne te le dira. Seule la règle <span class="m"><span class="v">R</span><sub>V</sub> ≥ 100 · <span class="v">R</span></span>,
+  vérifiée avant de brancher, te protège de ça.</p></div>
+</section>
+
+<!-- ============================================================ 10 -->
+<section id="outils">
+  <h2><span class="h-num">10</span>Les calculateurs</h2>
+  <p class="sub">Entre tes propres valeurs : la page recalcule tout, y compris le verdict de
+  la règle. Utilise-les au labo pour savoir <em>avant</em> de brancher si ta mesure va tenir.</p>
+
+  <div class="tool">
+    <div class="tool-h"><span>Influence du voltmètre</span><span class="hint">diviseur R₁ – R₂, mesure aux bornes de R₂ · écris 470k ou 5M</span></div>
+    <div class="fields f4">
+      <div class="f"><label for="v-u">U source [V]</label><input id="v-u" type="text" inputmode="decimal" value="10"></div>
+      <div class="f"><label for="v-r1">R₁ [Ω]</label><input id="v-r1" type="text" value="5M"></div>
+      <div class="f"><label for="v-r2">R₂ [Ω]</label><input id="v-r2" type="text" value="5M"></div>
+      <div class="f"><label for="v-rv">R_V du voltmètre [Ω]</label><input id="v-rv" type="text" value="10M"></div>
+    </div>
+    <div class="out">
+      <div class="orow"><span class="ok">Tension vraie, sans appareil</span><span class="ov" id="v-vraie">—</span></div>
+      <div class="orow"><span class="ok">Groupe R₂ // R_V</span><span class="ov" id="v-r2v">—</span></div>
+      <div class="orow hi"><span class="ok">Tension affichée</span><span class="ov" id="v-mes">—</span></div>
+      <div class="orow hi"><span class="ok">Écart</span><span class="ov" id="v-ecart">—</span></div>
+    </div>
+    <div class="verdict" id="v-verdict">—</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h"><span>Influence de l'ampèremètre</span><span class="hint">source, résistance, appareil en série · écris 1k5 ou 2k si tu veux</span></div>
+    <div class="fields f3">
+      <div class="f"><label for="a-u">U source [V]</label><input id="a-u" type="text" inputmode="decimal" value="10"></div>
+      <div class="f"><label for="a-r">R du circuit [Ω]</label><input id="a-r" type="text" inputmode="decimal" value="180"></div>
+      <div class="f"><label for="a-ra">R_A de l'ampèremètre [Ω]</label><input id="a-ra" type="text" inputmode="decimal" value="20"></div>
+    </div>
+    <div class="out">
+      <div class="orow"><span class="ok">Courant vrai, sans appareil</span><span class="ov" id="a-vrai">—</span></div>
+      <div class="orow hi"><span class="ok">Courant affiché</span><span class="ov" id="a-mes">—</span></div>
+      <div class="orow"><span class="ok">Tension perdue dans l'appareil</span><span class="ov" id="a-ua">—</span></div>
+      <div class="orow hi"><span class="ok">Écart</span><span class="ov" id="a-ecart">—</span></div>
+    </div>
+    <div class="verdict" id="a-verdict">—</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h"><span>Précision d'un Fluke 87</span><span class="hint">tension continue · ± (0,05 % + 1) · échelle choisie automatiquement</span></div>
+    <div class="fields">
+      <div class="f"><label for="p-u">Tension lue [V]</label><input id="p-u" type="text" inputmode="decimal" value="4.00"></div>
+      <div class="f"><label for="p-ech">Échelle retenue</label><input id="p-ech" type="text" value="—" readonly></div>
+    </div>
+    <div class="out">
+      <div class="orow"><span class="ok">Résolution de cette échelle</span><span class="ov" id="p-res">—</span></div>
+      <div class="orow"><span class="ok">Terme en pourcentage</span><span class="ov" id="p-pc">—</span></div>
+      <div class="orow"><span class="ok">Terme de résolution</span><span class="ov" id="p-dig">—</span></div>
+      <div class="orow hi"><span class="ok">Précision</span><span class="ov" id="p-tot">—</span></div>
+      <div class="orow"><span class="ok">La valeur vraie est entre</span><span class="ov" id="p-bornes">—</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 11 -->
+<section id="reflexes">
+  <h2><span class="h-num">11</span>Les cinq réflexes, et le formulaire</h2>
+  <ol class="steps">
+    <li>Quelle <strong>grandeur</strong> ? Tension, courant ou résistance.</li>
+    <li>Où est ma <strong>fiche</strong> ? Borne V/Ω ou borne A.</li>
+    <li>En <strong>série</strong> ou en <strong>parallèle</strong> ?</li>
+    <li>Le plus <strong>grand calibre</strong> d'abord, puis on descend.</li>
+    <li>Mon appareil va-t-il <strong>fausser</strong> la mesure ?
+      <span class="m"><span class="v">R</span><sub>V</sub> ≥ 100 <span class="v">R</span></span>,
+      <span class="m"><span class="v">R</span><sub>A</sub> ≤ <span class="v">R</span>/100</span>.</li>
+  </ol>
+  <p class="sub">Le cinquième est le nouveau. Les quatre premiers, tu les avais déjà.</p>
+
+  <div class="calc">
+    <div class="calc-h">Le formulaire du chapitre</div>
+    <div class="step"><span class="lab">voltmètre</span><span class="eq m"><span class="v">R</span><sub>2V</sub> = <span class="fr"><span><span class="v">R</span><sub>2</sub> · <span class="v">R</span><sub>V</sub></span><span><span class="v">R</span><sub>2</sub> + <span class="v">R</span><sub>V</sub></span></span> &nbsp;&nbsp; <span class="v">U</span><sub>mes</sub> = <span class="v">U</span> · <span class="fr"><span><span class="v">R</span><sub>2V</sub></span><span><span class="v">R</span><sub>1</sub> + <span class="v">R</span><sub>2V</sub></span></span></span></div>
+    <div class="step"><span class="lab">ampèremètre</span><span class="eq m"><span class="v">I</span><sub>mes</sub> = <span class="fr"><span><span class="v">U</span></span><span><span class="v">R</span> + <span class="v">R</span><sub>A</sub></span></span> &nbsp;&nbsp; <span class="v">U</span><sub>A</sub> = <span class="v">R</span><sub>A</sub> · <span class="v">I</span><sub>mes</sub></span></div>
+    <div class="step"><span class="lab">ohmmètre</span><span class="eq m"><span class="v">R</span><sub>lue</sub> = <span class="fr"><span><span class="v">R</span> · <span class="v">R</span><sub>reste</sub></span><span><span class="v">R</span> + <span class="v">R</span><sub>reste</sub></span></span> &nbsp;&nbsp; analogique : <span class="v">R</span><sub>V</sub> = <span class="v">S</span> · <span class="v">U</span><sub>calibre</sub></span></div>
+    <div class="step"><span class="lab">précision</span><span class="eq m">numérique : ± ( <span class="v">p</span> % de <span class="v">U</span><sub>lue</sub> + <span class="v">n</span> × résolution ) &nbsp;&nbsp; analogique : <span class="fr"><span>classe</span><span>100</span></span> · <span class="v">U</span><sub>calibre</sub></span></div>
+    <div class="step"><span class="lab">écart</span><span class="eq m">écart = <span class="fr"><span>mesure − vraie</span><span>vraie</span></span> · 100 &nbsp; [%]</span></div>
+  </div>
+  <p class="sub">Tout résultat s'écrit avec son unité entre crochets : 24,0 [mA], 9,00 [V],
+  2,00 [MΩ].</p>
+</section>
+
+<!-- ============================================================ 12 -->
+<section id="test">
+  <h2><span class="h-num">12</span>Teste-toi</h2>
+  <p class="sub">Réponds d'abord sur une feuille, puis ouvre la réponse. Ces valeurs ne sont
+  ni celles du cours ni celles de la fiche d'exercices.</p>
+
+  <div class="q">
+    <p>1. Tu mesures la tension aux bornes d'une résistance de 68 kΩ avec le Fluke 87
+    (10 MΩ). La règle est-elle tenue ?</p>
+    <details class="rep"><summary>Voir la réponse</summary><div class="body">
+      <p>Il faudrait <span class="m">100 · 68 · 10<sup>3</sup> = 6,8 · 10<sup>6</sup> [Ω] = 6,8 [MΩ]</span>.
+      Le voltmètre en offre 10 MΩ : <strong>la règle est tenue</strong>, l'erreur restera
+      sous 1 %.</p></div></details>
+  </div>
+
+  <div class="q">
+    <p>2. Un diviseur de deux résistances de 1 MΩ est alimenté sous 12 V. Que lit le même
+    voltmètre de 10 MΩ aux bornes de celle du bas, et quel est l'écart ?</p>
+    <details class="rep"><summary>Voir la réponse</summary><div class="body">
+      <p>Vraie : <span class="m">12 · 1/2 = 6,00 [V]</span>.</p>
+      <p>Groupe : <span class="m">1 · 10 / 11 = 0,909 [MΩ]</span>, donc
+      <span class="m">U<sub>mes</sub> = 12 · 0,909 / 1,909 = 5,71 [V]</span>.</p>
+      <p>Écart : <span class="m">(5,71 − 6,00) / 6,00 · 100 = − 4,8 [%]</span>. La règle
+      demandait 100 MΩ : elle n'est pas tenue, et ça se voit.</p></div></details>
+  </div>
+
+  <div class="q">
+    <p>3. Un ampèremètre de 3 Ω mesure le courant dans une résistance de 33 Ω alimentée
+    sous 6 V. Courant affiché, tension perdue, écart ?</p>
+    <details class="rep"><summary>Voir la réponse</summary><div class="body">
+      <p><span class="m">I<sub>vrai</sub> = 6/33 = 181,8 [mA]</span> ·
+      <span class="m">I<sub>mes</sub> = 6/36 = 166,7 [mA]</span>.</p>
+      <p><span class="m">U<sub>A</sub> = 3 · 0,1667 = 0,500 [V]</span>, écart
+      <span class="m">− 8,3 [%]</span>.</p>
+      <p>La règle demandait <span class="m">R<sub>A</sub> ≤ 0,33 [Ω]</span> : on est dix fois
+      trop haut, l'écart était prévisible.</p></div></details>
+  </div>
+
+  <div class="q">
+    <p>4. Une résistance de 100 kΩ est mesurée sans être dessoudée ; le reste du circuit
+    vaut 25 kΩ. Que lit l'ohmmètre ?</p>
+    <details class="rep"><summary>Voir la réponse</summary><div class="body">
+      <p><span class="m">R<sub>lue</sub> = 100 · 25 / 125 = 20 [kΩ]</span>, soit un écart de
+      <span class="m">− 80 [%]</span>. Toujours trop petit, jamais trop grand : un groupe
+      parallèle ne peut pas dépasser sa plus petite résistance.</p></div></details>
+  </div>
+
+  <div class="q">
+    <p>5. Ton Fluke 87 affiche 12,34 V. Sur quelle échelle es-tu, et entre quelles valeurs
+    se trouve la vraie tension ?</p>
+    <details class="rep"><summary>Voir la réponse</summary><div class="body">
+      <p>12,34 V ne tient pas dans l'échelle 6,000 V : c'est donc l'échelle
+      <strong>60,00 V</strong>, résolution 0,01 V.</p>
+      <p><span class="m">± ( 0,0005 · 12,34 + 1 · 0,01 ) = ± ( 6,2 + 10 ) · 10<sup>−3</sup> = ± 16 [mV]</span>.</p>
+      <p>La vraie tension est entre <strong>12,32 V et 12,36 V</strong>.</p></div></details>
+  </div>
+
+  <div class="q">
+    <p>6. Sans calcul : tu branches ton ampèremètre en parallèle sur une résistance de
+    100 Ω alimentée sous 12 V. Que se passe-t-il ?</p>
+    <details class="rep"><summary>Voir la réponse</summary><div class="body">
+      <p>Sa résistance est quasi nulle, il court-circuite la résistance. Presque tout le
+      courant de la source passe dans l'appareil — fusible grillé, au mieux. C'est le piège
+      de la section 04.</p></div></details>
+  </div>
+</section>
+
+<!-- ============================================================ 13 -->
+<section id="bilan">
+  <h2><span class="h-num">13</span>Où j'en suis</h2>
+  <p class="sub">Coche honnêtement — c'est pour toi. Ton navigateur garde tes coches sur cet
+  appareil.</p>
+  <div class="card check" id="check">
+    <label><input type="checkbox" data-k="m1"><span>Je dis ce qu'il y a dans un voltmètre, un ampèremètre et un ohmmètre</span><span class="lz">LZ 1951</span></label>
+    <label><input type="checkbox" data-k="m2"><span>Je calcule de combien un voltmètre fausse une mesure de tension</span><span class="lz">LZ 1951</span></label>
+    <label><input type="checkbox" data-k="m3"><span>Je calcule le courant affiché et la chute de tension d'un ampèremètre</span><span class="lz">LZ 1951</span></label>
+    <label><input type="checkbox" data-k="m4"><span>J'explique pourquoi une résistance mesurée en place se lit trop petite</span><span class="lz">LZ 1951</span></label>
+    <label><input type="checkbox" data-k="m5"><span>Je vérifie les deux règles AVANT de brancher</span><span class="lz">LZ 1951</span></label>
+    <label><input type="checkbox" data-k="m6"><span>Je lis une fiche technique : échelle, résolution, précision</span><span class="lz">LZ 1951</span></label>
+    <label><input type="checkbox" data-k="m7"><span>Je ne confonds pas la précision de l'appareil et son influence</span><span class="lz">LZ 1951</span></label>
+    <label><input type="checkbox" data-k="m8"><span>Je contrôle mes résultats avec les lois des nœuds et des mailles</span><span class="lz">LZ 1924</span></label>
+    <label><input type="checkbox" data-k="m9"><span>J'écris tout résultat avec son unité entre crochets</span><span class="lz">tous</span></label>
+  </div>
+  <div class="tools"><button class="btn" id="resetBtn">Tout décocher</button></div>
+</section>
+
+<footer>
+  ETML — Formation des électroniciens · El Dim1, Les appareils de mesure et leur influence ·
+  symboles CEI · version 09.2026
+</footer>
+
+</main>
+</div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- mode révision ---------- */
+  var body = document.body;
+  var btn = document.getElementById('quizBtn');
+  btn.addEventListener('click', function () {
+    var on = body.classList.toggle('quiz');
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.textContent = on ? 'Afficher les résultats' : 'Masquer les résultats';
+    if (!on) {
+      Array.prototype.forEach.call(document.querySelectorAll('.revealed'), function (el) {
+        el.classList.remove('revealed');
+      });
+    }
+  });
+  document.addEventListener('click', function (e) {
+    if (!body.classList.contains('quiz')) return;
+    var st = e.target.closest ? e.target.closest('.step.is-result, .step.is-check') : null;
+    if (st) st.classList.add('revealed');
+  });
+
+  /* ---------- mise en forme des nombres ---------- */
+  var PREFIXE = { k: 1e3, K: 1e3, M: 1e6, G: 1e9, m: 1e-3, 'µ': 1e-6, u: 1e-6 };
+  function num(id) {
+    var s = String(document.getElementById(id).value).replace(',', '.').replace(/\s/g, '');
+    // 2k2 et 1M5 : le préfixe tient lieu de virgule, comme sur les schémas
+    var m = s.match(/^([-+]?\d*\.?\d*)([kKMGmµu])(\d*)$/);
+    if (m && PREFIXE[m[2]]) {
+      var base = parseFloat(m[1]);
+      if (!isFinite(base)) return NaN;
+      if (m[3]) base = parseFloat(m[1] + '.' + m[3]);
+      return base * PREFIXE[m[2]];
+    }
+    var x = parseFloat(s);
+    return isFinite(x) ? x : NaN;
+  }
+  function fr(x, dec) {
+    return x.toFixed(dec).replace('.', ',');
+  }
+  function sig(x, n) {
+    if (!isFinite(x)) return '—';
+    if (x === 0) return '0';
+    var d = Math.max(0, n - 1 - Math.floor(Math.log10(Math.abs(x))));
+    return fr(x, Math.min(d, 6));
+  }
+  /* notation ingénieur : on reste sur les préfixes usuels de l'atelier */
+  function ing(x, unite) {
+    if (!isFinite(x)) return '—';
+    var a = Math.abs(x), p = '', k = 1;
+    if (a >= 1e6) { p = 'M'; k = 1e6; }
+    else if (a >= 1e3) { p = 'k'; k = 1e3; }
+    else if (a < 1 && a >= 1e-3) { p = 'm'; k = 1e-3; }
+    else if (a < 1e-3 && a > 0) { p = 'µ'; k = 1e-6; }
+    return sig(x / k, 3) + ' [' + p + unite + ']';
+  }
+
+  function verdict(el, ok, texte) {
+    el.className = 'verdict ' + (ok ? 'good' : 'bad');
+    el.textContent = texte;
+  }
+
+  /* ---------- calculateur voltmètre ---------- */
+  var vIds = ['v-u', 'v-r1', 'v-r2', 'v-rv'];
+  function calcV() {
+    var U = num('v-u'), R1 = num('v-r1'), R2 = num('v-r2'), RV = num('v-rv');
+    var out = ['v-vraie', 'v-r2v', 'v-mes', 'v-ecart'];
+    if (!isFinite(U) || !(R1 > 0) || !(R2 > 0) || !(RV > 0)) {
+      out.forEach(function (i) { document.getElementById(i).textContent = '—'; });
+      verdict(document.getElementById('v-verdict'), false,
+              'Complète les quatre champs avec des valeurs positives.');
+      return;
+    }
+    var vraie = U * R2 / (R1 + R2);
+    var R2V = R2 * RV / (R2 + RV);
+    var mes = U * R2V / (R1 + R2V);
+    var ec = (mes - vraie) / vraie * 100;
+    document.getElementById('v-vraie').textContent = sig(vraie, 3) + ' [V]';
+    document.getElementById('v-r2v').textContent = ing(R2V, 'Ω');
+    document.getElementById('v-mes').textContent = sig(mes, 3) + ' [V]';
+    document.getElementById('v-ecart').textContent = fr(ec, 1) + ' [%]';
+    var besoin = 100 * R2;
+    verdict(document.getElementById('v-verdict'), RV >= besoin,
+      RV >= besoin
+        ? 'Règle tenue : il faudrait ' + ing(besoin, 'Ω') + ', tu as ' + ing(RV, 'Ω') + '.'
+        : 'Règle NON tenue : il faudrait ' + ing(besoin, 'Ω') + ', tu n’as que '
+          + ing(RV, 'Ω') + '. Annonce l’écart avec ta mesure.');
+  }
+
+  /* ---------- calculateur ampèremètre ---------- */
+  var aIds = ['a-u', 'a-r', 'a-ra'];
+  function calcA() {
+    var U = num('a-u'), R = num('a-r'), RA = num('a-ra');
+    var out = ['a-vrai', 'a-mes', 'a-ua', 'a-ecart'];
+    if (!isFinite(U) || !(R > 0) || !(RA >= 0)) {
+      out.forEach(function (i) { document.getElementById(i).textContent = '—'; });
+      verdict(document.getElementById('a-verdict'), false,
+              'Complète les trois champs avec des valeurs positives.');
+      return;
+    }
+    var vrai = U / R;
+    var mes = U / (R + RA);
+    var UA = RA * mes;
+    var ec = (mes - vrai) / vrai * 100;
+    document.getElementById('a-vrai').textContent = ing(vrai, 'A');
+    document.getElementById('a-mes').textContent = ing(mes, 'A');
+    document.getElementById('a-ua').textContent = sig(UA, 3) + ' [V]';
+    document.getElementById('a-ecart').textContent = fr(ec, 1) + ' [%]';
+    var plafond = R / 100;
+    verdict(document.getElementById('a-verdict'), RA <= plafond,
+      RA <= plafond
+        ? 'Règle tenue : il faudrait au plus ' + ing(plafond, 'Ω') + ', tu as ' + ing(RA, 'Ω') + '.'
+        : 'Règle NON tenue : il faudrait au plus ' + ing(plafond, 'Ω') + ', tu as '
+          + ing(RA, 'Ω') + '. Le courant affiché sera trop faible.');
+  }
+
+  /* ---------- précision du Fluke 87, table 12 du manuel 80 Series V ---------- */
+  var ECHELLES = [
+    { nom: '600,0 mV', max: 0.6, res: 0.0001, pc: 0.1 },
+    { nom: '6,000 V', max: 6, res: 0.001, pc: 0.05 },
+    { nom: '60,00 V', max: 60, res: 0.01, pc: 0.05 },
+    { nom: '600,0 V', max: 600, res: 0.1, pc: 0.05 },
+    { nom: '1000 V', max: 1000, res: 1, pc: 0.05 }
+  ];
+  function calcP() {
+    var U = num('p-u');
+    var ids = ['p-res', 'p-pc', 'p-dig', 'p-tot', 'p-bornes'];
+    var e = null, i;
+    for (i = 0; i < ECHELLES.length; i++) {
+      if (Math.abs(U) <= ECHELLES[i].max) { e = ECHELLES[i]; break; }
+    }
+    if (!isFinite(U) || !e) {
+      document.getElementById('p-ech').value = isFinite(U) ? 'hors calibre' : '—';
+      ids.forEach(function (k) { document.getElementById(k).textContent = '—'; });
+      return;
+    }
+    var tpc = e.pc / 100 * Math.abs(U);
+    var tres = e.res;
+    var tot = tpc + tres;
+    document.getElementById('p-ech').value = e.nom + '   (± ' + fr(e.pc, 2) + ' % + 1)';
+    document.getElementById('p-res').textContent = ing(e.res, 'V');
+    document.getElementById('p-pc').textContent = ing(tpc, 'V');
+    document.getElementById('p-dig').textContent = ing(tres, 'V');
+    document.getElementById('p-tot').textContent = '± ' + ing(tot, 'V')
+      + '   (± ' + sig(tot / Math.abs(U) * 100, 2) + ' %)';
+    document.getElementById('p-bornes').textContent =
+      sig(U - tot, 5) + ' … ' + sig(U + tot, 5) + ' [V]';
+  }
+
+  function brancher(ids, fn) {
+    ids.forEach(function (i) {
+      var el = document.getElementById(i);
+      el.addEventListener('input', fn);
+    });
+    fn();
+  }
+  brancher(vIds, calcV);
+  brancher(aIds, calcA);
+  brancher(['p-u'], calcP);
+
+  /* ---------- auto-évaluation ---------- */
+  var KEY = 'elec500-bilan';
+  var boxes = document.querySelectorAll('#check input');
+  function save() {
+    var o = {};
+    Array.prototype.forEach.call(boxes, function (b) { if (b.checked) o[b.dataset.k] = 1; });
+    try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (err) { /* stockage indisponible */ }
+  }
+  function load() {
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (err) { saved = {}; }
+    Array.prototype.forEach.call(boxes, function (b) { b.checked = !!saved[b.dataset.k]; });
+  }
+  Array.prototype.forEach.call(boxes, function (b) { b.addEventListener('change', save); });
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    Array.prototype.forEach.call(boxes, function (b) { b.checked = false; });
+    save();
+  });
+  load();
+})();
+</script>

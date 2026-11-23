@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>121 Portes logiques et tables de vérité</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+__CSS__
+.sim { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; align-items: center; }
+.lamp { width: 46px; height: 46px; border-radius: 50%; border: 3px solid var(--ink); background: var(--surface); display: inline-block; vertical-align: middle; }
+.lamp.on { background: var(--one); box-shadow: 0 0 0 8px color-mix(in srgb, var(--one) 25%, transparent); }
+.inbtn { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.inbtn button { min-width: 84px; padding: 0 10px; white-space: nowrap; height: 50px; border-radius: 10px; border: 2px solid var(--head); font: 700 22px var(--font-mono); background: var(--surface); color: var(--ink); }
+.inbtn button.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.chrono { display: grid; gap: 8px; }
+.pins { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.pins label { display: grid; gap: 4px; font-weight: 700; }
+.pins label span { font-weight: 400; }
+table.tdv { justify-self: start; }
+</style>
+</head>
+<body>
+<!--GABARIT--><div style="background:#242852;color:#fff;padding:14px 20px;font:700 16px/1.45 Arial,sans-serif">GABARIT du générateur (build_pages_w1.py), pas la page finale. Ouvre plutôt « pages-interactives/121 Portes logiques et tables de vérité.html » dans le projet, ou l'artefact « 121 Portes logiques et tables de vérité ».</div><!--/GABARIT-->
+<div id="jsx" class="jsx" role="alert">Cette page a besoin de JavaScript pour afficher les animations et les exercices. Si ce message reste affiché, ouvre la page depuis le lien de l'artefact sur claude.ai, ou ouvre le fichier .html dans Edge, Chrome ou Safari (pas dans un aperçu de fichier).</div>
+<header class="top"><div class="in">
+  <div class="eyebrow">Test et Mesure 1 – El DT 1 · page interactive 121</div>
+  <img src="__LOGO__" alt="ETML">
+  <h1>Portes logiques et tables de vérité</h1>
+  <p>Six exercices tirés de la ligne de remplissage et de l'atelier. Les animations « Comprendre » reprennent la présentation 120 ; ensuite, à toi de jouer. Les tables de vérité vont du poids fort au poids faible : B A, puis la sortie Y. Va avec l'animation 125 et la fiche 130 EX.</p>
+</div></header>
+<div class="bar"><div class="in">
+  <nav aria-label="Exercices"><a href="#ex1">N°1</a><a href="#ex2">N°2</a><a href="#ex3">N°3</a><a href="#ex4">N°4</a><a href="#ex5">N°5</a><a href="#ex6">N°6</a></nav>
+  <div class="score">Exercices réussis : <span id="score-n">0</span> / 5
+    <span class="dots"><i data-id="t2"></i><i data-id="t3"></i><i data-id="t4"></i><i data-id="t5"></i><i data-id="t6"></i></span></div>
+</div></div>
+
+<main>
+<!-- ============================================ N°1 -->
+<section class="ex" id="ex1">
+  <header><span class="num">N°1</span><h2>Essaie chaque porte</h2>
+    <span class="refs"><a href="__T120__">Présentation 120, diapos 5 à 12</a><a href="__FL3__">Floyd 3-1 à 3-6 p. 112-138</a><a href="__LZ130__">LZ_130</a></span></header>
+  <div class="lesson" id="L1"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Des 0 et des 1 sur la ligne de remplissage</h3><span class="refs"><a href="__T120__">Présentation 120, diapo 2</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> dans une installation automatisée, chaque capteur (présence, niveau, fin de course) donne un signal binaire. La commande combine ces signaux avec des portes logiques ou un automate programmable.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Au laboratoire :</b> deux interrupteurs sur les entrées A et B, une LED sur la sortie Y. On fait passer les quatre combinaisons et on note la sortie : c'est ainsi qu'on vérifie un CI avant de le monter.</div>
+  <div class="chips" id="g-chips" role="group" aria-label="Choix de la porte"></div>
+  <div class="sim">
+    <div>
+      <div class="svgbox" id="g-svg"></div>
+      <div class="inbtn" style="margin-top:10px">
+        <span class="muted">Entrées :</span>
+        <button id="g-a" aria-label="Entrée A">A = 0</button>
+        <button id="g-b" aria-label="Entrée B">B = 0</button>
+        <span class="muted">Sortie :</span><span class="lamp" id="g-lamp" aria-live="polite"></span><b id="g-y" class="eq">Y = 0</b>
+      </div>
+    </div>
+    <div class="panel">
+      <h3 id="g-title">Porte</h3>
+      <table class="tdv" id="g-tdv"></table>
+      <p class="eq" id="g-eq" style="margin:10px 0 2px"></p>
+      <p id="g-rule" style="margin:0"></p>
+      <p class="muted" id="g-ci" style="margin:4px 0 0"></p>
+      <p class="life" id="g-life" style="margin:8px 0 0"></p>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="row" style="justify-content:space-between"><h3 style="margin:0">Chronogramme en direct</h3>
+      <span class="row"><button class="ls-btn" type="button" id="g-auto"></button><span class="muted">Clique sur A ou B pour piloter toi-même.</span></span></div>
+    <div class="svgbox nt" id="g-chrono"></div>
+    <p class="muted" style="margin:4px 0 0">Les quatre façons de décrire une porte, en même temps : le symbole, la table, l'équation et le chronogramme (présentation 120, diapo 12).</p>
+  </div>
+</section>
+
+<!-- ============================================ N°2 -->
+<section class="ex" id="ex2">
+  <header><span class="num">N°2</span><h2>Prépare la table de test d'un CI</h2>
+    <span class="refs"><a href="__T120__">Présentation 120, diapos 3 et 12</a><a href="__LZ4242__">LZ_4242</a><a href="__LZ29__">LZ_29</a></span></header>
+  <div class="lesson" id="L2"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Construire une table de vérité</h3><span class="refs"><a href="__T120__">Présentation 120, diapo 3</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> au contrôle final d'une carte, le banc de test applique toutes les combinaisons dans cet ordre, comme un compteur binaire, et compare chaque sortie à la table de vérité.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Au magasin :</b> un CI arrive avec son bon de livraison. Avant de le monter sur la carte, tu prépares sa table de test, que tu vérifieras ligne par ligne avec deux interrupteurs et une LED.</div>
+  <div class="row"><label for="t2-sel"><b>CI reçu :</b></label><select id="t2-sel"></select></div>
+  <p class="q" id="t2-q"></p>
+  <div class="row" style="align-items:flex-start;gap:24px">
+    <table class="tdv" id="t2-tab"></table>
+    <div class="svgbox" id="t2-svg"></div>
+  </div>
+  <p class="muted">Clique sur une case Y pour écrire 0 ou 1.</p>
+  <div class="row"><button class="btn" id="t2-check">Vérifier</button><button class="btn ghost" id="t2-reset">Effacer</button></div>
+  <div class="fb" id="t2-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°3 -->
+<section class="ex" id="ex3">
+  <header><span class="num">N°3</span><h2>Le voyant « défaut » de la ligne</h2>
+    <span class="refs"><a href="__T120__">Présentation 120, diapos 2 et 3</a><a href="__FL1__">Floyd 1-2 p. 5</a><a href="__LZ4242__">LZ_4242</a><a href="__LZ27__">LZ_27</a></span></header>
+  <div class="situ"><b>Cahier des charges :</b> le voyant défaut D s'allume si la pompe est en défaut (P = 1) ou si le convoyeur est bloqué (C = 1), mais seulement quand la ligne est en marche (M = 1). Ligne arrêtée : le voyant reste éteint.</div>
+  <p class="q">a) Complète la table de vérité : M est le poids fort, C le poids faible.</p>
+  <table class="tdv" id="t3-tab"></table>
+  <p class="q">b) Quelle équation correspond à ce voyant ?</p>
+  <div class="row" id="t3-eqs" role="radiogroup" aria-label="Équation du voyant"></div>
+  <div class="row"><button class="btn" id="t3-check">Vérifier</button><button class="btn ghost" id="t3-reset">Effacer</button></div>
+  <div class="fb" id="t3-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°4 -->
+<section class="ex" id="ex4">
+  <header><span class="num">N°4</span><h2>Reconnais la porte à son chronogramme</h2>
+    <span class="refs"><a href="__T120__">Présentation 120, diapos 4 et 12</a><a href="__FL3__">Floyd 3-6 p. 135-138</a><a href="__LZ29__">LZ_29</a></span></header>
+  <div class="lesson" id="L3"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Lire un chronogramme, intervalle par intervalle</h3><span class="refs"><a href="__T120__">Présentation 120, diapo 4</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> au laboratoire, l'oscilloscope deux voies ou l'analyseur logique affiche ces signaux. En dépannage, on compare ce qu'on mesure à ce que la table de vérité prévoit.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>À l'atelier :</b> une carte de commande de la ligne a perdu son schéma. L'analyseur logique affiche les entrées A, B et la sortie Y de trois portes. Pour chacune, trouve de quelle porte il s'agit.</div>
+  <div class="chrono" id="t4-list"></div>
+  <div class="row"><button class="btn" id="t4-check">Vérifier</button></div>
+  <div class="fb" id="t4-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°5 -->
+<section class="ex" id="ex5">
+  <header><span class="num">N°5</span><h2>Quelle porte, quel CI ?</h2>
+    <span class="refs"><a href="__T120__">Présentation 120, diapos 5 à 13</a><a href="__FL3__">Floyd 3-8 p. 146</a><a href="__LZ2223__">LZ_2223</a></span></header>
+  <div class="situ"><b>Dans la vraie vie :</b> chaque situation ci-dessous se commande avec une seule porte. Choisis la porte et le CI de la série 74HC qui la contient.</div>
+  <div class="cases" id="t5-list"></div>
+  <div class="row"><button class="btn" id="t5-check">Vérifier</button></div>
+  <div class="fb" id="t5-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°6 -->
+<section class="ex" id="ex6">
+  <header><span class="num">N°6</span><h2>Câble la vanne sur un 74HC08</h2>
+    <span class="refs"><a href="__T120__">Présentation 120, diapo 13</a><a href="__FL3__">Floyd 3-8 p. 146-149</a><a href="__LZ2223__">LZ_2223</a></span></header>
+  <div class="lesson" id="L4"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>De la porte au circuit intégré, sur breadboard</h3><span class="refs"><a href="__T120__">Présentation 120, diapo 13</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> sur une vraie carte, la sortie du CI ne pilote pas la vanne directement : elle commande un transistor ou un relais, comme au laboratoire.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Sur breadboard :</b> tu câbles la commande de la vanne V = B · N avec un 74HC08 (4 portes ET). Choisis une porte et indique la broche de chaque signal.</div>
+  <div class="grid2">
+    <div class="svgbox" id="t6-svg"></div>
+    <div class="pins" id="t6-pins"></div>
+  </div>
+  <div class="row"><button class="btn" id="t6-check">Vérifier</button></div>
+  <div class="fb" id="t6-fb" aria-live="polite"></div>
+</section>
+</main>
+
+<footer>
+  <span>Classe XLO1 · 2026-2027 · Test et Mesure 1 – El DT 1 · champ <a href="__CHAMP__">LFB_El_DT1</a></span>
+  <span>Objectifs : <a href="__LZ4242__">LZ_4242</a>, <a href="__LZ130__">LZ_130</a>, <a href="__LZ27__">LZ_27</a>, <a href="__LZ29__">LZ_29</a>, <a href="__LZ2223__">LZ_2223</a></span>
+  <span><a href="__FL3__">Floyd, chap. 3 Portes logiques</a> · <a href="__NXREPR__">nextecmedia 1.2.1</a> · <a href="__T120__">Présentation 120</a></span>
+  <span>Liens Floyd : __FLNOTE__</span>
+</footer>
+
+<script>
+window.addEventListener("error", (e) => { const b = document.getElementById("jsx"); if (b) { b.hidden = false; b.textContent = "Erreur dans la page : " + e.message + " (ligne " + e.lineno + "). Envoie ce message à l'enseignant."; } });
+__COMMONJS__
+const D = __DATA__;
+const LIFE = {
+  "NON": "Voyant « cuve vide » : il s'allume quand le capteur de niveau N vaut 0.",
+  "ET": "Vanne de remplissage : elle s'ouvre seulement si une bouteille est sous le bec ET si la cuve est assez pleine (V = B · N).",
+  "OU": "Plafonnier de voiture : il s'allume si l'une des portières est ouverte, ou les deux.",
+  "NON-ET": "Le 74HC00 est très répandu : avec des NON-ET seulement, on peut construire toutes les autres portes.",
+  "NON-OU": "Le convoyeur peut tourner seulement si aucun des deux arrêts d'urgence n'est actionné.",
+  "OUX": "Éclairage d'escalier en va-et-vient : chaque interrupteur change l'état de la lampe.",
+  "NON-OUX": "Deux capteurs de niveau redondants : « capteurs cohérents » = 1 quand ils donnent la même valeur.",
+};
+
+// ---------------------------------------------- N°1 simulateur
+let gk = "ET", ga = 0, gb = 0;
+function drawSim() {
+  const g = D.GATES[gk], n = gk === "NON" ? 1 : 2;
+  const y = n === 1 ? FN[gk](ga) : FN[gk](ga, gb);
+  $("g-svg").innerHTML = gateSVG(gk, ga, gb, y, { scale: 1.6 });
+  $("g-a").textContent = "A = " + ga; $("g-a").classList.toggle("on", ga === 1);
+  $("g-b").textContent = "B = " + gb; $("g-b").classList.toggle("on", gb === 1); $("g-b").hidden = n === 1;
+  $("g-lamp").classList.toggle("on", y === 1); $("g-y").textContent = "Y = " + y;
+  $("g-title").textContent = `Porte ${g.nom} (${g.en})`;
+  const head = n === 1 ? ["A", "Y"] : ["B", "A", "Y"];
+  let h = "<tr>" + head.map((c, i) => `<th class="${i === head.length - 1 ? "out" : ""}">${c}</th>`).join("") + "</tr>";
+  tdv(gk).forEach((r) => {
+    const cur = n === 1 ? r[0] === ga : (r[0] === gb && r[1] === ga);
+    h += `<tr class="${cur ? "hl" : ""}">` + r.map((v, i) => `<td class="${i === r.length - 1 ? "out" : ""} ${i === r.length - 1 && v ? "one" : ""}">${v}</td>`).join("") + "</tr>";
+  });
+  $("g-tdv").innerHTML = h;
+  $("g-eq").innerHTML = EQH[gk]; $("g-rule").textContent = g.regle;
+  $("g-ci").textContent = `CI : ${g.ci74} (${g.contenu}) · série 4000 : ${g.ci4000}`;
+  $("g-life").innerHTML = "<b>Dans la vraie vie :</b> " + LIFE[gk];
+  document.querySelectorAll("#g-chips .chip").forEach((c) => c.setAttribute("aria-pressed", c.dataset.k === gk ? "true" : "false"));
+}
+D.ORDER.forEach((k) => {
+  const b = document.createElement("button"); b.className = "chip"; b.dataset.k = k; b.textContent = D.GATES[k].nom;
+  b.onclick = () => { gk = k; drawSim(); }; $("g-chips").appendChild(b);
+});
+$("g-a").onclick = () => { ga = 1 - ga; drawSim(); };
+$("g-b").onclick = () => { gb = 1 - gb; drawSim(); };
+drawSim();
+
+// ---------------------------------------------- N°2 table de test
+const T2_CI = [["74HC02", "NON-OU"], ["74HC86", "OUX"], ["74HC00", "NON-ET"], ["74HC7266", "NON-OUX"], ["74HC32", "OU"]];
+let t2 = [];
+T2_CI.forEach(([ci, k], i) => { const o = document.createElement("option"); o.value = i; o.textContent = `${ci} : ${D.GATES[k].contenu}`; $("t2-sel").appendChild(o); });
+function drawT2() {
+  const k = T2_CI[$("t2-sel").value][1];
+  $("t2-q").textContent = `Complète la colonne Y d'une porte ${D.GATES[k].nom} du ${T2_CI[$("t2-sel").value][0]}.`;
+  t2 = [null, null, null, null];
+  renderT2(k, []);
+  $("t2-svg").innerHTML = gateSVG(k, null, null, null, { scale: 1.2 });
+  $("t2-fb").className = "fb";
+}
+function renderT2(k, wrong) {
+  let h = '<tr><th>B</th><th>A</th><th class="out">Y</th></tr>';
+  tdv(k).forEach((r, i) => {
+    const v = t2[i];
+    h += `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="out ${wrong.includes(i) ? "wrong" : ""}"><button data-i="${i}" class="${v === null ? "" : "set"}" aria-label="Y pour B = ${r[0]}, A = ${r[1]}">${v === null ? "?" : v}</button></td></tr>`;
+  });
+  $("t2-tab").innerHTML = h;
+  $("t2-tab").querySelectorAll("button").forEach((b) => b.onclick = () => {
+    const i = +b.dataset.i; t2[i] = t2[i] === null ? 0 : (t2[i] === 0 ? 1 : null); renderT2(k, []);
+  });
+}
+$("t2-sel").onchange = drawT2;
+$("t2-reset").onclick = drawT2;
+$("t2-check").onclick = () => {
+  const k = T2_CI[$("t2-sel").value][1], ref = tdv(k);
+  if (t2.includes(null)) { feedback($("t2-fb"), "info", "Il manque des cases.", "Écris un 0 ou un 1 dans chaque ligne de la colonne Y."); return; }
+  const wrong = ref.map((r, i) => (r[2] === t2[i] ? -1 : i)).filter((i) => i >= 0);
+  renderT2(k, wrong);
+  if (!wrong.length) { feedback($("t2-fb"), "ok", "Juste.", ` ${D.GATES[k].regle} Équation : <span class="eq" style="font-size:18px">${EQH[k]}</span>.`); markDone("t2", true); }
+  else {
+    feedback($("t2-fb"), "bad", `${wrong.length} ligne${wrong.length > 1 ? "s" : ""} à revoir (en rouge).`,
+      ` Règle de la porte ${D.GATES[k].nom} : ${D.GATES[k].regle} Essaie-la dans le N°1 si tu hésites.`);
+    markDone("t2", false);
+  }
+};
+drawT2();
+
+// ---------------------------------------------- N°3 voyant défaut D = M · (P + C)
+let t3 = Array(8).fill(null), t3eq = null;
+const T3REF = Array.from({ length: 8 }, (_, v) => ((v >> 2) & 1) & (((v >> 1) & 1) | (v & 1)));
+const T3EQ = [["D = M · (P + C)", true], ["D = M + P · C", false], ["D = M · P · C", false], ["D = (M + P) · C", false]];
+function renderT3(wrong) {
+  let h = '<tr><th>M</th><th>P</th><th>C</th><th class="out">D</th></tr>';
+  for (let v = 0; v < 8; v++) {
+    const val = t3[v];
+    h += `<tr><td>${(v >> 2) & 1}</td><td>${(v >> 1) & 1}</td><td>${v & 1}</td><td class="out ${wrong.includes(v) ? "wrong" : ""}"><button data-i="${v}" class="${val === null ? "" : "set"}" aria-label="D pour la ligne ${v}">${val === null ? "?" : val}</button></td></tr>`;
+  }
+  $("t3-tab").innerHTML = h;
+  $("t3-tab").querySelectorAll("button").forEach((b) => b.onclick = () => { const i = +b.dataset.i; t3[i] = t3[i] === null ? 0 : (t3[i] === 0 ? 1 : null); renderT3([]); });
+}
+T3EQ.forEach(([e], i) => {
+  const b = document.createElement("button"); b.className = "chip"; b.textContent = e; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", "false");
+  b.onclick = () => { t3eq = i; $("t3-eqs").querySelectorAll(".chip").forEach((c, j) => { c.setAttribute("aria-pressed", j === i ? "true" : "false"); c.setAttribute("aria-checked", j === i ? "true" : "false"); }); };
+  $("t3-eqs").appendChild(b);
+});
+$("t3-reset").onclick = () => { t3 = Array(8).fill(null); t3eq = null; renderT3([]); $("t3-eqs").querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", "false")); $("t3-fb").className = "fb"; };
+$("t3-check").onclick = () => {
+  if (t3.includes(null) || t3eq === null) { feedback($("t3-fb"), "info", "Il manque des réponses.", "Remplis les 8 lignes de D et choisis une équation."); return; }
+  const wrong = T3REF.map((r, i) => (r === t3[i] ? -1 : i)).filter((i) => i >= 0);
+  renderT3(wrong);
+  const eqOk = T3EQ[t3eq][1];
+  if (!wrong.length && eqOk) {
+    feedback($("t3-fb"), "ok", "Juste.", " D = 1 sur trois lignes seulement : 101, 110 et 111. La ligne doit être en marche (M = 1) et au moins un défaut présent (P + C). D'où D = M · (P + C) : une porte OU suivie d'une porte ET.");
+    markDone("t3", true);
+  } else {
+    let msg = "";
+    if (wrong.length) msg += ` ${wrong.length} ligne${wrong.length > 1 ? "s" : ""} de la table à revoir (en rouge). Ligne arrêtée (M = 0) : D = 0 dans tous les cas.`;
+    if (!eqOk) msg += " L'équation ne correspond pas : lis-la sur une ligne précise, par exemple M = 1, P = 0, C = 1.";
+    feedback($("t3-fb"), "bad", "Pas encore.", msg); markDone("t3", false);
+  }
+};
+renderT3([]);
+
+// ---------------------------------------------- N°4 chronogrammes mystère
+const MYST = [
+  { k: "OU", A: [0, 1, 1, 0, 0, 1, 0, 0], B: [0, 0, 1, 1, 0, 0, 1, 0] },
+  { k: "NON-OUX", A: [1, 0, 1, 0, 0, 1, 1, 0], B: [1, 1, 0, 0, 0, 1, 0, 1] },
+  { k: "NON-OU", A: [0, 0, 1, 0, 1, 0, 0, 1], B: [0, 1, 0, 0, 1, 0, 1, 0] },
+];
+function chronoSVG(A, B, Y) {
+  const x0 = 40, pw = 64, H = 50, gap = 26, rows = [["A", A], ["B", B], ["Y", Y]];
+  let s = `<svg viewBox="0 0 ${x0 + 8 * pw + 10} ${3 * (H + gap) + 26}" width="${x0 + 8 * pw + 10}" role="img" aria-label="Chronogramme A, B, Y">`;
+  for (let i = 0; i < 8; i++) {
+    s += `<text x="${x0 + i * pw + pw / 2}" y="14" text-anchor="middle" font-size="13" style="fill:var(--muted)">${i + 1}</text>`;
+    s += `<line x1="${x0 + i * pw}" y1="20" x2="${x0 + i * pw}" y2="${3 * (H + gap) + 18}" style="stroke:var(--line);stroke-width:1;stroke-dasharray:3 4"/>`;
+  }
+  rows.forEach(([nm, sig], r) => {
+    const yb = 26 + r * (H + gap) + H, yh = yb - H + 12;
+    s += `<text x="${x0 - 12}" y="${yb - 14}" text-anchor="end" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${nm}</text>`;
+    let d = `M ${x0} ${sig[0] ? yh : yb}`;
+    for (let i = 0; i < 8; i++) { const y = sig[i] ? yh : yb; d += ` L ${x0 + i * pw} ${y} L ${x0 + (i + 1) * pw} ${y}`; }
+    s += `<path d="${d}" fill="none" style="stroke:${nm === "Y" ? "var(--one)" : "var(--ink)"};stroke-width:3"/>`;
+  });
+  return s + "</svg>";
+}
+const twoIn = D.ORDER.filter((k) => k !== "NON");
+MYST.forEach((m, i) => {
+  m.Y = m.A.map((a, j) => FN[m.k](a, m.B[j]));
+  const div = document.createElement("div"); div.className = "case";
+  div.innerHTML = `<div class="row"><b>Chronogramme ${i + 1}</b><label class="muted" for="t4-s${i}">Porte :</label>
+    <select id="t4-s${i}"><option value="">choisir…</option>${twoIn.map((k) => `<option value="${k}">${D.GATES[k].nom}</option>`).join("")}</select>
+    <span id="t4-r${i}"></span></div><div class="svgbox">${chronoSVG(m.A, m.B, m.Y)}</div>`;
+  $("t4-list").appendChild(div);
+});
+$("t4-check").onclick = () => {
+  let ok = 0, notes = [];
+  MYST.forEach((m, i) => {
+    const v = $(`t4-s${i}`).value, good = v === m.k;
+    if (good) ok++;
+    $(`t4-r${i}`).innerHTML = v ? `<span class="tag ${good ? "ok" : "bad"}">${good ? "juste" : "à revoir"}</span>` : "";
+    if (v && !good) {
+      // l'intervalle qui contredit le choix
+      const j = m.A.findIndex((a, t) => FN[v](a, m.B[t]) !== m.Y[t]);
+      notes.push(`Chronogramme ${i + 1} : intervalle ${j + 1}, A = ${m.A[j]} et B = ${m.B[j]}. Une porte ${D.GATES[v].nom} donnerait Y = ${FN[v](m.A[j], m.B[j])}, l'écran montre Y = ${m.Y[j]}.`);
+    }
+  });
+  if (ok === 3) { feedback($("t4-fb"), "ok", "Les trois sont justes.", " Méthode : chercher la combinaison qui départage. A = B = 1 sépare OU (Y = 1) et OU exclusif (Y = 0) ; A = B = 0 sépare NON-OU (Y = 1) de OU (Y = 0)."); markDone("t4", true); }
+  else feedback($("t4-fb"), "bad", `${ok} sur 3.`, notes.length ? " " + notes.join(" ") : " Choisis une porte pour chaque chronogramme.");
+  if (ok < 3) markDone("t4", false);
+};
+
+// ---------------------------------------------- N°5 situations réelles
+const SITU = [
+  ["Presse à deux mains : la presse ne descend que si l'opérateur appuie sur les deux boutons à la fois.", "ET", "74HC08"],
+  ["Plafonnier de voiture : la lampe s'allume si l'une des deux portières est ouverte, ou les deux.", "OU", "74HC32"],
+  ["Voyant « cuve vide » : il s'allume quand le capteur de niveau N donne 0.", "NON", "74HC04"],
+  ["Voyant « remplir » : les capteurs des cuves de sirop et d'eau donnent 1 quand le niveau est bon. Le voyant s'allume dès qu'une cuve n'a plus assez de liquide.", "NON-ET", "74HC00"],
+  ["Surveillance : deux capteurs redondants mesurent le même niveau. L'alarme sonne quand ils ne donnent pas la même valeur.", "OUX", "74HC86"],
+];
+const CIS = ["74HC00", "74HC02", "74HC04", "74HC08", "74HC32", "74HC86", "74HC7266"];
+SITU.forEach(([s], i) => {
+  const div = document.createElement("div"); div.className = "case";
+  div.innerHTML = `<div>${s}</div><div class="row">
+    <label for="t5-g${i}">Porte</label><select id="t5-g${i}"><option value="">choisir…</option>${D.ORDER.map((k) => `<option value="${k}">${D.GATES[k].nom}</option>`).join("")}</select>
+    <label for="t5-c${i}">CI</label><select id="t5-c${i}"><option value="">choisir…</option>${CIS.map((c) => `<option value="${c}">${c}</option>`).join("")}</select>
+    <span id="t5-r${i}"></span></div>`;
+  $("t5-list").appendChild(div);
+});
+$("t5-check").onclick = () => {
+  let ok = 0, notes = [];
+  SITU.forEach(([s, k, ci], i) => {
+    const g = $(`t5-g${i}`).value, c = $(`t5-c${i}`).value;
+    const good = g === k && c === ci; if (good) ok++;
+    $(`t5-r${i}`).innerHTML = g || c ? `<span class="tag ${good ? "ok" : "bad"}">${good ? "juste" : "à revoir"}</span>` : "";
+    if ((g || c) && !good && g === k) notes.push(`Situation ${i + 1} : la porte est juste, mais elle se trouve dans le ${ci}.`);
+  });
+  if (ok === SITU.length) { feedback($("t5-fb"), "ok", "Tout est juste.", " Dans la série 74, les deux derniers chiffres donnent la fonction : 00 NON-ET, 02 NON-OU, 04 NON, 08 ET, 32 OU, 86 OU exclusif."); markDone("t5", true); }
+  else { feedback($("t5-fb"), "bad", `${ok} sur ${SITU.length}.`, notes.length ? " " + notes.join(" ") : " Relis chaque situation : quelles entrées, et quand la sortie vaut-elle 1 ?"); markDone("t5", false); }
+};
+
+// ---------------------------------------------- N°6 brochage du 74HC08
+const PL = ["1A", "1B", "1Y", "2A", "2B", "2Y", "GND"], PR = ["VCC", "4B", "4A", "4Y", "3B", "3A", "3Y"];
+function dipSVG() {
+  const bx = 150, by = 20, bw = 170, ph = 46;
+  let s = `<svg viewBox="0 0 470 ${by * 2 + ph * 7 + 20}" width="470" role="img" aria-label="Brochage du 74HC08 vu de dessus">`;
+  s += `<rect x="${bx}" y="${by}" width="${bw}" height="${ph * 7 + 20}" rx="10" style="fill:#343848;stroke:var(--ink);stroke-width:2"/>`;
+  s += `<path d="M ${bx + bw / 2 - 18} ${by} a 18 18 0 0 0 36 0" style="fill:#1E2030"/>`;
+  for (let i = 0; i < 7; i++) {
+    const y = by + 22 + i * ph;
+    s += `<rect x="${bx - 24}" y="${y - 9}" width="24" height="18" style="fill:#C8CEDA;stroke:var(--ink);stroke-width:1.5"/>`;
+    s += `<rect x="${bx + bw}" y="${y - 9}" width="24" height="18" style="fill:#C8CEDA;stroke:var(--ink);stroke-width:1.5"/>`;
+    s += `<text x="${bx + 10}" y="${y + 5}" font-size="13" fill="#B8BED0">${i + 1}</text><text x="${bx + bw - 10}" y="${y + 5}" font-size="13" text-anchor="end" fill="#B8BED0">${14 - i}</text>`;
+    s += `<text x="${bx - 32}" y="${y + 6}" font-size="16" font-weight="700" text-anchor="end" style="fill:var(--ink)">${PL[i]}</text>`;
+    s += `<text x="${bx + bw + 32}" y="${y + 6}" font-size="16" font-weight="700" style="fill:var(--ink)">${PR[i]}</text>`;
+  }
+  s += `<text x="${bx + bw / 2}" y="${by + ph * 3.5 + 6}" text-anchor="middle" font-size="22" font-weight="700" fill="#EEF1F7" font-family="IBM Plex Mono, monospace">74HC08</text>`;
+  return s + "</svg>";
+}
+$("t6-svg").innerHTML = dipSVG();
+const SIG = [["B", "capteur bouteille"], ["N", "capteur niveau"], ["V", "vanne"], ["+5 V", "alimentation"], ["GND", "masse"]];
+SIG.forEach(([s, l], i) => {
+  const lab = document.createElement("label"); lab.setAttribute("for", `t6-p${i}`);
+  lab.innerHTML = `<div>${s} <span class="muted">(${l})</span></div><select id="t6-p${i}"><option value="">broche…</option>${Array.from({ length: 14 }, (_, j) => `<option value="${j + 1}">${j + 1}</option>`).join("")}</select>`;
+  $("t6-pins").appendChild(lab);
+});
+const GATES08 = [[1, 2, 3], [4, 5, 6], [9, 10, 8], [12, 13, 11]];
+$("t6-check").onclick = () => {
+  const p = SIG.map((_, i) => +$(`t6-p${i}`).value || 0);
+  if (p.includes(0)) { feedback($("t6-fb"), "info", "Il manque des broches.", "Choisis une broche pour chaque signal."); return; }
+  const g = GATES08.find((x) => [x[0], x[1]].includes(p[0]) && [x[0], x[1]].includes(p[1]) && p[0] !== p[1]);
+  const notes = [];
+  if (!g) notes.push("B et N doivent arriver sur les deux entrées d'une même porte (par exemple 1A et 1B, broches 1 et 2).");
+  else if (p[2] !== g[2]) notes.push(`La sortie de cette porte est la broche ${g[2]}.`);
+  if (p[3] !== 14) notes.push("Le +5 V va sur VCC, broche 14.");
+  if (p[4] !== 7) notes.push("La masse va sur GND, broche 7.");
+  if (!notes.length) { feedback($("t6-fb"), "ok", "Câblage juste.", ` Porte utilisée : ${p[0]}, ${p[1]} → ${p[2]}. N'oublie pas de relier les entrées des trois autres portes à GND : une entrée CMOS ne reste jamais en l'air.`); markDone("t6", true); }
+  else { feedback($("t6-fb"), "bad", "À corriger.", " " + notes.join(" ")); markDone("t6", false); }
+};
+__LESSONS__
+$("jsx").hidden = true;
+</script>
+</body>
+</html>

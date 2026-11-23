@@ -1,0 +1,416 @@
+<title>Diagrammes d'états – Floyd chap. 9</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout : bandeau ETML, onglets des 4 démonstrations, scène (diagramme | circuit), puis exercices Floyd */
+:root{
+  --navy:#242852; --blue:#297FD5; --lblue:#ACCBF9; --tint:#E8EFFB; --red:#EE0000; --green:#1E8C46; --orange:#E67814;
+  --bg:#FFFFFF; --fg:#242852; --muted:#5A6478; --line:#C8CEDA; --panel:#F4F7FD; --card:#FFFFFF; --stateFill:#FFFFFF; --lcd:#1E223C; --lcdTxt:#BEFFC8;
+  --font:Arial,"Liberation Sans",Helvetica,sans-serif; --mono:"Courier New","Liberation Mono",monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --fg:#E6EBF7; --bg:#141730; --muted:#A3ADC4; --line:#3A4166; --panel:#1C2042; --card:#1A1E3C; --stateFill:#1A1E3C; --tint:#232A55; --navy:#ACCBF9; --lcd:#0B0D1E; color-scheme:dark}}
+:root[data-theme="dark"]{--fg:#E6EBF7; --bg:#141730; --muted:#A3ADC4; --line:#3A4166; --panel:#1C2042; --card:#1A1E3C; --stateFill:#1A1E3C; --tint:#232A55; --navy:#ACCBF9; --lcd:#0B0D1E; color-scheme:dark}
+html,body{background:var(--bg);color:var(--fg);font-family:var(--font)}
+.top{background:#242852;color:#fff}
+.top .in{max-width:1180px;margin:0 auto;padding-block:18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.top .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#ACCBF9;font-weight:700}
+.top h1{margin:4px 0 0;font-size:clamp(24px,4vw,34px);text-wrap:balance}
+.top .sect{font-weight:700;font-size:14px;border-left:3px solid #297FD5;padding-left:10px}
+main{max-width:1180px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{font:inherit;font-weight:700;font-size:14px;border:2px solid var(--blue);background:var(--card);color:var(--fg);border-radius:999px;padding:8px 14px;cursor:pointer;display:flex;gap:8px;align-items:center}
+.tab b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px}
+.tab[aria-selected="true"]{background:var(--blue);color:#fff}
+.tab[aria-selected="true"] b{background:#fff;color:#297FD5}
+.tab:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.scene{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.scene{grid-template-columns:1fr}}
+.head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.head h2{margin:0;font-size:24px;text-wrap:balance}
+.ref{font-size:13px;font-weight:700;background:var(--tint);border:1.5px solid var(--blue);border-radius:999px;padding:4px 12px;color:var(--fg)}
+.context{margin:6px 0 0;color:var(--muted);max-width:70ch;line-height:1.5}
+.panel{background:var(--panel);border-radius:14px;padding:14px;min-width:0}
+.panel h3{margin:0 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
+svg{display:block;width:100%;height:auto}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.btn{font:inherit;font-weight:700;font-size:14px;border-radius:10px;padding:9px 14px;cursor:pointer;border:2px solid var(--blue);background:var(--blue);color:#fff}
+.btn.ghost{background:transparent;color:var(--fg)}
+.btn.small{padding:6px 10px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.say{margin-top:12px;background:var(--card);border-left:4px solid var(--blue);border-radius:8px;padding:10px 12px;line-height:1.5;min-height:3em}
+.leds{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.led{display:grid;justify-items:center;gap:4px;font-weight:700;font-size:13px}
+.led i{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-family:var(--mono);font-weight:700;border:2px solid var(--navy);background:var(--card);color:var(--muted)}
+.led i.on{background:var(--red);color:#fff;box-shadow:0 0 0 6px rgba(238,0,0,.15)}
+.lcd{background:var(--lcd);color:var(--lcdTxt);font-family:var(--mono);font-weight:700;font-size:30px;border-radius:10px;padding:6px 16px;min-width:88px;text-align:center}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:6px 4px;text-align:center}
+thead th{background:#242852;color:#fff;font-size:13px}
+thead tr:nth-child(2) th{color:#ACCBF9;font-size:12px}
+tbody td{font-family:var(--mono);font-weight:700;font-size:18px;border-bottom:1px solid var(--line)}
+tbody tr.cur td{background:var(--tint)}
+td.ch{color:var(--red)}
+td input{width:2.1em;font:inherit;text-align:center;border:1.5px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg)}
+td input.ok{border-color:var(--green);background:rgba(30,140,70,.12)}
+td input.ko{border-color:var(--red);background:rgba(238,0,0,.1)}
+.grid2{display:grid;grid-template-columns:auto 1fr;gap:10px 14px;align-items:center}
+.reg{display:flex;gap:6px}
+.reg span{width:34px;height:34px;display:grid;place-items:center;border:2px solid var(--navy);border-radius:7px;font-family:var(--mono);font-weight:700;background:var(--card)}
+.reg span.on{background:var(--lblue);color:#242852}
+.floorbtns{display:flex;gap:6px;flex-wrap:wrap}
+.elev{display:grid;grid-template-columns:110px minmax(0,1fr);gap:14px}
+@media (max-width:560px){.elev{grid-template-columns:1fr}.elev>svg{max-width:130px;justify-self:center}}
+.floorbtns .btn{min-width:40px;padding:6px 8px}
+.outs{display:flex;gap:6px;flex-wrap:wrap}
+.outs span{border:1.5px solid var(--line);border-radius:8px;padding:5px 9px;font-size:12px;font-weight:700;color:var(--muted)}
+.outs span.on{background:var(--green);border-color:var(--green);color:#fff}
+.log{font-size:13px;color:var(--muted);max-height:120px;overflow:auto;margin:8px 0 0;padding-left:18px}
+.exos{display:grid;gap:10px}
+.exo{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--panel);border-radius:12px;padding:12px 14px}
+.exo .n{width:32px;height:32px;border-radius:50%;background:#242852;color:#fff;display:grid;place-items:center;font-weight:700}
+.exo p{margin:2px 0 0;color:var(--muted);font-size:14px;line-height:1.4}
+.exo .pg{font-weight:700;color:var(--blue);white-space:nowrap}
+.links{display:flex;gap:10px;flex-wrap:wrap}
+.links a,.links span{display:inline-flex;gap:8px;align-items:center;font-weight:700;text-decoration:none;border-radius:10px;padding:10px 14px;background:#242852;color:#fff}
+.links span{background:var(--line);color:var(--muted)}
+footer{color:var(--muted);font-size:12px;border-top:2px solid var(--blue);padding-top:8px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.st{transition:fill .25s}
+</style>
+
+<div class="top"><div class="in">
+  <div><div class="eyebrow">Test et Mesure 1 – El DT 1 · XLO1 · 2026-2027</div><h1>Diagrammes d'états</h1></div>
+  <div class="sect">Section électronique · ETML</div>
+</div></div>
+
+<main>
+  <nav class="tabs" role="tablist" aria-label="Démonstrations">
+    <button class="tab" role="tab" id="t1" aria-selected="true" data-s="1"><b>1</b>Chronogramme → diagramme</button>
+    <button class="tab" role="tab" id="t2" aria-selected="false" data-s="2"><b>2</b>Table des états suivants</button>
+    <button class="tab" role="tab" id="t3" aria-selected="false" data-s="3"><b>3</b>États inutilisés</button>
+    <button class="tab" role="tab" id="t4" aria-selected="false" data-s="4"><b>4</b>Ascenseur</button>
+  </nav>
+
+  <!-- 1 -->
+  <section id="s1" role="tabpanel">
+    <div class="head"><h2>Compteur binaire 3 bits</h2><span class="ref">Floyd § 9-1, p. 484 · fig. 9-2</span></div>
+    <p class="context">Comme au tableau : trois bascules Q2 Q1 Q0 mémorisent un nombre de 3 bits, donc 2³ = 8 états. Dans une machine qui remplit des bouteilles de comprimés (Floyd fig. 9-2), le compteur avance d'un état à chaque comprimé. Chaque front d'horloge = une flèche du diagramme.</p>
+    <div class="scene" style="margin-top:14px">
+      <div class="panel"><h3>Diagramme d'états</h3><svg id="d1" viewBox="0 0 520 470" role="img" aria-label="Diagramme d'états du compteur binaire 3 bits"></svg></div>
+      <div class="panel"><h3>Chronogramme</h3><svg id="c1" viewBox="0 0 440 300" role="img" aria-label="Chronogramme H, Q0, Q1, Q2"></svg>
+        <div class="leds" style="margin-top:10px"><div class="leds" id="l1"></div><div class="lcd" id="v1">0d</div></div>
+        <div class="ctrl"><button class="btn" id="b1">Front d'horloge ↑</button><button class="btn ghost" id="a1">Auto</button><button class="btn ghost" id="r1">Remise à 0</button></div>
+        <div class="say" id="m1">Clique sur « Front d'horloge » : le compteur suit une flèche et le chronogramme avance d'une période.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2" role="tabpanel" hidden>
+    <div class="head"><h2>Compteur en code Gray → table des états suivants</h2><span class="ref">Floyd § 9-5, p. 505-506 · fig. 9-26 · tab. 9-8</span></div>
+    <p class="context">Le code Gray ne change qu'un bit à la fois : on le trouve dans les codeurs d'angle et les compteurs sans aléas. Étape 1 de la méthode : le diagramme. Étape 2 : pour chaque état présent, suivre la flèche et noter l'état suivant.</p>
+    <div class="scene" style="margin-top:14px">
+      <div class="panel"><h3>Étape 1 · diagramme d'états</h3><svg id="d2" viewBox="0 0 520 470" role="img" aria-label="Diagramme d'états du compteur Gray 3 bits"></svg>
+        <div class="ctrl"><button class="btn" id="b2">Front d'horloge ↑</button><button class="btn ghost" id="r2">Recommencer</button></div></div>
+      <div class="panel"><h3>Étape 2 · table des états suivants</h3>
+        <div style="overflow-x:auto"><table id="tb2"><thead><tr><th colspan="3">État présent</th><th></th><th colspan="3">État suivant</th></tr><tr><th>Q2</th><th>Q1</th><th>Q0</th><th></th><th>Q2</th><th>Q1</th><th>Q0</th></tr></thead><tbody></tbody></table></div>
+        <div class="ctrl"><button class="btn ghost" id="x2">Mode exercice : je remplis moi-même</button><button class="btn" id="k2" hidden>Vérifier</button></div>
+        <div class="say" id="m2">Chaque front remplit une ligne. Les bits qui changent sont en rouge : il n'y en a toujours qu'un.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3" role="tabpanel" hidden>
+    <div class="head"><h2>Séquence irrégulière 1 → 2 → 5 → 7 → 1</h2><span class="ref">Floyd exemple 9-4, p. 509-511 · fig. 9-30</span></div>
+    <p class="context">Un séquenceur pilote 4 étapes d'une machine. Il faut 3 bascules (7 = 111b), donc 4 états restent inutilisés : 0, 3, 4 et 6. À la mise sous tension, les bascules peuvent démarrer n'importe où. Le compteur retrouve-t-il la séquence ?</p>
+    <div class="scene" style="margin-top:14px">
+      <div class="panel"><h3>Diagramme d'états complété</h3><svg id="d3" viewBox="0 0 520 470" role="img" aria-label="Diagramme de l'exemple 9-4 avec états inutilisés"></svg></div>
+      <div class="panel"><h3>Dans le circuit</h3>
+        <div class="leds"><div class="leds" id="l3"></div><div class="lcd" id="v3">1d</div></div>
+        <div class="ctrl"><button class="btn" id="b3">Front d'horloge ↑</button><button class="btn ghost" id="p3">Mise sous tension (état au hasard)</button></div>
+        <div class="ctrl" style="margin-top:8px"><span style="font-size:13px;font-weight:700">Forcer l'état :</span><span class="floorbtns" id="f3"></span></div>
+        <div class="say" id="m3">Les flèches vertes (retour au cycle) apparaissent quand tu visites un état inutilisé. Visite les 4 !</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4" role="tabpanel" hidden>
+    <div class="head"><h2>La commande d'un ascenseur</h2><span class="ref">Floyd application § 9-8, p. 531-534 · fig. 9-61 et 9-63</span></div>
+    <p class="context">Ici les cercles portent un nom (ce que fait le système) et les flèches une condition. Un compteur réversible (fig. 9-63) suit l'étage : +1 en montant, −1 en descendant, à chaque impulsion du capteur d'étage. Diagramme simplifié d'après la figure 9-61.</p>
+    <div class="scene" style="margin-top:14px">
+      <div class="panel"><h3>Diagramme d'états</h3><svg id="d4" viewBox="0 0 560 470" role="img" aria-label="Diagramme d'états de l'ascenseur"></svg>
+        <p style="font-size:12px;color:var(--muted);margin:6px 0 0">cible = étage de l'APPEL ou de la REQUÊTE · T = temporisation de la porte</p></div>
+      <div class="panel elev">
+        <svg id="b4svg" viewBox="0 0 110 420" role="img" aria-label="Immeuble et cabine"></svg>
+        <div style="min-width:0">
+          <div class="grid2">
+            <b>ÉTAGE</b><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div class="reg" id="rE"></div><div class="lcd" id="vE" style="font-size:22px;min-width:50px">1</div></div>
+            <b>APPEL</b><div class="reg" id="rA"></div>
+            <b>REQUÊTE</b><div class="reg" id="rR"></div>
+          </div>
+          <div style="margin-top:12px;font-size:13px;font-weight:700">Appeler depuis l'étage (APPEL)</div>
+          <div class="floorbtns" id="fA"></div>
+          <div style="margin-top:8px;font-size:13px;font-weight:700">Dans la cabine (REQUÊTE)</div>
+          <div class="floorbtns" id="fR"></div>
+          <div style="margin-top:10px" class="outs" id="o4"></div>
+          <div class="ctrl"><button class="btn" id="b4">Pas suivant ↑</button><button class="btn ghost" id="a4">Auto</button></div>
+          <div class="say" id="m4">L'ascenseur attend au 1er étage. Appelle-le depuis un étage.</div>
+          <ol class="log" id="g4"></ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head"><h2>Exercices dans le Floyd, chap. 9 « Compteurs »</h2><span class="ref">Réponses des problèmes impairs : fin du livre</span></div>
+    <div class="links" style="margin:12px 0" id="links"></div>
+    <div class="exos" id="exos"></div>
+  </section>
+
+  <footer><span>Section électronique · Test et Mesure 1 – El DT 1</span><span>Gaël Lemoine · 11/05/2026</span></footer>
+</main>
+
+<script>
+const FLOYD_URL = ""; // lien Teams du chapitre 9 – à compléter
+const NS = "http://www.w3.org/2000/svg";
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) { const v = String(attrs[k]); if (v.startsWith("var(")) e.style.setProperty(k, v); else e.setAttribute(k, v); }
+  if (parent) parent.appendChild(e); return e;
+}
+function txt(parent, x, y, s, o = {}) { const t = el("text", { x, y, "text-anchor": o.anchor || "middle", "dominant-baseline": "central", "font-size": o.size || 16, "font-weight": o.w || 700, "font-family": o.mono ? "var(--mono)" : "var(--font)", fill: o.fill || "var(--fg)" }, parent); t.textContent = s; return t; }
+function defs(svg) {
+  const d = el("defs", {}, svg);
+  [["ah", "var(--fg)"], ["ahb", "#297FD5"], ["ahg", "#1E8C46"]].forEach(([id, c]) => {
+    const m = el("marker", { id: svg.id + id, viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse" }, d);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: c }, m);
+  });
+}
+// flèche courbe entre deux cercles
+function arrow(svg, a, b, r, bend = 0, o = {}) {
+  const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy);
+  const c = [(a[0] + b[0]) / 2 - dy * bend, (a[1] + b[1]) / 2 + dx * bend];
+  const sa = Math.atan2(c[1] - a[1], c[0] - a[0]), sb = Math.atan2(c[1] - b[1], c[0] - b[0]);
+  const p0 = [a[0] + r * Math.cos(sa), a[1] + r * Math.sin(sa)], p1 = [b[0] + (r + 3) * Math.cos(sb), b[1] + (r + 3) * Math.sin(sb)];
+  const col = o.color || "var(--fg)";
+  const mk = col === "#297FD5" ? "ahb" : col === "#1E8C46" ? "ahg" : "ah";
+  const p = el("path", { d: `M${p0[0]},${p0[1]} Q${c[0]},${c[1]} ${p1[0]},${p1[1]}`, fill: "none", stroke: col, "stroke-width": o.w || 2.5, "marker-end": `url(#${svg.id + mk})`, "stroke-dasharray": o.dash || "" }, svg);
+  return [(p0[0] + 2 * c[0] + p1[0]) / 4, (p0[1] + 2 * c[1] + p1[1]) / 4];
+}
+function stateC(svg, c, r, label, sub, mode) {
+  const g = el("g", {}, svg);
+  const fill = mode === "on" ? "#297FD5" : mode === "warn" ? "#EE0000" : "var(--stateFill)";
+  const stroke = mode === "faded" ? "var(--line)" : mode === "warn" ? "#EE0000" : "var(--fg)";
+  if (mode === "on" || mode === "warn") el("circle", { cx: c[0], cy: c[1], r: r + 7, fill: "none", stroke: mode === "on" ? "#ACCBF9" : "#F5B5B5", "stroke-width": 6 }, g);
+  el("circle", { class: "st", cx: c[0], cy: c[1], r, fill, stroke, "stroke-width": 2.5, "stroke-dasharray": mode === "faded" ? "6 5" : "" }, g);
+  const tc = mode === "on" || mode === "warn" ? "#fff" : mode === "faded" ? "var(--muted)" : "var(--fg)";
+  const lines = label.split("\n");
+  lines.forEach((ln, i) => txt(g, c[0], c[1] + (i - (lines.length - 1) / 2) * 16 - (sub ? 8 : 0), ln, { mono: lines.length === 1 && /^[01]+$/.test(ln), size: lines.length > 1 || !/^[01]+$/.test(ln) ? 13 : 20, fill: tc }));
+  if (sub) txt(g, c[0], c[1] + 14, sub, { size: 12, w: 400, fill: tc });
+}
+function ring(cx, cy, R, n) { return [...Array(n)].map((_, k) => [cx + R * Math.cos(-Math.PI / 2 + 2 * Math.PI * k / n), cy + R * Math.sin(-Math.PI / 2 + 2 * Math.PI * k / n)]); }
+function ledsHTML(id, bits) { document.getElementById(id).innerHTML = ["Q2", "Q1", "Q0"].map((n, i) => `<div class="led"><i class="${bits[i] === "1" ? "on" : ""}">${bits[i]}</i>${n}</div>`).join(""); }
+const bin3 = n => n.toString(2).padStart(3, "0");
+function labelBg(svg, x, y, s, color) {
+  const g = el("g", {}, svg); const w = s.length * 6.6 + 10;
+  el("rect", { x: x - w / 2, y: y - 10, width: w, height: 20, rx: 5, fill: "var(--panel)" }, g);
+  txt(g, x, y, s, { size: 11.5, fill: color || "var(--fg)" });
+}
+
+/* ---------- 1 · binaire ---------- */
+const S1 = { n: 0, hist: [0], last: null, timer: null };
+function draw1() {
+  const svg = document.getElementById("d1"); svg.innerHTML = ""; defs(svg);
+  const C = ring(260, 235, 175, 8);
+  for (let j = 0; j < 8; j++) arrow(svg, C[j], C[(j + 1) % 8], 38, -0.12, S1.last === j ? { color: "#297FD5", w: 6 } : {});
+  for (let j = 0; j < 8; j++) stateC(svg, C[j], 38, bin3(j), j + "d", j === S1.n ? "on" : "");
+  txt(svg, 260, 225, "1 front d'horloge", { size: 14, fill: "#297FD5" }); txt(svg, 260, 247, "= 1 flèche", { size: 14, fill: "#297FD5" });
+  // chronogramme
+  const c = document.getElementById("c1"); c.innerHTML = "";
+  const h = S1.hist.slice(-12), x0 = 50, pw = 32;
+  [["H", -1], ["Q0", 0], ["Q1", 1], ["Q2", 2]].forEach(([nm, b], r) => {
+    const yb = 60 + r * 68, yh = yb - 36;
+    txt(c, 18, yb - 18, nm, { size: 15 });
+    el("line", { x1: x0, y1: yb, x2: 430, y2: yb, stroke: "var(--line)" }, c);
+    let d = "";
+    h.forEach((v, i) => {
+      const xa = x0 + i * pw;
+      if (b < 0) d += `${i ? "L" : "M"}${xa},${yb} L${xa},${yh} L${xa + pw / 2},${yh} L${xa + pw / 2},${yb} L${xa + pw},${yb} `;
+      else { const y = (v >> b) & 1 ? yh : yb; d += `${i ? "L" : "M"}${xa},${y} L${xa + pw},${y} `; txt(c, xa + pw / 2, yb + 11, String((v >> b) & 1), { size: 10, w: 400, fill: "var(--muted)" }); }
+    });
+    el("path", { d, fill: "none", stroke: b < 0 ? "#297FD5" : "var(--fg)", "stroke-width": 2.5 }, c);
+  });
+  for (let i = 1; i < h.length; i++) el("line", { x1: x0 + i * pw, y1: 18, x2: x0 + i * pw, y2: 270, stroke: "var(--line)", "stroke-dasharray": "3 4" }, c);
+  el("rect", { x: x0 + (h.length - 1) * pw + 1, y: 16, width: pw - 2, height: 258, rx: 5, fill: "none", stroke: "#297FD5", "stroke-width": 2 }, c);
+  ledsHTML("l1", bin3(S1.n)); document.getElementById("v1").textContent = S1.n + "d";
+}
+function tick1() {
+  const p = S1.n; S1.n = (S1.n + 1) % 8; S1.last = p; S1.hist.push(S1.n); draw1();
+  document.getElementById("m1").textContent = S1.n === 0
+    ? "111b → 000b : après le dernier état, le compteur recommence. Le diagramme est une boucle fermée."
+    : `Front ↑ : ${bin3(p)}b → ${bin3(S1.n)}b (${p}d → ${S1.n}d). Une seule flèche, même si plusieurs bits basculent ensemble.`;
+}
+document.getElementById("b1").onclick = tick1;
+document.getElementById("r1").onclick = () => { S1.n = 0; S1.hist = [0]; S1.last = null; draw1(); document.getElementById("m1").textContent = "Remise à 0 : état 000b."; };
+document.getElementById("a1").onclick = e => { if (S1.timer) { clearInterval(S1.timer); S1.timer = null; e.target.textContent = "Auto"; } else { S1.timer = setInterval(tick1, 1100); e.target.textContent = "Stop"; } };
+
+/* ---------- 2 · Gray ---------- */
+const GRAY = ["000", "001", "011", "010", "110", "111", "101", "100"];
+const S2 = { k: 0, quiz: false };
+function draw2() {
+  const svg = document.getElementById("d2"); svg.innerHTML = ""; defs(svg);
+  const C = ring(260, 235, 175, 8), cur = S2.k % 8;
+  for (let j = 0; j < 8; j++) arrow(svg, C[j], C[(j + 1) % 8], 40, -0.12, S2.k > 0 && (S2.k - 1) % 8 === j ? { color: "#297FD5", w: 6 } : {});
+  for (let j = 0; j < 8; j++) stateC(svg, C[j], 40, GRAY[j], null, j === cur ? "on" : "");
+  const tb = document.querySelector("#tb2 tbody");
+  tb.innerHTML = GRAY.map((a, r) => {
+    const b = GRAY[(r + 1) % 8], shown = S2.quiz || S2.k > r;
+    const nx = [0, 1, 2].map(i => S2.quiz ? `<td><input id="q${r}${i}" inputmode="numeric" maxlength="1" aria-label="ligne ${r + 1}, bit Q${2 - i} suivant"></td>` : shown ? `<td class="${a[i] !== b[i] ? "ch" : ""}">${b[i]}</td>` : "<td></td>").join("");
+    return `<tr class="${!S2.quiz && S2.k - 1 === r ? "cur" : ""}"><td>${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td><td style="color:#297FD5">→</td>${nx}</tr>`;
+  }).join("");
+}
+document.getElementById("b2").onclick = () => {
+  if (S2.quiz) return; S2.k = Math.min(S2.k + 1, 8); draw2();
+  const a = GRAY[S2.k - 1], b = GRAY[S2.k % 8], bit = 2 - [0, 1, 2].find(i => a[i] !== b[i]);
+  document.getElementById("m2").textContent = S2.k < 8 ? `État présent ${a} → état suivant ${b}. Seul Q${bit} change.` : "100 → 000 : la table est complète (tableau 9-8 du Floyd). Étape suivante : le tableau des transitions de la bascule (étape 3).";
+};
+document.getElementById("r2").onclick = () => { S2.k = 0; draw2(); document.getElementById("m2").textContent = "Table vidée. Clique sur « Front d'horloge »."; };
+document.getElementById("x2").onclick = e => {
+  S2.quiz = !S2.quiz; S2.k = 0; draw2();
+  e.target.textContent = S2.quiz ? "Revenir à la démonstration" : "Mode exercice : je remplis moi-même";
+  document.getElementById("k2").hidden = !S2.quiz; document.getElementById("b2").disabled = S2.quiz;
+  document.getElementById("m2").textContent = S2.quiz ? "Lis le diagramme et écris l'état suivant de chaque ligne (0 ou 1), puis « Vérifier »." : "Démonstration : chaque front remplit une ligne.";
+};
+document.getElementById("k2").onclick = () => {
+  let ok = 0;
+  GRAY.forEach((a, r) => [0, 1, 2].forEach(i => { const inp = document.getElementById(`q${r}${i}`), good = inp.value.trim() === GRAY[(r + 1) % 8][i]; inp.className = good ? "ok" : "ko"; ok += good; }));
+  document.getElementById("m2").textContent = ok === 24 ? "24/24 : bravo, ta table des états suivants est juste." : `${ok}/24 bits justes. Corrige les cases rouges : pars de l'état présent et suis la flèche.`;
+};
+
+/* ---------- 3 · états inutilisés ---------- */
+const P3 = { 1: [260, 85], 2: [400, 230], 5: [260, 375], 7: [120, 230], 6: [445, 70], 0: [60, 70], 3: [60, 230], 4: [60, 390] };
+// états suivants : séquence voulue + retours donnés par la solution de l'exemple 9-4 (0→3→4→7, 6→1)
+const N3 = { 1: 2, 2: 5, 5: 7, 7: 1, 6: 1, 0: 3, 3: 4, 4: 7 };
+const S3 = { s: 1, seen: new Set(), last: null, warn: false };
+function draw3() {
+  const svg = document.getElementById("d3"); svg.innerHTML = ""; defs(svg);
+  [1, 2, 5, 7].forEach(a => arrow(svg, P3[a], P3[N3[a]], 40, -0.16, S3.last === a ? { color: "#297FD5", w: 6 } : {}));
+  [0, 3, 4, 6].forEach(a => { if (S3.seen.has(a)) arrow(svg, P3[a], P3[N3[a]], 40, a === 4 ? 0.12 : 0, { color: S3.last === a ? "#297FD5" : "#1E8C46", w: S3.last === a ? 6 : 3 }); });
+  for (const s in P3) {
+    const n = +s, unused = [0, 3, 4, 6].includes(n);
+    stateC(svg, P3[s], 40, bin3(n), n + "d", n === S3.s ? (S3.warn ? "warn" : "on") : unused && !S3.seen.has(n) ? "faded" : "");
+    if (unused && !S3.seen.has(n) && n !== S3.s) txt(svg, P3[s][0] + 34, P3[s][1] - 34, "?", { size: 20, fill: "#E67814" });
+  }
+  el("line", { x1: 300, y1: 448, x2: 330, y2: 448, stroke: "var(--fg)", "stroke-width": 3 }, svg); txt(svg, 338, 448, "séquence voulue", { anchor: "start", size: 12 });
+  el("line", { x1: 300, y1: 466, x2: 330, y2: 466, stroke: "#1E8C46", "stroke-width": 3 }, svg); txt(svg, 338, 466, "retour au cycle", { anchor: "start", size: 12, fill: "#1E8C46" });
+  ledsHTML("l3", bin3(S3.s)); document.getElementById("v3").textContent = S3.s + "d";
+  document.getElementById("f3").innerHTML = [0, 1, 2, 3, 4, 5, 6, 7].map(n => `<button class="btn ghost small" data-n="${n}">${n}</button>`).join("");
+  document.querySelectorAll("#f3 button").forEach(b => b.onclick = () => force3(+b.dataset.n));
+}
+function force3(n) {
+  S3.s = n; S3.last = null; S3.warn = [0, 3, 4, 6].includes(n); draw3();
+  document.getElementById("m3").textContent = S3.warn ? `Les bascules démarrent en ${bin3(n)}b = ${n} : un état INUTILISÉ. Clique « Front d'horloge » pour voir où va le compteur.` : `État ${n} : il fait partie de la séquence voulue.`;
+}
+document.getElementById("b3").onclick = () => {
+  const p = S3.s; if ([0, 3, 4, 6].includes(p)) S3.seen.add(p);
+  S3.s = N3[p]; S3.last = p; S3.warn = false; draw3();
+  const rest = [0, 3, 4, 6].filter(x => !S3.seen.has(x));
+  document.getElementById("m3").textContent = [0, 3, 4, 6].includes(p)
+    ? `${p} → ${S3.s} : ${[1, 2, 5, 7].includes(S3.s) ? "le compteur rejoint la séquence voulue." : "toujours hors du cycle, encore un front…"}` + (rest.length ? ` États inutilisés pas encore testés : ${rest.join(", ")}.` : " Les 4 états inutilisés reviennent dans le cycle : pas de boucle piège !")
+    : `${p} → ${S3.s} : séquence voulue 1 → 2 → 5 → 7.`;
+};
+document.getElementById("p3").onclick = () => force3(Math.floor(Math.random() * 8));
+
+/* ---------- 4 · ascenseur ---------- */
+const E = { ATT: [280, 60], AO: [280, 230], F: [280, 400], D: [80, 230], M: [480, 230] };
+const EL = { ATT: "ATTENTE", AO: "ARRÊT\nOUVRE", F: "FERME", D: "DESCEND", M: "MONTE" };
+const ARCS = [["ATT", "D", 0.18, "APPEL < ÉTAGE", [140, 120]], ["ATT", "M", -0.18, "APPEL > ÉTAGE", [420, 120]], ["ATT", "AO", 0, "APPEL = ÉTAGE", [280, 145]],
+  ["D", "AO", 0, "ÉTAGE = cible", [180, 210]], ["M", "AO", 0, "ÉTAGE = cible", [380, 210]], ["AO", "F", 0, "T écoulé", [280, 315]],
+  ["F", "D", -0.18, "REQUÊTE < ÉTAGE", [130, 345]], ["F", "M", 0.18, "REQUÊTE > ÉTAGE", [430, 345]]];
+const S4 = { st: "ATT", floor: 1, appel: null, req: null, tmr: 0, last: null, timer: null, log: [] };
+function regHTML(id, v) { document.getElementById(id).innerHTML = (v === null ? "---" : bin3(v)).split("").map(b => `<span class="${b === "1" ? "on" : ""}">${b}</span>`).join(""); }
+function draw4() {
+  const svg = document.getElementById("d4"); svg.innerHTML = ""; defs(svg);
+  ARCS.forEach(([a, b, bend]) => arrow(svg, E[a], E[b], 46, bend, S4.last && S4.last[0] === a && S4.last[1] === b ? { color: "#297FD5", w: 6 } : {}));
+  const fa = S4.last && S4.last[0] === "F" && S4.last[1] === "ATT";
+  el("path", { d: `M${280 + 46},400 L548,400 L548,60 L${280 + 49},60`, fill: "none", stroke: fa ? "#297FD5" : "var(--fg)", "stroke-width": fa ? 6 : 2.5, "marker-end": `url(#d4${fa ? "ahb" : "ah"})` }, svg);
+  ARCS.forEach(([a, b, , lab, p]) => labelBg(svg, p[0], p[1], lab, S4.last && S4.last[0] === a && S4.last[1] === b ? "#297FD5" : null));
+  labelBg(svg, 515, 300, "aucune", fa ? "#297FD5" : null); labelBg(svg, 515, 318, "requête", fa ? "#297FD5" : null);
+  for (const k in E) stateC(svg, E[k], 46, EL[k], null, k === S4.st ? "on" : "");
+  // immeuble
+  const b = document.getElementById("b4svg"); b.innerHTML = "";
+  el("polygon", { points: "5,30 55,2 105,30", fill: "#242852" }, b);
+  el("rect", { x: 10, y: 30, width: 90, height: 384, fill: "var(--card)", stroke: "var(--fg)", "stroke-width": 2 }, b);
+  for (let f = 0; f < 8; f++) {
+    const y = 30 + (7 - f) * 48;
+    el("line", { x1: 10, y1: y + 48, x2: 100, y2: y + 48, stroke: "var(--line)" }, b);
+    txt(b, 22, y + 24, f === 0 ? "S" : String(f), { size: 12, fill: "var(--muted)" });
+    if (S4.appel === f) el("circle", { cx: 88, cy: y + 24, r: 6, fill: "#E67814" }, b);
+    if (S4.req === f) el("circle", { cx: 88, cy: y + 24, r: 6, fill: "#297FD5" }, b);
+  }
+  const cy = 30 + (7 - S4.floor) * 48;
+  el("rect", { x: 38, y: cy + 5, width: 38, height: 40, fill: S4.st === "AO" ? "#ACCBF9" : "#297FD5", stroke: "#242852", "stroke-width": 2 }, b);
+  regHTML("rE", S4.floor); regHTML("rA", S4.appel); regHTML("rR", S4.req);
+  document.getElementById("vE").textContent = S4.floor === 0 ? "S" : S4.floor;
+  document.getElementById("o4").innerHTML = [["MONTE", "M"], ["DESCEND", "D"], ["ARRÊT/OUVRE", "AO"], ["FERME", "F"]].map(([l, k]) => `<span class="${S4.st === k ? "on" : ""}">${l}</span>`).join("");
+  document.getElementById("g4").innerHTML = S4.log.slice(-6).map(l => `<li>${l}</li>`).join("");
+}
+function go4(to, why) { S4.last = [S4.st, to]; S4.log.push(`${EL[S4.st].replace("\n", "/")} → ${EL[to].replace("\n", "/")} (${why})`); S4.st = to; if (to === "AO") S4.tmr = 2; }
+function step4() {
+  const target = S4.appel !== null ? S4.appel : S4.req; let msg = ""; S4.last = null;
+  switch (S4.st) {
+    case "ATT":
+      if (S4.appel === null) { msg = "ATTENTE : aucun appel. Choisis un étage dans « Appeler depuis l'étage »."; break; }
+      if (S4.appel > S4.floor) { go4("M", "APPEL > ÉTAGE"); msg = `APPEL ${bin3(S4.appel)}b > ÉTAGE ${bin3(S4.floor)}b → MONTE.`; }
+      else if (S4.appel < S4.floor) { go4("D", "APPEL < ÉTAGE"); msg = `APPEL ${bin3(S4.appel)}b < ÉTAGE ${bin3(S4.floor)}b → DESCEND.`; }
+      else { go4("AO", "APPEL = ÉTAGE"); msg = "APPEL = ÉTAGE : la porte s'ouvre tout de suite."; }
+      break;
+    case "M": case "D":
+      if (S4.floor === target) { go4("AO", "ÉTAGE = cible"); msg = "ÉTAGE = cible → ARRÊT/OUVRE : le moteur s'arrête, la porte s'ouvre."; }
+      else { S4.floor += S4.st === "M" ? 1 : -1; msg = `Impulsion du capteur d'étage : le compteur ${S4.st === "M" ? "monte (+1)" : "descend (−1)"} → ${bin3(S4.floor)}b.`; if (S4.floor === target) msg += " On est arrivé : au prochain pas, ÉTAGE = cible."; }
+      break;
+    case "AO":
+      if (S4.appel !== null && S4.floor === S4.appel) S4.appel = null;
+      if (S4.req !== null && S4.floor === S4.req) S4.req = null;
+      if (S4.tmr > 0) { S4.tmr--; msg = `Porte ouverte, temporisation T en cours… ${S4.req === null ? "Choisis un étage dans la cabine (REQUÊTE)." : ""}`; }
+      else { go4("F", "T écoulé"); msg = "T écoulé → FERME : la porte se referme."; }
+      break;
+    case "F":
+      if (S4.req === null) { go4("ATT", "aucune requête"); msg = "Aucune requête → ATTENTE."; }
+      else if (S4.req > S4.floor) { go4("M", "REQUÊTE > ÉTAGE"); msg = "REQUÊTE > ÉTAGE → MONTE."; }
+      else if (S4.req < S4.floor) { go4("D", "REQUÊTE < ÉTAGE"); msg = "REQUÊTE < ÉTAGE → DESCEND."; }
+      else { S4.req = null; go4("ATT", "aucune requête"); msg = "Déjà à l'étage demandé → ATTENTE."; }
+      break;
+  }
+  document.getElementById("m4").textContent = msg; draw4();
+}
+function floorBtns(id, fn) { document.getElementById(id).innerHTML = [...Array(8)].map((_, f) => `<button class="btn ghost small" data-f="${f}">${f === 0 ? "S" : f}</button>`).join(""); document.querySelectorAll(`#${id} button`).forEach(b => b.onclick = () => fn(+b.dataset.f)); }
+floorBtns("fA", f => { if (S4.st !== "ATT") { document.getElementById("m4").textContent = "Ce modèle simplifié traite un appel à la fois : attends le retour en ATTENTE."; return; } S4.appel = f; document.getElementById("m4").textContent = `APPEL = ${bin3(f)}b (étage ${f === 0 ? "S" : f}). Clique « Pas suivant » : quelle flèche est vraie ?`; draw4(); });
+floorBtns("fR", f => { if (S4.st !== "AO") { document.getElementById("m4").textContent = "On choisit l'étage une fois dans la cabine, porte ouverte (état ARRÊT/OUVRE)."; return; } S4.req = f; S4.tmr = Math.max(S4.tmr, 1); document.getElementById("m4").textContent = `REQUÊTE = ${bin3(f)}b. Au prochain pas, T s'écoule.`; draw4(); });
+document.getElementById("b4").onclick = step4;
+document.getElementById("a4").onclick = e => { if (S4.timer) { clearInterval(S4.timer); S4.timer = null; e.target.textContent = "Auto"; } else { S4.timer = setInterval(step4, 900); e.target.textContent = "Stop"; } };
+
+/* ---------- onglets ---------- */
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+  document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t));
+  [1, 2, 3, 4].forEach(i => document.getElementById("s" + i).hidden = String(i) !== t.dataset.s);
+});
+
+/* ---------- exercices ---------- */
+const EXOS = [["Révision § 9-1, questions 1 à 3", "Machine de Moore ou de Mealy ? Quelle différence ?", "p. 485"],
+  ["Problèmes 1 et 2 (§ 9-1)", "Dessiner le schéma de principe et le diagramme d'états d'un compteur à décade ; type de machine des feux de circulation.", "p. 537"],
+  ["Exemple 9-4 + exercice connexe", "Vérifier que chaque état inutilisé revient dans la séquence (démonstration 3).", "p. 509-511"],
+  ["Révision § 9-5, questions 1 à 3", "État présent → état suivant, entrées J et K.", "p. 513"],
+  ["Problèmes 18 et 19 (§ 9-5)", "Trouver la séquence d'un compteur câblé, puis dessiner son diagramme d'états.", "p. 540"],
+  ["Problèmes 20 à 23 (§ 9-5)", "Du diagramme d'états (ou de la séquence) au compteur à bascules J-K. Le 23 a une entrée ascendant / descendant.", "p. 540"],
+  ["Application : contrôle d'ascenseur", "Relire les figures 9-61 à 9-64 et retrouver chaque état de la démonstration 4.", "p. 531-534"]];
+document.getElementById("exos").innerHTML = EXOS.map((e, i) => `<div class="exo"><span class="n">${i + 1}</span><div style="min-width:0"><b>${e[0]}</b><p>${e[1]}</p></div><span class="pg">${e[2]}</span></div>`).join("");
+document.getElementById("links").innerHTML = FLOYD_URL
+  ? `<a href="${FLOYD_URL}" target="_blank" rel="noopener">Floyd V11 · Chap 09 – Compteurs (PDF Teams) ↗</a>`
+  : `<span>Floyd V11 · Chap 09 – Compteurs : lien Teams à venir</span>`;
+
+draw1(); draw2(); draw3(); draw4();
+</script>
