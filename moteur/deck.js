@@ -298,8 +298,10 @@ function creer(cfg) {
     txt(s, "Les étapes", { x: 5.75, y: 2.25, w: 3.75, h: 0.28, fontSize: 12, bold: true, color: NAVY });
     bullets(s, steps, { x: 5.75, y: 2.55, w: 3.75, h: 1.36, fontSize: 10.5 }, true);
     frame(s, 5.75, 3.95, 3.75, 0.56);
-    if (MEDIAS) s.addText([ARROW, LINK(`Ouvrir la page ${num} sur Teams`, url, file + " : à ouvrir dans Edge ou Chrome"), { text: "", options: { breakLine: true } },
-      { text: "version en ligne : ", options: { color: GR, bold: false } }, LINK("artefact claude.ai", art, "Page en ligne (une fois partagée)")],
+    // sans artefact (art vide : demande de Gaël du 11/24/2026), seul le lien SharePoint est donné
+    if (MEDIAS) s.addText(art ? [ARROW, LINK(`Ouvrir la page ${num} sur Teams`, url, file + " : à ouvrir dans Edge ou Chrome"), { text: "", options: { breakLine: true } },
+      { text: "version en ligne : ", options: { color: GR, bold: false } }, LINK("artefact claude.ai", art, "Page en ligne (une fois partagée)")] :
+      [ARROW, LINK(`Ouvrir la page ${num} sur Teams`, url, file + " : à ouvrir dans Edge ou Chrome")],
       { x: 5.9, y: 3.97, w: 3.5, h: 0.52, fontFace: F, fontSize: 10.5, bold: true, color: NAVY, margin: 0, valign: "middle" });
     else txt(s, "Liens Teams et artefact : phase médias", { x: 5.9, y: 3.97, w: 3.5, h: 0.52, fontSize: 10.5, italic: true, color: GR, valign: "middle" });
     life(s, 0.5, 4.65, 9.0, 0.9, lifeLines, 10.5);

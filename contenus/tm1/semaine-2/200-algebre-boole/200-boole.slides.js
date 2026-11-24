@@ -100,13 +100,13 @@ module.exports = function (E) {
       [cell("Associativité", { bold: true, align: "left" }), cell(""), cell("")],
       [cell("Distributivité", { bold: true, align: "left" }), cell("", { colspan: 2 })]];
     s.addTable(rows, { x: 0.5, y: 0.95, w: 9.0, colW: [2.0, 3.5, 3.5], rowH: [0.38, 0.62, 0.62, 0.62], border: BORDER, fontSize: 12 });
-    EQ(s, "eq_com1", 2.95, 1.43, 2.1, 0.42);
-    EQ(s, "eq_com2", 6.45, 1.43, 2.1, 0.42);
-    EQ(s, "eq_ass1", 2.75, 2.05, 3.05, 0.42);
-    EQ(s, "eq_ass2", 6.2, 2.05, 3.05, 0.42);
-    EQ(s, "eq_dis", 4.6, 2.67, 3.3, 0.42);
-    txt(s, "« mise en évidence » quand on la lit de droite à gauche", { x: 2.6, y: 3.05, w: 6.8, h: 0.25, fontSize: 9.5, italic: true, color: GR, align: "center" });
-    life(s, 0.5, 3.55, 9.0, 2.0, [
+    EQ(s, "eq_com1", 2.95, 1.41, 2.2, 0.46);
+    EQ(s, "eq_com2", 6.45, 1.41, 2.2, 0.46);
+    EQ(s, "eq_ass1", 2.65, 2.03, 3.1, 0.46);
+    EQ(s, "eq_ass2", 6.15, 2.03, 3.2, 0.46);
+    EQ(s, "eq_dis", 4.45, 2.62, 3.6, 0.46);
+    txt(s, "« mise en évidence » quand on la lit de droite à gauche", { x: 2.6, y: 3.2, w: 6.8, h: 0.25, fontSize: 9.5, italic: true, color: GR, align: "center" });
+    life(s, 0.5, 3.6, 9.0, 1.95, [
       "Commutativité : sur la carte, tu peux échanger les fils A et B d'une porte pour simplifier le routage.",
       "Associativité : un ET à 3 entrées (74HC11) peut être remplacé par deux ET à 2 entrées d'un 74HC08 déjà présent sur la carte.",
       "Distributivité : mettre A en évidence dans A · B + A · C économise une porte ET.",
@@ -319,7 +319,7 @@ module.exports = function (E) {
     txt(s, "Le convoyeur de sortie S", { x: 4.55, y: 1.02, w: 4.8, h: 0.3, fontSize: 12.5, bold: true, color: BLUE });
     [["m1", ""], ["m2", "distributivité"], ["m3", "règle 11"]].forEach(([k, r], i) => {
       const y = 1.4 + i * 0.62;
-      EQ(s, k, 4.6, y, 3.0, 0.42);
+      EQ(s, k, 4.6, y - 0.02, 3.1, 0.46);
       txt(s, r, { x: 7.75, y, w: 1.65, h: 0.42, fontSize: 10.5, italic: true, color: BLUE, valign: "middle" });
     });
     card(s, 0.5, 3.55, 9.0, 0.85);

@@ -25,7 +25,7 @@ lz:
 # Pas de lien Floyd ni nextecmedia pour cette séance (Gaël, 11/23/2026).
 
 # ---------------------------------------------------------------- Teams : dossier du cours (El_DT1/PMT&SBT)
-teams_dossier: "https://eduvaud.sharepoint.com/:{k}:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/"
+teams_dossier: "https://eduvaud.sharepoint.com/:{k}:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/"
 
 # ---------------------------------------------------------------- fichiers (REGLES 8)
 fichiers:
@@ -41,12 +41,9 @@ renvois:
   "130": "130 EX Portes logiques de base.docx"
 
 versions:
-  "200": "1.0"
+  "200": "1.1"
 
 # vidéos : couverture (image à 7 s, bouton lecture, durée affichée)
 videos:
   "205": "3 min 52"
 
-# artefact claude.ai de la page interactive (privé tant que Gaël ne le partage pas)
-artefacts:
-  "201": "https://claude.ai/artifact/ThZsK2ZfZeEJ1VH4nZwUR3"

@@ -161,7 +161,7 @@ def build(corr, out):
     x.ANS("$S=\\bar{\\bar{A\\cdot B+A\\cdot C}}=\\bar{\\bar{A\\cdot B}\\cdot \\bar{A\\cdot C}}$ : trois NON-ET.", 2)
     x.Q("c)", "Dessine le schéma avec des portes NON-ET seulement.")
     if corr:
-        x.IMG("fig_n5_corr.png", 4.8, after=2)
+        x.IMG("fig_n5_corr.png", 5.2, after=2)
         x.ANS("3 portes d'un seul 74HC00, au lieu de 2 CI (74HC32 et 74HC08). Une somme de produits se câble toujours ainsi : NON-ET, puis NON-ET.", 2)
     else:
         for _ in range(6): x.P("", after=6)

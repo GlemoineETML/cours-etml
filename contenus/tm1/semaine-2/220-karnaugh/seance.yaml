@@ -16,7 +16,7 @@ lz:
     texte: "Elles/Ils appliquent les lois fondamentales de l'algèbre de Boole."
     lien: "https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4"
 
-teams_dossier: "https://eduvaud.sharepoint.com/:{k}:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/"
+teams_dossier: "https://eduvaud.sharepoint.com/:{k}:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/"
 
 fichiers:
   "220": "220 Simplification par Karnaugh.pptx"
@@ -32,12 +32,9 @@ renvois:
   "210": "210 EX Algèbre de Boole.docx"
 
 versions:
-  "220": "1.0"
+  "220": "1.1"
 
 # vidéos : couverture (image à 7 s, bouton lecture, durée affichée)
 videos:
   "225": "2 min 47"
 
-# artefact claude.ai de la page interactive (privé tant que Gaël ne le partage pas)
-artefacts:
-  "221": "https://claude.ai/artifact/NezWTvMnsyRxbPWVoiA4B5"
