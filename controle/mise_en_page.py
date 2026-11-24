@@ -5,7 +5,7 @@ Présentations (.pptx, lecture du XML) :
   - texte qui déborde de son cadre (estimation : largeur moyenne des caractères Arial, interligne 1,2) ;
   - chevauchements entre zones de texte, et entre une zone de texte et une image.
 Fiches et présentations (PDF rendu par LibreOffice, pdftotext -bbox-layout) :
-  - page presque vide (fiche : page intermédiaire remplie à moins de 80 %, dernière page à moins de 25 %) ;
+  - page presque vide (fiche : page intermédiaire remplie à moins de 80 %, dernière page à moins de 25 % ; texte et images) ;
   - nombre séparé de son unité en fin de ligne (« 0,0039 » / « 1/K »).
 Ce sont des estimations : chaque avertissement se vérifie sur le rendu, puis se corrige ou se justifie avant livraison."""
 import html, math, os, re, subprocess, zipfile
@@ -120,10 +120,21 @@ def _pages_pdf(pdf):
     return pages
 
 
+def _images_pdf(pdf):
+    """[[bas de chaque image (pt, depuis le haut)] par page] : une figure en fin de page compte comme contenu."""
+    try:
+        import pdfplumber
+    except ImportError:
+        return []
+    with pdfplumber.open(pdf) as d:
+        return [[float(im["bottom"]) for im in p.images] for p in d.pages]
+
+
 def controler_pdf(pdf, fiche):
     A = []
     nom = os.path.basename(pdf)[:-4]
     pages = _pages_pdf(pdf)
+    images = _images_pdf(pdf) if fiche else []
     for i, (ph, lignes) in enumerate(pages):
         # unité séparée de son nombre en fin de ligne
         for a, b in zip(lignes, lignes[1:]):
@@ -132,10 +143,10 @@ def controler_pdf(pdf, fiche):
         if not fiche:
             continue
         haut, bas = 0.11 * ph, ph - 0.09 * ph                     # en-tête et pied de page du modèle Rapport_Simple
-        corps = [l for l in lignes if haut < l[0] < bas]
+        corps = [l[1] for l in lignes if haut < l[0] < bas] + [b for b in (images[i] if i < len(images) else []) if haut < b < bas]
         if not corps:
             continue
-        rempli = (max(l[1] for l in corps) - haut) / (bas - haut)
+        rempli = (max(corps) - haut) / (bas - haut)
         derniere = i == len(pages) - 1
         if (not derniere and rempli < 0.8) or (derniere and rempli < 0.25):
             A.append(f"{nom} (page {i + 1}) : page remplie à {rempli:.0%} seulement" + (" (dernière page)" if derniere else ""))

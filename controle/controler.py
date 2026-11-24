@@ -287,7 +287,13 @@ def planche_video(S, anim, dossier, pas=5.0):
 def planche_figures(travail, dossier):
     """Toutes les figures de la séance sur une planche, pour la relecture visuelle obligatoire (CLAUDE.md)."""
     from PIL import Image
-    fs = sorted(glob.glob(os.path.join(travail, "fig_*.png")))
+    import json
+    fs = set(glob.glob(os.path.join(travail, "fig_*.png")))
+    tailles = os.path.join(travail, "tailles_figures.json")       # toutes les figures passées par moteur/cei.save
+    if os.path.exists(tailles):
+        fs |= {os.path.join(travail, n) for n in json.load(open(tailles, encoding="utf-8"))
+               if not n.startswith("eq_") and os.path.exists(os.path.join(travail, n))}
+    fs = sorted(fs)
     if not fs:
         return None
     W = 900                                             # pages de 4 figures, lisibles à l'écran
@@ -345,6 +351,8 @@ def main():
     if os.path.exists(fa):
         E += [f"figure · {l.strip()}" for l in open(fa, encoding="utf-8") if l.strip()]
     E += corps_figures(fichiers, os.path.join(travail, "tailles_figures.json"))
+    from controle.karnaugh import verifier as verifier_karnaugh          # tableaux de Karnaugh (REGLES 3.5)
+    E += verifier_karnaugh(travail)
     verif = os.path.join(S.dossier, "verif.py")
     if os.path.exists(verif):
         e = S.module("verif").verifier()

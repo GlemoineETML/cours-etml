@@ -1,0 +1,17 @@
+{
+ "_": "Équations de la présentation 220 (mini-syntaxe de moteur/omml.py). Sortie S, entrées A, B, C, D (REGLES 3.4).",
+ "eq_sdp1": "S=\\bar{A}\\cdot B\\cdot \\bar{C}+A\\cdot B\\cdot \\bar{C}+A\\cdot \\bar{B}\\cdot C",
+ "eq_sdp2": "+\\bar{A}\\cdot B\\cdot C+A\\cdot B\\cdot C",
+ "eq_rinc": "S=B+A\\cdot C",
+ "eq_l1": "\\bar{A}\\cdot B\\cdot \\bar{C}",
+ "eq_g1": "B",
+ "eq_g2": "A\\cdot C",
+ "eq_k4": "S=\\bar{A}\\cdot \\bar{C}+A\\cdot C",
+ "eq_x": "S=C+\\bar{A}\\cdot B",
+ "eq_sx": "S=B\\cdot C+\\bar{A}\\cdot B",
+ "eq_t1": "S=\\bar{B}",
+ "eq_t2": "S=A\\cdot B+B\\cdot C",
+ "eq_t3": "S=\\bar{C}\\cdot \\bar{D}+A\\cdot \\bar{B}\\cdot C",
+ "eq_conv": "S=A\\cdot B+A\\cdot C=A\\cdot (B+C)",
+ "eq_ejec": "S=\\bar{A}+\\bar{B}\\cdot \\bar{D}+\\bar{C}\\cdot \\bar{D}"
+}

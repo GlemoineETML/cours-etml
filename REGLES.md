@@ -63,6 +63,16 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 - Équations logiques en notation Floyd (S = AB, S = A + B, barre = NON). La sortie s'appelle toujours S ; les entrées A, B, C, D… (jamais d'initiales comme M, P, V). Le sens de chaque lettre est donné dans une légende (« A : machine en marche »). Demande de Gaël du 11/23/2026 ; la semaine 1 de TM1, faite avant, garde Y.
 - Niveaux et délais : notation des fiches techniques (V_IH, V_IL, V_OH, V_OL, t_PHL, t_PLH), avec un renvoi à la notation du Floyd (V_EH, V_EB, V_SH, V_SB, t_PHB, t_PBH).
 
+### 3.5 Tableaux de Karnaugh
+
+Modèle de Gaël (11/24/2026), dessiné par `moteur/cei.py` (`karnaugh`, `fig_karnaugh`, `image_karnaugh` pour les vidéos) et, dans les pages interactives, par `kmapSVG` (gabarit de la page 221) :
+- Codes gris sur des bandes : colonnes BA (00, 01, 11, 10) en haut, lignes DC (00, 01, 11, 10) à gauche, texte tourné. A est le poids faible (k = 8·D + 4·C + 2·B + A).
+- Zones jaunes : A en haut, B en bas, C à gauche, D à droite, lettre centrée dans sa zone. Lignes intérieures ocre ; celles qui bordent les zones A et C traversent la bande grise ; un trait foncé sépare les zones A et C de leur bande. Bord du tableau foncé.
+- Coin : diagonale depuis le coin haut gauche ; BA au-dessus, DC à gauche, à la même distance de la diagonale (symétriques) ; la sortie S au bout de la diagonale.
+- Groupes : un rectangle de couleur par groupe ; un groupe coupé par un bord s'ouvre vers l'extérieur (aucun côté sur le bord du tableau).
+- Termes (présentations, fiches, vidéos) : chaque terme, de la couleur de son groupe, est relié à son groupe par un trait à 45° vers l'extérieur, puis horizontal. Le trait ne longe aucune ligne, ne passe ni sur un chiffre, ni sur une bande, une zone A ou C, une lettre ou le trait de S, et ne croise pas un autre trait. Un groupe sans coin libre part du milieu d'un côté de case (le trait passe entre deux chiffres) ; en dernier recours, le trait traverse la zone B ou D loin de sa lettre. Aucun terme sur le tableau, une bande ou une zone, ni sur un autre terme.
+- `controle/karnaugh.py` vérifie ces points (bloquant) à partir de `karnaugh_figures.json`.
+
 ## 4. Documents Word (fiches, corrigés, tests)
 
 - Toujours partir du modèle `modeles/Rapport_Simple.dotx` : police, styles, en-tête, pied de page, logo.

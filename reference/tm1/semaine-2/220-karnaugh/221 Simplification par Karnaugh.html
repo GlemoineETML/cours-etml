@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>221 Simplification par Karnaugh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Charte ETML : marine, bleu, bleu clair. Mise en page : une colonne de fiches d'exercices, chacune avec sa situation réelle. */
+  --navy: #242852; --blue: #297FD5; --light: #ACCBF9; --tint: #E8EFFB;
+  --bg: #F6F8FC; --surface: #FFFFFF; --ink: #1D2140; --muted: #5A6478; --line: #C9D2E3;
+  --ok: #1E8C46; --ok-bg: #E2F4E8; --bad: #C81E1E; --bad-bg: #FBE4E4; --warn: #C86A10; --warn-bg: #FDF0E0;
+  --one: #297FD5; --zero: #242852; --head: #242852;
+  --font-body: Arial, "Liberation Sans", Helvetica, sans-serif;
+  --font-mono: "IBM Plex Mono", "Liberation Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11132A; --surface: #1A1D3A; --ink: #E6EAF6; --muted: #A3ACC4; --line: #343A66; --tint: #232852;
+    --ok: #4CC27A; --ok-bg: #173A27; --bad: #F06A6A; --bad-bg: #3D1C24; --warn: #F0A050; --warn-bg: #3A2A18;
+    --one: #5AA2EA; --zero: #ACCBF9; --head: #ACCBF9; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11132A; --surface: #1A1D3A; --ink: #E6EAF6; --muted: #A3ACC4; --line: #343A66; --tint: #232852;
+  --ok: #4CC27A; --ok-bg: #173A27; --bad: #F06A6A; --bad-bg: #3D1C24; --warn: #F0A050; --warn-bg: #3A2A18;
+  --one: #5AA2EA; --zero: #ACCBF9; --head: #ACCBF9; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--font-body); }
+a { color: var(--blue); }
+a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--light); outline-offset: 2px; }
+.top { background: #242852; color: #fff; }
+.top .in { max-width: 1060px; margin: 0 auto; padding: 18px 20px 20px; display: grid; grid-template-columns: 1fr auto; gap: 8px 24px; align-items: center; }
+.top img { height: 30px; grid-column: 2; grid-row: 1 / span 2; }
+.top .eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #ACCBF9; font-weight: 700; }
+.top h1 { margin: 2px 0 0; font-size: clamp(24px, 3.4vw, 34px); line-height: 1.15; text-wrap: balance; }
+.top p { grid-column: 1 / -1; margin: 6px 0 0; color: #D7E2F8; max-width: 70ch; }
+.bar { position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.bar .in { max-width: 1060px; margin: 0 auto; padding: 10px 20px; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 14px; }
+.bar nav { display: flex; flex-wrap: wrap; gap: 6px; }
+.bar nav a { text-decoration: none; padding: 3px 10px; border-radius: 999px; background: var(--tint); color: var(--head); font-weight: 700; }
+.score { margin-left: auto; font-weight: 700; color: var(--head); font-variant-numeric: tabular-nums; }
+.score .dots { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle; }
+.score .dots i { width: 12px; height: 12px; border-radius: 50%; background: var(--line); display: inline-block; }
+.score .dots i.on { background: var(--ok); }
+main { max-width: 1060px; margin: 0 auto; padding: 20px 20px 40px; display: grid; gap: 22px; }
+.ex { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: grid; gap: 14px; scroll-margin-top: 60px; }
+.ex > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.ex h2 { margin: 0; font-size: 22px; color: var(--head); text-wrap: balance; }
+.num { display: inline-grid; place-items: center; min-width: 38px; height: 30px; padding: 0 8px; border-radius: 8px; background: #242852; color: #fff; font-weight: 700; font-size: 15px; }
+.refs { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.situ { border-left: 5px solid var(--blue); background: var(--tint); padding: 10px 14px; border-radius: 0 10px 10px 0; max-width: 78ch; }
+.situ b { color: var(--head); }
+.q { margin: 0; font-weight: 700; max-width: 78ch; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; align-items: start; }
+.panel { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: var(--bg); }
+.panel h3 { margin: 0 0 8px; font-size: 15px; color: var(--head); text-transform: uppercase; letter-spacing: .05em; }
+button { font: inherit; cursor: pointer; }
+.btn { border: 0; border-radius: 10px; padding: 9px 16px; font-weight: 700; background: var(--blue); color: #fff; }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 2px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 5px 12px; font-weight: 700; font-size: 14px; }
+.chip[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+select, input[type="number"] { max-width: 100%; font: inherit; padding: 6px 8px; border-radius: 8px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); }
+.fb { border-radius: 10px; padding: 10px 14px; display: none; max-width: 80ch; }
+.fb.ok { display: block; background: var(--ok-bg); border: 2px solid var(--ok); }
+.fb.bad { display: block; background: var(--bad-bg); border: 2px solid var(--bad); }
+.fb.info { display: block; background: var(--tint); border: 2px solid var(--blue); }
+.fb b:first-child { display: block; margin-bottom: 2px; }
+.fb.ok b:first-child { color: var(--ok); } .fb.bad b:first-child { color: var(--bad); }
+table.tdv { border-collapse: collapse; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+table.tdv th, table.tdv td { border: 1px solid var(--line); padding: 4px 0; width: 54px; text-align: center; font-size: 18px; }
+table.tdv th { background: var(--light); color: #242852; font-family: var(--font-body); }
+table.tdv td.out, table.tdv th.out { border-left: 3px solid var(--head); }
+table.tdv tr.hl td { background: var(--tint); outline: 2px solid var(--blue); outline-offset: -2px; }
+table.tdv td.one { color: var(--one); font-weight: 700; }
+table.tdv td button { width: 42px; height: 30px; border-radius: 6px; border: 2px dashed var(--line); background: var(--surface); color: var(--ink); font: 700 18px var(--font-mono); }
+table.tdv td button.set { border-style: solid; border-color: var(--blue); }
+table.tdv td.wrong button { border-color: var(--bad); background: var(--bad-bg); }
+.bit { display: inline-grid; place-items: center; width: 44px; height: 38px; border-radius: 8px; border: 2px solid var(--head); font: 700 20px var(--font-mono); background: var(--surface); color: var(--ink); }
+.bit.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.eq { font: 700 22px var(--font-body); color: var(--head); }
+.ov { text-decoration: overline; text-decoration-thickness: 2px; }
+.muted { color: var(--muted); font-size: 14px; }
+.life { font-size: 15px; }
+.life b { color: var(--blue); }
+svg text { font-family: var(--font-body); }
+.svgbox { overflow-x: auto; }
+.svgbox svg { max-width: 100%; height: auto; }
+main > *, .ex > *, .grid2 > *, .sim > * { min-width: 0; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; }
+.tag { display: inline-block; padding: 2px 9px; border-radius: 999px; font-weight: 700; font-size: 14px; }
+.tag.ok { background: var(--ok-bg); color: var(--ok); } .tag.bad { background: var(--bad-bg); color: var(--bad); } .tag.warn { background: var(--warn-bg); color: var(--warn); }
+.cases { display: grid; gap: 10px; }
+.case { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 8px; background: var(--surface); }
+.case .row label { font-weight: 700; }
+footer { max-width: 1060px; margin: 0 auto; padding: 0 20px 30px; color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+input[type="range"] { width: 100%; accent-color: var(--blue); }
+/* leçon animée (« Comprendre ») avant chaque exercice, puis « À toi » */
+.lesson { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: 14px 16px; display: grid; gap: 10px; }
+.ls-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.ls-tag { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--blue); padding: 2px 8px; border-radius: 6px; }
+.ls-tag.alt { background: #242852; }
+.ls-head h3 { margin: 0; font-size: 18px; color: var(--head); }
+.ls-body { display: grid; gap: 8px; min-width: 0; }
+.ls-stage { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.ls-stage svg { width: 100%; height: auto; display: block; }
+.ls-cap { min-height: 3.1em; font-size: 16.5px; max-width: 82ch; }
+.ls-cap b { color: var(--blue); }
+.ls-ctrl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ls-btn { border: 2px solid var(--blue); background: var(--surface); color: var(--blue); border-radius: 8px; padding: 4px 10px; font-weight: 700; font-size: 14px; }
+.ls-steps { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.ls-steps button { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; font-size: 13px; padding: 0; }
+.ls-steps button[aria-current="step"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+.ls-prog { flex: 1 1 100px; min-width: 80px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.ls-prog i { display: block; height: 100%; width: 0; background: var(--blue); }
+.ls-extra { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.ls-extra input[type="range"] { width: 180px; }
+/* bandeau visible tant que le script de la page n'a pas fini de démarrer (aperçu sans JavaScript, erreur) */
+.jsx { background: #FDF0E0; color: #7A3E00; border-bottom: 3px solid #C86A10; padding: 10px 20px; font: 600 15px/1.45 Arial, sans-serif; }
+.todo { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.todo::after { content: ""; flex: 1; border-top: 2px dashed var(--line); }
+@media (max-width: 520px) { .top .in { grid-template-columns: 1fr; } .top img { grid-row: 1; grid-column: 1; justify-self: start; height: 24px; } .ex { padding: 16px; } table.tdv th, table.tdv td { width: 44px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.kbox { overflow-x: auto; }
+.kbox svg { max-width: 100%; height: auto; display: block; }
+.kbox svg [data-k] { cursor: pointer; }
+.kwrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; align-items: start; }
+.terms { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font: 700 20px var(--font-body); }
+.terms .t { padding: 2px 10px; border-radius: 8px; border: 2px solid currentColor; background: var(--surface); }
+.terms .t button { border: 0; background: none; color: inherit; font-weight: 700; margin-left: 6px; }
+.prob { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: var(--surface); display: grid; gap: 10px; }
+.prob.done { border-color: var(--ok); }
+.rd { display: grid; grid-template-columns: auto repeat(3, auto) 1fr; gap: 6px 10px; align-items: center; }
+.rd .eq { font-size: 20px; }
+</style>
+</head>
+<body>
+<div id="jsx" class="jsx" role="alert">Cette page a besoin de JavaScript pour afficher les animations et les exercices. Si ce message reste affiché, ouvre la page depuis le lien de l'artefact sur claude.ai, ou ouvre le fichier .html dans Edge, Chrome ou Safari (pas dans un aperçu de fichier).</div>
+<header class="top"><div class="in">
+  <div class="eyebrow">Test et Mesure 1 – El DT 1 · page interactive 221</div>
+  <img src="data:image/png;base64,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" alt="ETML">
+  <h1>Simplification par Karnaugh</h1>
+  <p>Cinq exercices pour remplir un tableau, regrouper les 1 et lire l'équation la plus courte. Les animations « Comprendre » reprennent la présentation 220 ; ensuite, à toi. La sortie s'appelle toujours S, les entrées A, B, C, D. Va avec l'animation 225 et la fiche 230 EX.</p>
+</div></header>
+<div class="bar"><div class="in">
+  <nav aria-label="Exercices"><a href="#ex1">N°1</a><a href="#ex2">N°2</a><a href="#ex3">N°3</a><a href="#ex4">N°4</a><a href="#ex5">N°5</a></nav>
+  <div class="score">Exercices réussis : <span id="score-n">0</span> / 5
+    <span class="dots"><i data-id="t1"></i><i data-id="t2"></i><i data-id="t3"></i><i data-id="t4"></i><i data-id="t5"></i></span></div>
+</div></div>
+
+<main>
+<!-- ============================================ N°1 -->
+<section class="ex" id="ex1">
+  <header><span class="num">N°1</span><h2>Remplis le tableau</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/220%20Simplification%20par%20Karnaugh.pptx?csf=1&amp;web=1">Présentation 220, diapos 3 et 4</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4">LZ_2225</a></span></header>
+  <div class="lesson" id="L1"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Une case par ligne de la table</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/220%20Simplification%20par%20Karnaugh.pptx?csf=1&amp;web=1">Présentation 220, diapos 3 et 4</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> la buse de rinçage d'une ancienne machine. S : buse ouverte, A : machine en marche, B : bouteille sale détectée, C : cycle de nettoyage demandé.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Le voyant de contrôle de la vanne :</b> reporte la table dans le tableau. Clique sur une case pour écrire 0, puis 1. Place chaque ligne avec les codes gris (ligne C, colonne BA), jamais en comptant les cases.</div>
+  <div class="kwrap"><table class="tdv" id="t1-tab"></table><div class="kbox" id="t1-k"></div></div>
+  <div class="row"><button class="btn" id="t1-check">Vérifier</button><button class="btn ghost" id="t1-reset">Effacer</button></div>
+  <div class="fb" id="t1-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°2 -->
+<section class="ex" id="ex2">
+  <header><span class="num">N°2</span><h2>Lis chaque groupe</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/220%20Simplification%20par%20Karnaugh.pptx?csf=1&amp;web=1">Présentation 220, diapos 5 et 6</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4">LZ_2225</a></span></header>
+  <div class="lesson" id="L2"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Dans la zone, hors de la zone, à cheval</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/220%20Simplification%20par%20Karnaugh.pptx?csf=1&amp;web=1">Présentation 220, diapo 6</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> chaque variable qui disparaît, c'est un fil et une entrée de porte en moins sur la carte.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Deux groupes sont déjà entourés.</b> Pour chaque groupe et chaque variable, dis si le groupe est dans la zone jaune, hors de la zone, ou à cheval sur son bord. Le terme s'écrit au fur et à mesure.</div>
+  <div class="kwrap"><div class="kbox" id="t2-k"></div><div class="cases" id="t2-list"></div></div>
+  <div class="row"><button class="btn" id="t2-check">Vérifier</button></div>
+  <div class="fb" id="t2-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°3 -->
+<section class="ex" id="ex3">
+  <header><span class="num">N°3</span><h2>Regroupe toi-même, jusqu'à quatre variables</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/220%20Simplification%20par%20Karnaugh.pptx?csf=1&amp;web=1">Présentation 220, diapos 5, 8 et 9</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4">LZ_2225</a></span></header>
+  <div class="lesson" id="L3"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Les bords se touchent</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/220%20Simplification%20par%20Karnaugh.pptx?csf=1&amp;web=1">Présentation 220, diapo 8</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> Karnaugh montre aussi les entrées qui ne servent à rien. Ici, deux capteurs sur quatre peuvent être débranchés.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Trois tableaux.</b> Clique sur les cases d'un groupe, puis sur « Ajouter le groupe ». Un groupe est un rectangle de 1, 2, 4 ou 8 cases, qui peut passer par les bords. Quand tous les 1 sont dans un groupe, vérifie : la page dit si ton équation est la plus courte.</div>
+  <div class="cases" id="t3-list"></div>
+  <div class="fb" id="t3-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°4 -->
+<section class="ex" id="ex4">
+  <header><span class="num">N°4</span><h2>Les cas indifférents X</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/220%20Simplification%20par%20Karnaugh.pptx?csf=1&amp;web=1">Présentation 220, diapo 12</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4">LZ_2225</a></span></header>
+  <div class="lesson" id="L4"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Un X qui agrandit un groupe compte comme 1</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/220%20Simplification%20par%20Karnaugh.pptx?csf=1&amp;web=1">Présentation 220, diapo 12</a></span></div>
+    <div class="ls-body"></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> la pompe de vidange. Le capteur haut (C) ne peut pas être mouillé si le capteur bas (B) est sec : ces combinaisons n'arrivent jamais.</p></div>
+  <div class="todo"><span class="ls-tag alt">À toi</span></div>
+  <div class="situ"><b>Deux tableaux avec des X.</b> Même méthode qu'au N°3 : tu peux mettre un X dans un groupe s'il l'agrandit, mais aucun groupe ne doit contenir que des X.</div>
+  <div class="cases" id="t4-list"></div>
+  <div class="fb" id="t4-fb" aria-live="polite"></div>
+</section>
+
+<!-- ============================================ N°5 -->
+<section class="ex" id="ex5">
+  <header><span class="num">N°5</span><h2>Contrôle le travail d'un collègue</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/220%20Simplification%20par%20Karnaugh.pptx?csf=1&amp;web=1">Présentation 220, diapos 5 et 13</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4">LZ_2225</a></span></header>
+  <div class="situ"><b>À l'atelier :</b> un collègue a entouré les groupes de trois commandes avant de les câbler. Pour chacune, dis si son travail est juste et le plus court, juste mais trop long, ou faux.</div>
+  <div class="cases" id="t5-list"></div>
+  <div class="row"><button class="btn" id="t5-check">Vérifier</button></div>
+  <div class="fb" id="t5-fb" aria-live="polite"></div>
+</section>
+</main>
+
+<footer>
+  <span>Classe XLO1 · 2026-2027 · Test et Mesure 1 – El DT 1 · champ <a href="https://skills.futuremem.swiss/fr/9999_et/2000_lfe_bfs_1/#comp%C3%A9tences-op%C3%A9rationnelles-et-crit%C3%A8res-de-performance">LFB_El_DT1</a></span>
+  <span>Objectif : <a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4">LZ_2225</a></span>
+  <span><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/220%20Simplification%20par%20Karnaugh.pptx?csf=1&amp;web=1">Présentation 220</a> · <a href="https://eduvaud.sharepoint.com/:w:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/230%20EX%20Simplification%20par%20Karnaugh.docx?csf=1&amp;web=1">Fiche 230 EX</a></span>
+</footer>
+
+<script>
+window.addEventListener("error", (e) => { const b = document.getElementById("jsx"); if (b) { b.hidden = false; b.textContent = "Erreur dans la page : " + e.message + " (ligne " + e.lineno + "). Envoie ce message à l'enseignant."; } });
+const $ = (id) => document.getElementById(id);
+const FN = {
+  "NON": (a) => 1 - a, "ET": (a, b) => a & b, "OU": (a, b) => a | b, "NON-ET": (a, b) => 1 - (a & b),
+  "NON-OU": (a, b) => 1 - (a | b), "OUX": (a, b) => a ^ b, "NON-OUX": (a, b) => 1 - (a ^ b),
+};
+const QUAL = { "NON": "1", "ET": "&amp;", "OU": "≥1", "NON-ET": "&amp;", "NON-OU": "≥1", "OUX": "=1", "NON-OUX": "=1" };
+const NEG = { "NON": 1, "ET": 0, "OU": 0, "NON-ET": 1, "NON-OU": 1, "OUX": 0, "NON-OUX": 1 };
+const EQH = {
+  "NON": 'Y = <span class="ov">A</span>', "ET": "Y = A · B", "OU": "Y = A + B", "NON-ET": 'Y = <span class="ov">A · B</span>',
+  "NON-OU": 'Y = <span class="ov">A + B</span>', "OUX": "Y = A ⊕ B", "NON-OUX": 'Y = <span class="ov">A ⊕ B</span>',
+};
+// table de vérité, entrées du poids fort au poids faible : [B, A, Y] ou [A, Y]
+function tdv(key) {
+  if (key === "NON") return [[0, 1], [1, 0]];
+  const r = [];
+  for (const b of [0, 1]) for (const a of [0, 1]) r.push([b, a, FN[key](a, b)]);
+  return r;
+}
+const wireStyle = (v) => v === 1 ? "stroke:var(--one);stroke-width:5" : (v === 0 ? "stroke:var(--zero);stroke-width:3" : "stroke:var(--muted);stroke-width:3");
+
+// Symbole CEI 60617-12 : rectangle, qualificatif, cercle de négation
+function gateParts(key, a, b, y, opt = {}) {
+  const n = key === "NON" ? 1 : 2, w = 90, h = n === 1 ? 90 : 116, x0 = 84, y0 = 14, L = 50;
+  const labels = opt.labels || ["A", "B"], out = opt.out != null ? opt.out : "Y";
+  const ys = n === 1 ? [y0 + h / 2] : [y0 + h * 0.28, y0 + h * 0.72];
+  let s = "";
+  const vin = n === 1 ? [a] : [a, b];
+  ys.forEach((yy, i) => {
+    s += `<line x1="${x0 - L}" y1="${yy}" x2="${x0}" y2="${yy}" style="${wireStyle(vin[i])}"/>`;
+    s += `<text x="${x0 - L - 8}" y="${yy + 6}" text-anchor="end" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${labels[i]}</text>`;
+  });
+  s += `<rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="2" style="fill:var(--surface);stroke:var(--ink);stroke-width:3"/>`;
+  s += `<text x="${x0 + w / 2}" y="${y0 + 30}" text-anchor="middle" font-size="24" font-weight="700" style="fill:var(--ink)">${QUAL[key]}</text>`;
+  let xo = x0 + w;
+  if (NEG[key]) { s += `<circle cx="${xo + 7}" cy="${y0 + h / 2}" r="7" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/>`; xo += 14; }
+  s += `<line x1="${xo}" y1="${y0 + h / 2}" x2="${xo + L}" y2="${y0 + h / 2}" style="${wireStyle(y)}"/>`;
+  s += `<text x="${xo + L + 8}" y="${y0 + h / 2 + 6}" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${out}</text>`;
+  return { w: x0 + w + 2 * L + 50, h: h + 2 * y0, body: s, inX: x0 - L, inY: ys, outX: xo + L, outY: y0 + h / 2 };
+}
+function gateSVG(key, a, b, y, opt = {}) {
+  const p = gateParts(key, a, b, y, opt);
+  return `<svg viewBox="0 0 ${p.w} ${p.h}" width="${p.w * (opt.scale || 1)}" role="img" aria-label="Symbole CEI de la porte ${key}">${p.body}</svg>`;
+}
+// porte placée dans un dessin : renvoie le groupe SVG et les points de raccordement (entrées, sortie)
+function gateAt(key, a, b, y, X, Y, s = 1, opt = {}) {
+  const p = gateParts(key, a, b, y, opt);
+  return { svg: `<g transform="translate(${X} ${Y}) scale(${s})">${p.body}</g>`, inX: X + p.inX * s, inY: p.inY.map((v) => Y + v * s), outX: X + p.outX * s, outY: Y + p.outY * s, w: p.w * s, h: p.h * s };
+}
+
+// suivi des exercices réussis (en mémoire seulement)
+const DONE = new Set();
+function markDone(id, ok) {
+  if (ok) DONE.add(id); else DONE.delete(id);
+  const dots = document.querySelectorAll(".score .dots i");
+  dots.forEach((d) => d.classList.toggle("on", DONE.has(d.dataset.id)));
+  $("score-n").textContent = DONE.size;
+}
+function feedback(el, kind, title, html) {
+  el.className = "fb " + kind;
+  el.innerHTML = `<b>${title}</b>${html}`;
+}
+const fmtV = (x) => String(x).replace(".", ",") + " V";
+// liens externes dans un nouvel onglet
+// démarrage : tout de suite si la page est déjà chargée (certains lecteurs injectent la page après DOMContentLoaded)
+const ready = (f) => { if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", f); else f(); };
+// liens externes : <a href> simples ; le lecteur d'artefact les ouvre lui-même hors de la page (pas de target="_blank", refusé dans le cadre isolé)
+// typographie française : espaces insécables (avant « : ; ? ! », nombre + unité, « A = 1 », plages « 0 … 70 »)
+const NBSP = "\u00a0";
+function typo(s) {
+  return s
+    .replace(/ ([:;?!»])/g, NBSP + "$1").replace(/« /g, "«" + NBSP)
+    .replace(/ (=|·|×|≥|≤|<|>|→|⊕|…|\+) /g, NBSP + "$1" + NBSP)
+    .replace(/(\d) (ou|à) (?=[\d−])/g, "$1" + NBSP + "$2" + NBSP)
+    .replace(/(\d) (?=(V|mV|mA|ns|ms|µs|s|°C|%|ko|L|[a-zà-ÿ]))/g, "$1" + NBSP)
+    .replace(/\b(p\.|chap\.|diapos?|N°|Floyd|LZ) (?=\d)/g, "$1" + NBSP);
+}
+function typoTree(root) {
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: (n) => /^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  let n; while ((n = w.nextNode())) { const t = typo(n.nodeValue); if (t !== n.nodeValue) n.nodeValue = t; }
+}
+const inStage = (n) => { const e = n.nodeType === 1 ? n : n.parentElement; return !!(e && e.closest && e.closest(".ls-stage, .nt")); };
+ready(() => {
+  typoTree(document.body);
+  new MutationObserver((ms) => ms.forEach((m) => { if (inStage(m.target)) return; m.addedNodes.forEach((x) => { if (x.nodeType === 3) { const t = typo(x.nodeValue); if (t !== x.nodeValue) x.nodeValue = t; } else if (x.nodeType === 1 && !/^(SCRIPT|STYLE)$/.test(x.nodeName)) typoTree(x); }); }))
+    .observe(document.body, { childList: true, subtree: true });
+});
+
+// ---------------------------------------------- outils de dessin des animations
+const REDUCE = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
+const prog = (t, a, b) => ease((t - a) / (b - a));
+const lerp = (a, b, p) => a + (b - a) * p;
+// texte SVG ; o = { size, anchor, bold, italic, mono, color, op }
+const TX = (x, y, s, o = {}) => `<text x="${x}" y="${y}" font-size="${o.size || 16}"${o.anchor ? ` text-anchor="${o.anchor}"` : ""}${o.bold ? ' font-weight="700"' : ""}${o.italic ? ' font-style="italic"' : ""}${o.mono ? ' font-family="IBM Plex Mono, Liberation Mono, monospace"' : ""} style="fill:${o.color || "var(--ink)"}${o.op != null ? ";opacity:" + o.op : ""}">${s}</text>`;
+const SUBV = (i, rest = "") => `V<tspan font-size="0.72em" dy="0.3em">${i}</tspan><tspan dy="-0.3em">${rest}</tspan>`;
+const wireP = (pts, v) => `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" style="${wireStyle(v)};stroke-linejoin:round"/>`;
+const lampG = (x, y, r, on, col = "var(--one)") => (on ? `<circle cx="${x}" cy="${y}" r="${r + 8}" style="fill:${col};opacity:.25"/>` : "") +
+  `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${on ? col : "var(--surface)"};stroke:var(--ink);stroke-width:2.5"/>`;
+const pill = (x, y, v, o = {}) => `<rect x="${x - 15}" y="${y - 15}" width="30" height="30" rx="7" style="fill:${v ? "var(--one)" : "var(--surface)"};stroke:var(--head);stroke-width:2"/>` +
+  TX(x, y + 7, v, { size: 19, bold: true, mono: true, anchor: "middle", color: v ? "#fff" : "var(--ink)" });
+const okMark = (x, y, ok, r = 11) => `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${ok ? "var(--ok)" : "var(--bad)"}"/>` +
+  (ok ? `<path d="M ${x - r * .45} ${y} l ${r * .3} ${r * .35} l ${r * .55} ${-r * .7}" style="fill:none;stroke:#fff;stroke-width:2.6"/>`
+      : `<path d="M ${x - r * .4} ${y - r * .4} l ${r * .8} ${r * .8} M ${x + r * .4} ${y - r * .4} l ${-r * .8} ${r * .8}" style="stroke:#fff;stroke-width:2.6"/>`);
+// boîtier DIP 14 vu de dessus, encoche à gauche : broches 1 à 7 en bas (gauche → droite), 8 à 14 en haut (droite → gauche)
+function dipG(x, y, w, h, label, o = {}) {
+  const n = 7, pw = w / n; let s = "";
+  for (let i = 0; i < n; i++) {
+    const px = x + pw * (i + 0.5) - 6;
+    s += `<rect x="${px}" y="${y - 14}" width="12" height="14" style="fill:#C8CEDA;stroke:#5A6478"/><rect x="${px}" y="${y + h}" width="12" height="14" style="fill:#C8CEDA;stroke:#5A6478"/>`;
+  }
+  s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" style="fill:#3A3F52;stroke:#23263A;stroke-width:2"/>`;
+  s += `<path d="M ${x} ${y + h / 2 - 12} a 12 12 0 0 1 0 24 z" style="fill:#23263A"/><circle cx="${x + 16}" cy="${y + h - 14}" r="5" style="fill:#5A6070"/>`;
+  if (label) s += TX(x + w / 2, y + h / 2 + 8, label, { size: o.fs || 22, bold: true, mono: true, anchor: "middle", color: "#EEF1F7" });
+  if (o.nums) for (let i = 0; i < n; i++) {
+    s += TX(x + pw * (i + 0.5), y + h - 6, i + 1, { size: 11, anchor: "middle", color: "#B8BED0" });
+    s += TX(x + pw * (i + 0.5), y + 14, 14 - i, { size: 11, anchor: "middle", color: "#B8BED0" });
+  }
+  return s;
+}
+const dipPin = (x, y, w, h, k) => k <= 7 ? [x + (w / 7) * (k - 0.5), y + h + 14] : [x + (w / 7) * (14 - k + 0.5), y - 14];
+// chronogramme qui s'écrit au fil du temps : rows = [{ name, f(s) → 0/1, color }], de s = 0 à min(t, tmax)
+function traceG(x, y, w, rows, t, tmax, o = {}) {
+  const rh = o.rh || 34, hi = rh * 0.55, X = (s) => x + w * s / tmax, dt = o.dt || tmax / 400, end = Math.min(t, tmax);
+  let g = "";
+  rows.forEach((r, i) => {
+    const yb = y + i * rh + rh - 6, yh = yb - hi;
+    g += TX(x - 10, yb - 3, r.name, { anchor: "end", bold: true, italic: true, size: o.fs || 15 });
+    g += `<line x1="${x}" y1="${yb}" x2="${x + w}" y2="${yb}" style="stroke:var(--line);stroke-width:1"/>`;
+    if (end <= 0) return;
+    let v = r.f(0), d = `M ${x} ${v ? yh : yb}`;
+    for (let s = dt; s <= end + 1e-9; s += dt) { const nv = r.f(s); if (nv !== v) { d += ` L ${X(s)} ${v ? yh : yb} L ${X(s)} ${nv ? yh : yb}`; v = nv; } }
+    d += ` L ${X(end)} ${v ? yh : yb}`;
+    g += `<path d="${d}" fill="none" style="stroke:${r.color || "var(--ink)"};stroke-width:2.6;stroke-linejoin:round"/>`;
+  });
+  if (o.cursor !== false && t > 0 && t < tmax) g += `<line x1="${X(end)}" y1="${y}" x2="${X(end)}" y2="${y + rows.length * rh}" style="stroke:var(--bad);stroke-width:1.5"/>`;
+  return g;
+}
+
+// ---------------------------------------------- leçons animées : lecture, pause, étapes numérotées, sous-titres
+// L'animation tourne en boucle et s'arrête quand elle sort de l'écran. Avec « réduire les animations », elle démarre en pause.
+const LESSONS = [];
+function lesson(id, cfg) {
+  const root = $(id), body = root.querySelector(".ls-body");
+  body.innerHTML = `<div class="ls-stage"></div><div class="ls-cap"></div>
+    <div class="ls-ctrl"><button class="ls-btn ls-play" type="button"></button><button class="ls-btn ls-back" type="button">↺ Recommencer</button>
+    <span class="ls-steps" role="group" aria-label="Étapes"></span><span class="ls-prog"><i></i></span></div>`;
+  if (cfg.extra) { const e = document.createElement("div"); e.className = "ls-extra"; e.innerHTML = cfg.extra; body.insertBefore(e, body.querySelector(".ls-cap")); }
+  const st = { t: 0, T: 0, playing: !REDUCE, vis: true, last: null, step: -1, dirty: true, cfg };
+  const stage = body.querySelector(".ls-stage"), cap = body.querySelector(".ls-cap"), play = body.querySelector(".ls-play"), bar = body.querySelector(".ls-prog i"), steps = body.querySelector(".ls-steps");
+  stage.setAttribute("role", "img"); stage.setAttribute("aria-label", cfg.label);
+  cfg.steps.forEach(([t0], i) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = i + 1; b.setAttribute("aria-label", "Étape " + (i + 1));
+    b.onclick = () => { st.t = t0 + 0.01; st.dirty = true; }; steps.appendChild(b);
+  });
+  const setPlay = () => { play.textContent = st.playing ? "❚❚ Pause" : "▶ Lecture"; };
+  play.onclick = () => { st.playing = !st.playing; setPlay(); }; setPlay();
+  body.querySelector(".ls-back").onclick = () => { st.t = 0; st.dirty = true; if (!st.playing) { st.playing = true; setPlay(); } };
+  if ("IntersectionObserver" in window) new IntersectionObserver((es) => es.forEach((e) => { st.vis = e.isIntersecting; st.last = null; }), { threshold: 0.1 }).observe(stage);
+  st.render = () => {
+    stage.innerHTML = cfg.draw(st.t, st.T, st);
+    let k = 0; cfg.steps.forEach(([t0], i) => { if (st.t >= t0) k = i; });
+    if (k !== st.step) {
+      st.step = k; cap.innerHTML = `<b>${k + 1}.</b> ${cfg.steps[k][1]}`;
+      steps.querySelectorAll("button").forEach((b, i) => b.setAttribute("aria-current", i === k ? "step" : "false"));
+    }
+    bar.style.width = (100 * st.t / cfg.dur).toFixed(1) + "%";
+  };
+  LESSONS.push(st);
+  try { st.render(); } catch (e) { console.error(e); }   // première image tout de suite, même si l'animation ne démarre pas
+  return st;
+}
+function lessonLoop(ts) {
+  LESSONS.forEach((st) => {
+    if (!st.vis) return;
+    const dt = st.last == null ? 0 : Math.min(0.1, (ts - st.last) / 1000); st.last = ts;
+    if (st.playing) { st.t += dt; st.T += dt; if (st.t >= st.cfg.dur) st.t = 0; st.dirty = true; }
+    if (st.dirty && ts - (st.drawn || 0) > 33) { st.render(); st.drawn = ts; st.dirty = false; }
+  });
+  requestAnimationFrame(lessonLoop);
+}
+ready(() => requestAnimationFrame(lessonLoop));
+
+// ================================================================ tableau de Karnaugh, modèle de Gaël (comme moteur/cei.py : karnaugh)
+// codes BA et DC sur bandes grises ; zones jaunes A en haut, B en bas, C à gauche, D à droite ; S au bout de la diagonale.
+// Combinaison k = 8·D + 4·C + 2·B + A (A poids faible). Valeurs : 0, 1, "X" ou null (case vide).
+const KJ = "#F3EBA6", KO = "#D9AE45", KG = "#E6E6E6", KN = "#242852", KB = "#297FD5";
+const KCOL = ["#1E8C46", "#EE0000", "#297FD5", "#242852", "#E67814", "#7A3DB8"];
+const VARS = ["A", "B", "C", "D"];
+function kLayout(n) {
+  const C = n === 2 ? [0, 1] : [0, 1, 3, 2], L = n === 4 ? [0, 1, 3, 2] : [0, 1];
+  const vc = n === 2 ? ["A"] : ["A", "B"], vl = n === 2 ? ["B"] : n === 3 ? ["C"] : ["C", "D"];
+  const kc = (l, c) => (n === 2 ? 2 * l + c : 4 * l + c);
+  return { C, L, vc, vl, kc };
+}
+function kPos(n) {   // combinaison → [ligne, colonne]
+  const { C, L, kc } = kLayout(n), p = {};
+  L.forEach((l, i) => C.forEach((c, j) => { p[kc(l, c)] = [i, j]; }));
+  return p;
+}
+function kBlocs(vals, tot) {
+  const s = [...new Set(vals)].sort((a, b) => a - b);
+  if (s.length === tot || s[s.length - 1] - s[0] === s.length - 1) return [[s, false, false]];
+  const bas = []; let v = 0; while (s.includes(v)) bas.push(v++);
+  return [[bas, true, false], [s.filter((x) => !bas.includes(x)), false, true]];
+}
+// opt : groups [{k:[…], col}], sel (Set), click (cases cliquables), zone ("A"…"D" : voile sur la zone), hl (Set de cases surlignées), u (côté d'une case)
+function kmapSVG(n, vals, opt = {}) {
+  const { C, L, vc, vl, kc } = kLayout(n), u = opt.u || 60, hb = 30, zb = 26, nc = C.length, nl = L.length;
+  const x0 = hb + zb + 46, y0 = hb + zb + 40, X1 = x0 + nc * u, Y1 = y0 + nl * u;
+  const W = X1 + (vl.length > 1 ? zb : 0) + 16, H = Y1 + (vc.length > 1 ? zb : 0) + 14;
+  let h = `<svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="${opt.label || "Tableau de Karnaugh à " + n + " variables"}">`;
+  h += `<rect x="0" y="0" width="${W}" height="${H}" fill="#fff"/>`;
+  h += `<rect x="${x0}" y="${y0 - hb}" width="${nc * u}" height="${hb}" fill="${KG}"/><rect x="${x0 - hb}" y="${y0}" width="${hb}" height="${nl * u}" fill="${KG}"/>`;
+  const code = (v, nb) => Array.from({ length: nb }, (_, r) => (v >> (nb - 1 - r)) & 1).join("");
+  C.forEach((c, j) => { h += `<text x="${x0 + (j + 0.5) * u}" y="${y0 - hb / 2 + 6}" text-anchor="middle" font-size="17" fill="${KN}">${code(c, vc.length)}</text>`; });
+  L.forEach((l, i) => { const cx = x0 - hb / 2 + 6, cy = y0 + (i + 0.5) * u; h += `<text x="${cx}" y="${cy}" text-anchor="middle" font-size="17" fill="${KN}" transform="rotate(-90 ${cx} ${cy})">${code(l, vl.length)}</text>`; });
+  // zones
+  const zones = [[vc[0], "haut", C.map((c, j) => (c & 1 ? j : -1)).filter((j) => j >= 0)], [vl[0], "gauche", L.map((l, i) => (l & 1 ? i : -1)).filter((i) => i >= 0)]];
+  if (vc[1]) zones.push([vc[1], "bas", C.map((c, j) => (c & 2 ? j : -1)).filter((j) => j >= 0)]);
+  if (vl[1]) zones.push([vl[1], "droite", L.map((l, i) => (l & 2 ? i : -1)).filter((i) => i >= 0)]);
+  const zr = {};
+  zones.forEach(([v, cote, idx]) => {
+    const a = Math.min(...idx), b = Math.max(...idx) + 1;
+    let r, rot = 0;
+    if (cote === "haut") r = [x0 + a * u, y0 - hb - zb, (b - a) * u, zb];
+    else if (cote === "bas") r = [x0 + a * u, Y1, (b - a) * u, zb];
+    else if (cote === "gauche") { r = [x0 - hb - zb, y0 + a * u, zb, (b - a) * u]; rot = -90; }
+    else { r = [X1, y0 + a * u, zb, (b - a) * u]; rot = 90; }
+    zr[v] = { cote, a, b };
+    const on = opt.zone === v;
+    h += `<rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" fill="${on ? "#F2D24B" : KJ}" stroke="${KO}" stroke-width="1"/>`;
+    const cx = r[0] + r[2] / 2, cy = r[1] + r[3] / 2 + 6;
+    h += `<text x="${cx}" y="${cy}" text-anchor="middle" font-size="18" font-weight="700" fill="${KN}"${rot ? ` transform="rotate(${rot} ${cx} ${cy - 6})"` : ""}>${v}</text>`;
+    if (cote === "haut") h += `<line x1="${r[0]}" y1="${y0}" x2="${r[0]}" y2="${y0 - hb}" stroke="${KO}" stroke-width="1.5"/><line x1="${r[0] + r[2]}" y1="${y0}" x2="${r[0] + r[2]}" y2="${y0 - hb}" stroke="${KO}" stroke-width="1.5"/><line x1="${r[0]}" y1="${y0 - hb}" x2="${r[0] + r[2]}" y2="${y0 - hb}" stroke="${KN}" stroke-width="3"/>`;
+    if (cote === "gauche") h += `<line x1="${x0}" y1="${r[1]}" x2="${x0 - hb}" y2="${r[1]}" stroke="${KO}" stroke-width="1.5"/><line x1="${x0}" y1="${r[1] + r[3]}" x2="${x0 - hb}" y2="${r[1] + r[3]}" stroke="${KO}" stroke-width="1.5"/><line x1="${x0 - hb}" y1="${r[1]}" x2="${x0 - hb}" y2="${r[1] + r[3]}" stroke="${KN}" stroke-width="3"/>`;
+  });
+  // cases
+  L.forEach((l, i) => C.forEach((c, j) => {
+    const k = kc(l, c), x = x0 + j * u, y = y0 + i * u, v = vals[k];
+    let fill = "#fff";
+    if (opt.zone && zr[opt.zone]) { const z = zr[opt.zone]; const inZ = (z.cote === "haut" || z.cote === "bas") ? (j >= z.a && j < z.b) : (i >= z.a && i < z.b); if (inZ) fill = "#FBF4CC"; }
+    if (opt.hl && opt.hl.has(k)) fill = "#FFE9A8";
+    if (opt.sel && opt.sel.has(k)) fill = "#CFE0FA";
+    h += `<rect x="${x}" y="${y}" width="${u}" height="${u}" fill="${fill}"${opt.click ? ` data-k="${k}" tabindex="0" role="button" aria-label="case ${k}"` : ""}/>`;
+    if (v !== null && v !== undefined && v !== "") h += `<text x="${x + u / 2}" y="${y + u / 2 + 9}" text-anchor="middle" font-size="26" font-weight="${v === 1 ? 700 : 400}" fill="${v === 1 ? KB : v === "X" ? "#6B7280" : KN}" pointer-events="none">${v}</text>`;
+    else if (opt.idx) h += `<text x="${x + u - 6}" y="${y + u - 6}" text-anchor="end" font-size="12" fill="#8A93A6" pointer-events="none">${k}</text>`;
+  }));
+  for (let j = 1; j < nc; j++) h += `<line x1="${x0 + j * u}" y1="${y0}" x2="${x0 + j * u}" y2="${Y1}" stroke="${KO}" stroke-width="1.5" pointer-events="none"/>`;
+  for (let i = 1; i < nl; i++) h += `<line x1="${x0}" y1="${y0 + i * u}" x2="${X1}" y2="${y0 + i * u}" stroke="${KO}" stroke-width="1.5" pointer-events="none"/>`;
+  h += `<rect x="${x0}" y="${y0}" width="${nc * u}" height="${nl * u}" fill="none" stroke="${KN}" stroke-width="3" pointer-events="none"/>`;
+  // coin : diagonale, noms des colonnes et des lignes, S
+  const px = x0 - hb - 12, py = y0 - hb - 12;
+  h += `<line x1="${px}" y1="${py}" x2="${x0}" y2="${y0}" stroke="${KN}" stroke-width="2"/>`;
+  h += `<text x="${x0 - hb + 2}" y="${y0 - hb - 3}" font-size="16" font-weight="700" fill="${KN}">${vc.slice().reverse().join("")}</text>`;
+  h += `<text x="${x0 - hb - 3}" y="${y0 - hb + 2}" font-size="16" font-weight="700" fill="${KN}" text-anchor="end" transform="rotate(-90 ${x0 - hb - 3} ${y0 - hb + 2})">${vl.slice().reverse().join("")}</text>`;
+  h += `<text x="${px - 2}" y="${py - 2}" font-size="20" font-weight="700" fill="${KN}" text-anchor="end">S</text>`;
+  // groupes : un rectangle par bloc, ouvert vers l'extérieur aux bords
+  const pos = kPos(n), ov = 8;
+  (opt.groups || []).forEach((g, gi) => {
+    const col = g.col || KCOL[gi % KCOL.length], m = 5 + 3 * (gi % 3), cells = g.k.map((k) => pos[k]);
+    kBlocs(cells.map((c) => c[0]), nl).forEach(([br, ot, ob]) => kBlocs(cells.map((c) => c[1]), nc).forEach(([bc, og, od]) => {
+      const xa = og ? x0 - ov : x0 + Math.min(...bc) * u + m, xb = od ? X1 + 4 : x0 + (Math.max(...bc) + 1) * u - m;
+      const ya = ot ? y0 - ov : y0 + Math.min(...br) * u + m, yb = ob ? Y1 + 4 : y0 + (Math.max(...br) + 1) * u - m;   // vers B et D : dépassement court, loin de la lettre
+      const P = [[xa, ya], [xb, ya], [xb, yb], [xa, yb]], side = [!ot, !od, !ob, !og];
+      if (side.every(Boolean)) { h += `<rect x="${xa}" y="${ya}" width="${xb - xa}" height="${yb - ya}" fill="none" stroke="${col}" stroke-width="4" pointer-events="none"/>`; return; }
+      let d0 = [0, 1, 2, 3].find((q) => side[q] && !side[(q + 3) % 4]), pts = [P[d0]], q = d0;
+      while (side[q % 4] && pts.length < 5) { pts.push(P[(q + 1) % 4]); q++; }
+      h += `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" stroke="${col}" stroke-width="4" pointer-events="none"/>`;
+    }));
+  });
+  return h + "</svg>";
+}
+// un groupe valide = un rectangle de 2^p cases (bords compris) : les cases ont n − p variables fixes et prennent toutes les valeurs des p autres
+function kCube(n, ks) {
+  if (!ks.length) return null;
+  const full = (1 << n) - 1; let eq = full;
+  ks.forEach((k) => { eq &= ~(k ^ ks[0]) & full; });
+  const libres = n - [...Array(n).keys()].filter((b) => (eq >> b) & 1).length;
+  if (new Set(ks).size !== (1 << libres)) return null;
+  return { mask: eq, val: ks[0] & eq };
+}
+function kTerm(n, cube, html = true) {
+  const lits = [];
+  for (let b = 0; b < n; b++) if ((cube.mask >> b) & 1) lits.push((cube.val >> b) & 1 ? VARS[b] : (html ? `<span class="ov">${VARS[b]}</span>` : VARS[b] + "'"));
+  return lits.length ? lits.join(" · ") : "1";
+}
+const kLits = (n, cube) => [...Array(n).keys()].filter((b) => (cube.mask >> b) & 1).length;
+// meilleure couverture : impliquants premiers, puis le plus petit nombre de termes, puis de lettres
+function kBest(n, vals) {
+  const N = 1 << n, cubes = [];
+  for (let m = 0; m < N; m++) for (let v = 0; v < N; v++) {
+    if ((v & m) !== v) continue;
+    const ks = [...Array(N).keys()].filter((k) => (k & m) === v);
+    if (ks.every((k) => vals[k] === 1 || vals[k] === "X") && ks.some((k) => vals[k] === 1)) cubes.push({ mask: m, val: v, ks });
+  }
+  const primes = cubes.filter((c) => !cubes.some((d) => d !== c && d.ks.length > c.ks.length && c.ks.every((k) => d.ks.includes(k))));
+  const ones = [...Array(N).keys()].filter((k) => vals[k] === 1);
+  let best = null;
+  for (let s = 1; s < (1 << primes.length); s++) {
+    const ch = primes.filter((_, i) => (s >> i) & 1);
+    if (best && ch.length > best.t) continue;
+    if (!ones.every((k) => ch.some((c) => c.ks.includes(k)))) continue;
+    const lit = ch.reduce((a, c) => a + kLits(n, c), 0);
+    if (!best || ch.length < best.t || (ch.length === best.t && lit < best.l)) best = { t: ch.length, l: lit, ch };
+  }
+  return best;
+}
+const tabVals = (n, f, xs = []) => [...Array(1 << n).keys()].map((k) => (xs.includes(k) ? "X" : f(k & 1, (k >> 1) & 1, (k >> 2) & 1, (k >> 3) & 1)));
+const eqHTML = (n, cubes, cols) => "S = " + cubes.map((c, i) => `<span style="color:${cols ? cols[i] : "inherit"}">${kTerm(n, c)}</span>`).join(" + ");
+
+// ---------------------------------------------- N°1 remplir : voyant de contrôle de la vanne (fiche 230 EX, N°1)
+const V1 = tabVals(3, (a, b, c) => ((a & !b & !c) | (a & b & !c) | (a & b & c)) ? 1 : 0);
+let t1 = Array(8).fill(null);
+function renderT1(wrong = new Set()) {
+  let t = "<tr><th>C</th><th>B</th><th>A</th><th class=\"out\">S</th></tr>";
+  for (let k = 0; k < 8; k++) t += `<tr><td>${(k >> 2) & 1}</td><td>${(k >> 1) & 1}</td><td>${k & 1}</td><td class="out ${V1[k] ? "one" : ""}">${V1[k]}</td></tr>`;
+  $("t1-tab").innerHTML = t;
+  $("t1-k").innerHTML = kmapSVG(3, t1, { click: true, hl: wrong, label: "Tableau à remplir : clique une case pour écrire 0 puis 1" });
+  $("t1-k").querySelectorAll("[data-k]").forEach((r) => {
+    const go = () => { const k = +r.dataset.k; t1[k] = t1[k] === null ? 0 : t1[k] === 0 ? 1 : null; renderT1(); };
+    r.addEventListener("click", go); r.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+  });
+}
+$("t1-reset").onclick = () => { t1 = Array(8).fill(null); renderT1(); $("t1-fb").className = "fb"; };
+$("t1-check").onclick = () => {
+  if (t1.includes(null)) { feedback($("t1-fb"), "info", "Il manque des cases.", " Écris un 0 ou un 1 dans chacune des 8 cases."); return; }
+  const wrong = new Set([...Array(8).keys()].filter((k) => t1[k] !== V1[k]));
+  renderT1(wrong);
+  if (!wrong.size) { feedback($("t1-fb"), "ok", "Juste.", " Les 1 sont dans les cases 001, 011 et 111 : ligne C = 0, colonnes 01 et 11, puis ligne C = 1, colonne 11."); markDone("t1", true); }
+  else { feedback($("t1-fb"), "bad", `${wrong.size} case${wrong.size > 1 ? "s" : ""} à revoir (en jaune).`, " Lis la ligne C dans la bande de gauche et les bits B A dans la bande du haut. Attention : la 3e colonne est 11 et la 4e est 10."); markDone("t1", false); }
+};
+renderT1();
+
+// ---------------------------------------------- N°2 lire : la rinceuse (présentation 220, diapo 7)
+const V2 = tabVals(3, (a, b, c) => (b | (a & c)) ? 1 : 0);
+const G2 = [[2, 3, 6, 7], [5, 7]];
+const ETAT = ["dans", "hors", "à cheval"];
+const t2 = G2.map(() => ({ C: "", B: "", A: "" }));
+function etatVrai(g, b) { const c = kCube(3, g); return !((c.mask >> b) & 1) ? "à cheval" : ((c.val >> b) & 1 ? "dans" : "hors"); }
+function termeChoisi(i) {
+  const lits = ["A", "B", "C"].map((v, b) => (t2[i][v] === "dans" ? v : t2[i][v] === "hors" ? `<span class="ov">${v}</span>` : t2[i][v] === "à cheval" ? "" : "?")).filter((x) => x);
+  return lits.length ? lits.join(" · ") : "1";
+}
+function renderT2() {
+  $("t2-k").innerHTML = kmapSVG(3, V2, { groups: G2.map((k) => ({ k })), label: "Tableau de la rinceuse avec un groupe vert et un groupe rouge" });
+  $("t2-list").innerHTML = "";
+  G2.forEach((g, i) => {
+    const d = document.createElement("div"); d.className = "case";
+    d.innerHTML = `<b style="color:${KCOL[i]}">Groupe ${i === 0 ? "vert" : "rouge"} (${g.length} cases)</b>` +
+      ["C", "B", "A"].map((v) => `<div class="row"><label for="t2-${i}${v}" style="min-width:2.5em">${v} :</label><select id="t2-${i}${v}"><option value="">…</option>${ETAT.map((e) => `<option ${t2[i][v] === e ? "selected" : ""}>${e}</option>`).join("")}</select><span id="t2-r${i}${v}"></span></div>`).join("") +
+      `<div class="eq" style="color:${KCOL[i]}">terme : ${termeChoisi(i)}</div>`;
+    $("t2-list").appendChild(d);
+    ["C", "B", "A"].forEach((v) => { $(`t2-${i}${v}`).onchange = (e) => { t2[i][v] = e.target.value; renderT2(); }; });
+  });
+}
+$("t2-check").onclick = () => {
+  if (t2.some((s) => Object.values(s).includes(""))) { feedback($("t2-fb"), "info", "Il manque des réponses.", " Choisis dans, hors ou à cheval pour chaque variable des deux groupes."); return; }
+  let ok = 0;
+  G2.forEach((g, i) => ["C", "B", "A"].forEach((v) => { const b = { A: 0, B: 1, C: 2 }[v], good = t2[i][v] === etatVrai(g, b); if (good) ok++; $(`t2-r${i}${v}`).innerHTML = `<span class="tag ${good ? "ok" : "bad"}">${good ? "juste" : "à revoir"}</span>`; }));
+  if (ok === 6) { feedback($("t2-fb"), "ok", "Juste : S = B + A · C.", " Le groupe vert est à cheval sur C et sur A, entièrement dans la zone B. Le rouge est dans les zones C et A, à cheval sur B."); markDone("t2", true); }
+  else { feedback($("t2-fb"), "bad", `${ok} sur 6.`, " Regarde chaque zone jaune : si le groupe a des cases dedans et des cases dehors, il est à cheval et la variable disparaît."); markDone("t2", false); }
+};
+renderT2();
+
+// ---------------------------------------------- N°3 et N°4 : regrouper soi-même
+function groupeur(listId, fbId, doneId, probs) {
+  const st = probs.map(() => ({ sel: new Set(), groups: [], ok: false }));
+  probs.forEach((p) => { p.best = kBest(p.n, p.vals); });
+  function render() {
+    $(listId).innerHTML = "";
+    probs.forEach((p, i) => {
+      const s = st[i], d = document.createElement("div"); d.className = "prob" + (s.ok ? " done" : "");
+      const cubes = s.groups.map((g) => kCube(p.n, g));
+      d.innerHTML = `<b>${p.titre}</b><div class="muted">${p.situ}</div><div class="kwrap"><div class="kbox">${kmapSVG(p.n, p.vals, { click: true, sel: s.sel, groups: s.groups.map((k) => ({ k })), label: "Tableau : clique les cases d'un groupe" })}</div>
+        <div style="display:grid;gap:10px"><div class="row"><button class="btn" data-a="add">Ajouter le groupe</button><button class="btn ghost" data-a="clr">Tout effacer</button></div>
+        <div class="terms">${s.groups.length ? cubes.map((c, gi) => `<span class="t" style="color:${KCOL[gi % 6]}">${kTerm(p.n, c)}<button data-rm="${gi}" aria-label="Retirer ce groupe">×</button></span>`).join(" + ") : '<span class="muted">Aucun groupe pour l\'instant.</span>'}</div>
+        ${s.groups.length ? `<div class="eq">${eqHTML(p.n, cubes, s.groups.map((_, gi) => KCOL[gi % 6]))}</div>` : ""}
+        <div class="row"><button class="btn" data-a="chk">Vérifier</button>${s.ok ? '<span class="tag ok">la plus courte</span>' : ""}</div></div></div>`;
+      $(listId).appendChild(d);
+      d.querySelectorAll("[data-k]").forEach((r) => {
+        const go = () => { const k = +r.dataset.k; s.sel.has(k) ? s.sel.delete(k) : s.sel.add(k); render(); };
+        r.addEventListener("click", go); r.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+      });
+      d.querySelectorAll("[data-rm]").forEach((b) => b.onclick = () => { s.groups.splice(+b.dataset.rm, 1); s.ok = false; render(); });
+      d.querySelector('[data-a="clr"]').onclick = () => { s.sel.clear(); s.groups = []; s.ok = false; render(); };
+      d.querySelector('[data-a="add"]').onclick = () => {
+        const ks = [...s.sel], c = kCube(p.n, ks);
+        if (!ks.length) { feedback($(fbId), "info", "Aucune case choisie.", " Clique d'abord sur les cases du groupe, puis sur « Ajouter le groupe »."); return; }
+        if (ks.some((k) => p.vals[k] === 0)) { feedback($(fbId), "bad", "Ce groupe contient un 0.", " Un groupe ne prend que des 1 (et des X)."); return; }
+        if (!ks.some((k) => p.vals[k] === 1)) { feedback($(fbId), "bad", "Ce groupe ne contient que des X.", " Un X sert seulement à agrandir un groupe de 1."); return; }
+        if (!c) { feedback($(fbId), "bad", "Ce n'est pas un groupe.", ` Un groupe est un rectangle de 1, 2, 4 ou 8 cases (bords compris). Tu as choisi ${ks.length} case${ks.length > 1 ? "s" : ""}${[1, 2, 4, 8, 16].includes(ks.length) ? " qui ne forment pas un rectangle" : ""}.`); return; }
+        s.groups.push(ks); s.sel.clear(); $(fbId).className = "fb"; render();
+      };
+      d.querySelector('[data-a="chk"]').onclick = () => {
+        const ones = [...Array(1 << p.n).keys()].filter((k) => p.vals[k] === 1), libres = ones.filter((k) => !s.groups.some((g) => g.includes(k)));
+        if (libres.length) { feedback($(fbId), "info", `${p.titre} : il reste des 1 sans groupe.`, ` ${libres.length} case${libres.length > 1 ? "s" : ""} à 1 n'${libres.length > 1 ? "ont" : "a"} pas de groupe. Un 1 isolé forme un groupe de 1.`); s.ok = false; }
+        else {
+          const lit = cubes.reduce((a, c) => a + kLits(p.n, c), 0);
+          if (cubes.length === p.best.t && lit === p.best.l) { s.ok = true; feedback($(fbId), "ok", `${p.titre} : juste, et c'est la plus courte.`, ` ${p.bravo}`); }
+          else { s.ok = false; feedback($(fbId), "bad", `${p.titre} : l'équation est juste, mais on peut faire plus court.`, ` La plus courte a ${p.best.t} terme${p.best.t > 1 ? "s" : ""} et ${p.best.l} lettre${p.best.l > 1 ? "s" : ""} (toi : ${cubes.length} et ${lit}). Agrandis les groupes : pense aux bords qui se touchent${p.vals.includes("X") ? " et aux X" : ""}.`); }
+        }
+        render();
+        const tous = st.every((x) => x.ok); markDone(doneId, tous);
+        if (tous) feedback($(fbId), "ok", "Tous les tableaux sont justes et les plus courts.", " Chaque groupe a été fait le plus grand possible, et le moins de groupes possible.");
+      };
+    });
+  }
+  render();
+}
+groupeur("t3-list", "t3-fb", "t3", [
+  { titre: "Tableau 1", n: 3, vals: tabVals(3, (a, b, c) => (a & b) | (b & c)), situ: "3 variables : deux groupes qui partagent une case.", bravo: "S = A · B + B · C : le 1 de la case 111 sert deux fois." },
+  { titre: "Tableau 2", n: 4, vals: tabVals(4, (a, b, c, d) => (a === c) ? 1 : 0), situ: "4 variables : regarde les coins.", bravo: "S = Ā · C̄ + A · C : les quatre coins forment un groupe ; B et D ont disparu." },
+  { titre: "Tableau 3", n: 4, vals: tabVals(4, (a, b, c, d) => (!a | (!b & !d) | (!c & !d)) ? 1 : 0), situ: "4 variables : l'éjecteur de la diapo 9, onze cases à 1.", bravo: "S = Ā + B̄ · D̄ + C̄ · D̄ : le groupe de 8 passe par les bords gauche et droit." },
+]);
+groupeur("t4-list", "t4-fb", "t4", [
+  { titre: "Pompe de vidange", n: 3, vals: tabVals(3, (a, b, c) => (c | (!a & b)) ? 1 : 0, [4, 5]), situ: "Les cases 100 et 101 valent X : le capteur haut ne peut pas être mouillé si le capteur bas est sec.", bravo: "S = C + Ā · B : avec les deux X, toute la zone C forme un groupe de 4." },
+  { titre: "Afficheur de niveau", n: 4, vals: tabVals(4, (a, b, c, d) => (b & !c) ? 1 : 0, [10, 11, 12, 13, 14, 15]), situ: "Les combinaisons 10 à 15 n'existent pas (code BCD) : elles valent X.", bravo: "La plus courte utilise les X du bas du tableau pour agrandir les groupes." },
+]);
+
+// ---------------------------------------------- N°5 contrôler le travail d'un collègue
+const COLL = [
+  { nom: "Convoyeur de sortie", n: 3, vals: tabVals(3, (a, b, c) => (a & b) | (a & c)), groups: [[3, 7], [5, 7]], rep: "court",
+    why: "Deux groupes de 2 qui partagent la case 111 : S = A · B + A · C, la plus courte." },
+  { nom: "Buse de rinçage", n: 3, vals: V2, groups: [[2, 3, 6], [5, 7]], rep: "faux",
+    why: "Le groupe vert a 3 cases : ce n'est pas un groupe. Il fallait le carré de 4 cases (2, 3, 6, 7), qui donne B." },
+  { nom: "Capteurs cohérents", n: 4, vals: tabVals(4, (a, b, c, d) => (a === c) ? 1 : 0), groups: [[0, 2], [8, 10], [5, 7, 13, 15]], rep: "long",
+    why: "Les groupes sont justes, mais les deux groupes du haut et du bas se touchent par les bords : un seul groupe de 4 (les coins) suffit." },
+];
+const REP = [["court", "juste et le plus court"], ["long", "juste mais trop long"], ["faux", "faux"]];
+COLL.forEach((q, i) => {
+  const d = document.createElement("div"); d.className = "case";
+  const cubes = q.groups.map((g) => kCube(q.n, g));
+  const eq = cubes.every(Boolean) ? eqHTML(q.n, cubes, q.groups.map((_, gi) => KCOL[gi])) : "S = ?";
+  d.innerHTML = `<b>${q.nom}</b><div class="kwrap"><div class="kbox">${kmapSVG(q.n, q.vals, { groups: q.groups.map((k) => ({ k })), u: 52 })}</div>
+    <div style="display:grid;gap:8px"><div class="eq">${eq}</div><div class="row"><label for="t5-s${i}">Le travail est</label><select id="t5-s${i}"><option value="">…</option>${REP.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select><span id="t5-r${i}"></span></div><div class="muted" id="t5-w${i}"></div></div></div>`;
+  $("t5-list").appendChild(d);
+});
+$("t5-check").onclick = () => {
+  if (COLL.some((_, i) => !$(`t5-s${i}`).value)) { feedback($("t5-fb"), "info", "Il manque des réponses.", " Choisis une réponse pour chaque commande."); return; }
+  let ok = 0;
+  COLL.forEach((q, i) => { const g = $(`t5-s${i}`).value === q.rep; if (g) ok++; $(`t5-r${i}`).innerHTML = `<span class="tag ${g ? "ok" : "bad"}">${g ? "juste" : "à revoir"}</span>`; $(`t5-w${i}`).textContent = q.why; });
+  if (ok === 3) { feedback($("t5-fb"), "ok", "Les trois sont justes.", " Un groupe a toujours 1, 2, 4, 8 ou 16 cases en rectangle, et on le fait le plus grand possible, bords compris."); markDone("t5", true); }
+  else { feedback($("t5-fb"), "bad", `${ok} sur 3.`, " Compte les cases de chaque groupe, puis cherche si deux groupes pourraient n'en faire qu'un plus grand."); markDone("t5", false); }
+};
+// ================================================================ leçons animées de la page 221 (présentation 220)
+// Sortie S, entrées A, B, C, D (REGLES 3.4). Tableaux : kmapSVG du gabarit (modèle de Gaël). Briques : moteur/pages/common.js.
+
+const RINC = tabVals(3, (a, b, c) => (b | (a & c)) ? 1 : 0);
+// table de vérité dessinée à gauche de la leçon
+function miniTable(x, y, vals, actif, nf) {
+  let h = "", rh = 30, cw = 40;
+  ["C", "B", "A", "S"].forEach((t, j) => { h += `<rect x="${x + j * cw}" y="${y}" width="${cw}" height="${rh}" style="fill:var(--light)"/>` + TX(x + j * cw + cw / 2, y + 21, t, { size: 16, bold: true, anchor: "middle", color: "#242852" }); });
+  for (let k = 0; k < 8; k++) {
+    const yy = y + rh * (k + 1);
+    h += `<rect x="${x}" y="${yy}" width="${4 * cw}" height="${rh}" style="fill:${k === actif ? "#FFE9A8" : "var(--surface)"};stroke:var(--line)"/>`;
+    [(k >> 2) & 1, (k >> 1) & 1, k & 1, vals[k]].forEach((v, j) => { h += TX(x + j * cw + cw / 2, yy + 21, String(v), { size: 16, anchor: "middle", mono: true, bold: j === 3 && v === 1, color: j === 3 && v === 1 ? "var(--one)" : "var(--ink)", op: k < nf || j < 3 ? 1 : 0.35 }); });
+  }
+  return h;
+}
+const imbrique = (svg, x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})">${svg.replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g>`;
+
+// ---------------------------------------------------------------- L1 remplir (diapos 3 et 4)
+lesson("L1", {
+  dur: 30, label: "Animation : chaque ligne de la table de la buse de rinçage est reportée dans sa case, repérée par la ligne C et la colonne BA",
+  steps: [
+    [0, "La table a 8 lignes, le tableau a 8 cases : une case par ligne."],
+    [3, "Chaque ligne trouve sa case avec les codes gris : la ligne C, puis la colonne BA."],
+    [12, "L'ordre des colonnes est 00, 01, 11, 10 : la ligne 011 va dans la 3e colonne, la ligne 010 dans la 4e."],
+    [21, "Les zones jaunes disent la même chose : la case 101 est dans les zones C et A, hors de la zone B."],
+  ],
+  draw(t) {
+    const k = t < 3 ? -1 : Math.min(7, Math.floor((t - 3) / 2.6)), nf = t < 3 ? 0 : Math.min(8, Math.floor((t - 3) / 2.6) + 1);
+    const vals = RINC.map((v, i) => (i < nf ? v : null));
+    let h = '<svg viewBox="0 0 960 380">' + miniTable(40, 40, RINC, k, nf);
+    h += imbrique(kmapSVG(3, vals, { hl: k >= 0 && nf <= 8 ? new Set([k]) : new Set(), zone: t >= 21 ? (t < 24 ? "C" : t < 27 ? "A" : "B") : null, u: 70 }), 300, 20, 1.1);
+    if (k >= 0) h += TX(300, 360, `${(k >> 2) & 1}${(k >> 1) & 1}${k & 1}  →  ligne C = ${(k >> 2) & 1}, colonne BA = ${(k >> 1) & 1}${k & 1}`, { size: 20, bold: true, color: "var(--blue)" });
+    return h + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L2 lire un groupe (diapo 6)
+lesson("L2", {
+  dur: 28, label: "Animation : le groupe vert puis le groupe rouge du tableau de la rinceuse ; chaque zone jaune s'allume pour dire si le groupe est dedans, dehors ou à cheval",
+  steps: [
+    [0, "Groupe vert : 4 cases. On regarde chaque zone jaune l'une après l'autre."],
+    [3, "Zone C : le groupe a des cases dedans et dehors. Il est à cheval, C disparaît."],
+    [6, "Zone A : à cheval aussi, A disparaît. Zone B : tout le groupe est dedans, il reste B."],
+    [13, "Groupe rouge : dans la zone C, dans la zone A, à cheval sur B. Il reste A · C."],
+    [22, "On additionne les termes : S = B + A · C."],
+  ],
+  draw(t) {
+    const g = t < 13 ? [[2, 3, 6, 7]] : [[2, 3, 6, 7], [5, 7]];
+    const z = t < 3 ? null : t < 6 ? "C" : t < 9 ? "A" : t < 13 ? "B" : t < 16 ? "C" : t < 19 ? "A" : t < 22 ? "B" : null;
+    let h = '<svg viewBox="0 0 960 380">' + imbrique(kmapSVG(3, RINC, { groups: g.map((k) => ({ k })), zone: z, u: 70 }), 30, 20, 1.1);
+    const L = [[3, "C : à cheval → disparaît", KCOL[0]], [6, "A : à cheval → disparaît", KCOL[0]], [9, "B : dans la zone → B", KCOL[0]],
+      [13, "C : dans la zone → C", KCOL[1]], [16, "A : dans la zone → A", KCOL[1]], [19, "B : à cheval → disparaît", KCOL[1]]];
+    L.forEach(([t0, s, c], i) => { const op = prog(t, t0, t0 + 0.8); if (op > 0) h += TX(560, 60 + i * 44 + (i >= 3 ? 16 : 0), s, { size: 22, bold: true, color: c, op }); });
+    const op = prog(t, 22, 23);
+    if (op > 0) h += TX(560, 350, "S = B + A · C", { size: 34, bold: true, color: "var(--head)", op });
+    return h + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L3 les bords se touchent (diapo 8)
+const K4 = tabVals(4, (a, b, c, d) => (a === c) ? 1 : 0);
+lesson("L3", {
+  dur: 24, label: "Animation : dans un tableau à 4 variables, les quatre coins forment un seul groupe ouvert vers l'extérieur, puis le carré du centre",
+  steps: [
+    [0, "Tableau de 16 cases : A en haut, B en bas, C à gauche, D à droite."],
+    [4, "La colonne de gauche touche la colonne de droite, la ligne du haut touche celle du bas : les quatre coins sont voisins."],
+    [9, "Les coins forment un groupe de 4, dessiné ouvert vers l'extérieur. Hors de A, hors de C, à cheval sur B et D : il reste Ā · C̄."],
+    [15, "Le carré du centre est dans les zones A et C : il reste A · C. B et D ont disparu."],
+  ],
+  draw(t) {
+    const g = t < 9 ? [] : t < 15 ? [[0, 2, 8, 10]] : [[0, 2, 8, 10], [5, 7, 13, 15]];
+    const hl = t >= 4 && t < 9 ? new Set([0, 2, 8, 10]) : new Set();
+    let h = '<svg viewBox="0 0 960 420">' + imbrique(kmapSVG(4, K4, { groups: g.map((k) => ({ k })), hl, u: 64 }), 40, 10, 1.0);
+    if (t >= 4 && t < 9) {
+      const op = prog(t, 4, 5);
+      h += TX(560, 120, "les bords se touchent", { size: 26, bold: true, color: "var(--blue)", op });
+    }
+    if (t >= 9) h += `<text x="560" y="160" font-size="30" font-weight="700" style="fill:${KCOL[0]}">Ā · C̄</text>`;
+    if (t >= 15) h += `<text x="560" y="220" font-size="30" font-weight="700" style="fill:${KCOL[1]}">A · C</text>` + TX(560, 300, "S = Ā · C̄ + A · C", { size: 32, bold: true, color: "var(--head)" });
+    return h + "</svg>";
+  },
+});
+
+// ---------------------------------------------------------------- L4 cas X (diapo 12)
+const VID = tabVals(3, (a, b, c) => (c | (!a & b)) ? 1 : 0, [4, 5]);
+lesson("L4", {
+  dur: 22, label: "Animation : la pompe de vidange ; les deux X agrandissent le groupe de la zone C, puis le 1 restant forme un groupe de 2",
+  steps: [
+    [0, "Les cases 100 et 101 valent X : ces combinaisons n'arrivent jamais."],
+    [4, "Sans les X, la zone C donne un groupe de 2 seulement : B · C."],
+    [9, "Avec les X, toute la zone C forme un groupe de 4 : il reste C."],
+    [15, "Le 1 de la case 010 s'allie à la case 110 : hors de A, dans la zone B. Il reste Ā · B. S = C + Ā · B."],
+  ],
+  draw(t) {
+    const g = t < 4 ? [] : t < 9 ? [[6, 7]] : t < 15 ? [[4, 5, 6, 7]] : [[4, 5, 6, 7], [2, 6]];
+    let h = '<svg viewBox="0 0 960 360">' + imbrique(kmapSVG(3, VID, { groups: g.map((k) => ({ k })), hl: t < 4 ? new Set([4, 5]) : new Set(), u: 70 }), 30, 20, 1.1);
+    const s = t < 4 ? "" : t < 9 ? "sans les X : S = B · C + …" : t < 15 ? "avec les X : C" : "S = C + Ā · B";
+    if (s) h += TX(560, 180, s, { size: 30, bold: true, color: t < 9 ? "var(--muted)" : "var(--head)" });
+    return h + "</svg>";
+  },
+});
+
+$("jsx").hidden = true;
+</script>
+</body>
+</html>

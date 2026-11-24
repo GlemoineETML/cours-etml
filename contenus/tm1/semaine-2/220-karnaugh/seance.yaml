@@ -1,0 +1,43 @@
+# Semaine 2 TM1, ligne 15 du plan : simplification par Karnaugh.
+# Cadrage validé par Gaël le 11/23/2026 : 2 périodes (présentation 220 + fiche 230 EX), LZ_2225, cas indifférents (X) compris,
+# pas de lien Floyd ni nextecmedia. Sortie S, entrées A, B, C, D avec légende (REGLES 3.4). Le code Gray n'est vu qu'en semaine 4.
+
+classe: XLO1
+annee: 2026-2027
+matiere: Test et Mesure 1 – El DT 1
+champ: LFB_El_DT1
+date: 11/23/2026
+editeur: Gaël Lemoine
+
+futuremem_champ: "https://skills.futuremem.swiss/fr/9999_et/2000_lfe_bfs_1/#comp%C3%A9tences-op%C3%A9rationnelles-et-crit%C3%A8res-de-performance"
+lz:
+  LZ_2225:
+    niveau: C3
+    texte: "Elles/Ils appliquent les lois fondamentales de l'algèbre de Boole."
+    lien: "https://skills.futuremem.swiss/fr/data/5000_lze_04/#67416C27-6C09-0E42-8A59-FCB08E6212A4"
+
+teams_dossier: "https://eduvaud.sharepoint.com/:{k}:/r/sites/msteams_084f74/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/PMT%26SBT/"
+
+fichiers:
+  "220": "220 Simplification par Karnaugh.pptx"
+  "221": "221 Simplification par Karnaugh.html"
+  "225": "225 Simplification par Karnaugh.mp4"
+  "230": "230 EX Simplification par Karnaugh.docx"
+  "230C": "230 EX C Simplification par Karnaugh.docx"
+
+# fichiers d'autres séances cités dans les supports (liens Teams par chemin, non produits ici)
+renvois:
+  "130": "130 EX Portes logiques de base.docx"
+  "200": "200 Algèbre de Boole.pptx"
+  "210": "210 EX Algèbre de Boole.docx"
+
+versions:
+  "220": "1.0"
+
+# vidéos : couverture (image à 7 s, bouton lecture, durée affichée)
+videos:
+  "225": "2 min 47"
+
+# artefact claude.ai de la page interactive (privé tant que Gaël ne le partage pas)
+artefacts:
+  "221": "https://claude.ai/artifact/NezWTvMnsyRxbPWVoiA4B5"
