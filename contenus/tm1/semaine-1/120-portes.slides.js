@@ -201,7 +201,7 @@ module.exports = function (E) {
       s.addImage({ path: `gate_${k}.png`, x: gx + 0.17, y: yy + 0.04, w: 0.58, h: 0.39 });
       const EQD = tailles(/^eq_.*\.png$/), PX = 0.38 / Math.max(...Object.values(EQD).map(v => v[1]));
       const ew = EQD[`eq_${k}.png`][0] * PX, eh = EQD[`eq_${k}.png`][1] * PX;
-      s.addImage({ path: `eq_${k}.png`, x: ex + (colW[2] - ew) / 2, y: yy + (rh - eh) / 2, w: ew, h: eh, objectName: eqName(G[k][14], 1600) });
+      s.addImage({ path: `eq_${k}.png`, x: ex + (colW[2] - ew) / 2, y: yy + (rh - eh) / 2, w: ew, h: eh, objectName: eqName(G[k][14], 1600, undefined, ew, eh) });
     });
     txt(s, "Colonnes 00 à 11 : valeurs de B et A (B, poids fort, à gauche). Pour NON, seule A compte.", { x: 0.5, y: y0 + hh + 7 * rh + 0.05, w: 9.0, h: 0.25, fontSize: 9.5, italic: true, color: GR });
     card(s, 0.5, 4.95, 9.0, 0.6);

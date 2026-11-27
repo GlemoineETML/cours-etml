@@ -36,11 +36,13 @@ def _formes(xml):
         if "<m:oMath" in bloc:
             # équation éditable : PowerPoint l'affiche à sa taille de police (sz), centrée dans le cadre, sans la réduire ;
             # le rendu LibreOffice montre l'image de secours, ajustée au cadre : seule cette estimation voit le débordement.
+            # mesure comme Office la compose (moteur/omml.mesure : Cambria Math, espaces autour des opérateurs, fractions,
+            # barres). L'ancienne estimation (0,55 corps par caractère, sans les espaces des opérateurs) sous-estimait la
+            # largeur de 15 à 35 % : les équations débordaient dans PowerPoint sans alerte (présentation 200, 11/27/2026).
+            from moteur.omml import mesure
             sz = max([int(t) / 100 for t in re.findall(r'<a:rPr[^>]*\bsz="(\d+)"', bloc)] or [18.0])
-            car = len("".join(re.findall(r"<m:t[^>]*>([^<]*)</m:t>", bloc)))
-            fr = bloc.count("<m:f>")
-            hn = sz * (2.6 if fr else 1.3)                        # une fraction : numérateur + dénominateur ≈ 2,6 corps
-            ln = sz * 0.55 * car * (0.6 if fr else 1.0)           # dans une fraction, numérateur et dénominateur se superposent
+            we, he = mesure(re.search(r"<m:oMath>.*</m:oMath>", bloc, flags=re.S).group(0))
+            ln, hn = we * sz, he * sz
             cx, cy = x + l / 2, y + h / 2
             out.append(("eq", x, y, l, h, "équation", paras, False, (cx - max(l, ln) / 2, cy - max(h, hn) / 2, max(l, ln), max(h, hn), ln, hn)))
             continue
@@ -48,21 +50,31 @@ def _formes(xml):
     return out
 
 
+_ARIAL = {}
+
+
+def _largeur(t, sz, gras):
+    """Largeur (pt) d'un texte Arial : chasse réelle mesurée sur Liberation Sans (mêmes métriques qu'Arial)."""
+    if gras not in _ARIAL:
+        from PIL import ImageFont
+        _ARIAL[gras] = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSans-%s.ttf" % ("Bold" if gras else "Regular"), 1000)
+    return _ARIAL[gras].getlength(t) / 1000 * sz
+
+
 def _hauteur_texte(paras, largeur):
-    """Hauteur estimée (pt) d'un texte Arial dans une largeur donnée (pt)."""
+    """Hauteur (pt) d'un texte Arial dans une largeur donnée (pt) : coupure aux espaces comme PowerPoint, interligne 1,2."""
     tot = 0.0
     for texte, sz, gras, br in paras:
         if not texte:
             tot += sz * 1.2 * (1 + br)
             continue
-        cw = sz * (0.55 if gras else 0.5)
-        lignes, cur = 1, 0.0
+        lignes, cur, esp = 1, 0.0, _largeur(" ", sz, gras)
         for mot in texte.split():
-            w = (len(mot) + 1) * cw
+            w = _largeur(mot, sz, gras)
             if cur + w > largeur and cur > 0:
-                lignes += 1; cur = w
+                lignes += 1; cur = w + esp
             else:
-                cur += w
+                cur += w + esp
         tot += (lignes + br) * sz * 1.2 + 3
     return tot
 
@@ -82,7 +94,7 @@ def controler_pptx(chemin):
         formes = _formes(z.read(n).decode("utf-8"))
         for f in [f for f in formes if f[0] == "eq"]:
             ln, hn = f[8][4], f[8][5]
-            if hn > f[4] + 4 or ln > f[3] + 4:
+            if hn > f[4] * 1.1 or ln > f[3]:
                 A.append(f"{nom} (diapo {k}) : équation plus grande que son cadre dans PowerPoint (≈ {ln:.0f} × {hn:.0f} pt pour {f[3]:.0f} × {f[4]:.0f} pt)")
         formes = [(("sp",) + f[8][:4] + (f"équation {i + 1}", f[6], True)) if f[0] == "eq" else f for i, f in enumerate(formes)]
         textes = [f for f in formes if f[0] == "sp" and f[5]]
@@ -138,7 +150,9 @@ def controler_pdf(pdf, fiche):
     for i, (ph, lignes) in enumerate(pages):
         # unité séparée de son nombre en fin de ligne
         for a, b in zip(lignes, lignes[1:]):
-            if a[2] and b[2] and re.search(r"\d$", a[2][-1]) and re.match(UNITE, b[2][0]) and b[0] > a[0]:
+            # « 0 » ou « 1 » suivi d'une seule lettre : valeur logique et variable (A, B…), pas un nombre et son unité
+            logique = re.fullmatch(r"[+=]?[01]", a[2][-1] or "") and re.fullmatch(r"[A-Z]", b[2][0] or "") if a[2] and b[2] else False
+            if a[2] and b[2] and not logique and re.search(r"\d$", a[2][-1]) and re.match(UNITE, b[2][0]) and b[0] > a[0]:
                 A.append(f"{nom} (page {i + 1}) : unité séparée de son nombre en fin de ligne : « {a[2][-1]} / {b[2][0]} »")
         if not fiche:
             continue
@@ -151,3 +165,36 @@ def controler_pdf(pdf, fiche):
         if (not derniere and rempli < 0.8) or (derniere and rempli < 0.25):
             A.append(f"{nom} (page {i + 1}) : page remplie à {rempli:.0%} seulement" + (" (dernière page)" if derniere else ""))
     return A
+
+
+def simulation_powerpoint(chemin, sortie):
+    """Copie de la présentation où l'image de secours de chaque équation prend la taille que PowerPoint donne à l'équation
+    éditable (moteur/omml.mesure), centrée sur son cadre. LibreOffice ne montre que l'image de secours, ajustée à son cadre :
+    sans cette copie, le rendu de contrôle (et l'aperçu claude.ai) cache les équations que PowerPoint fait déborder."""
+    from moteur.omml import mesure
+    zin = zipfile.ZipFile(chemin)
+    zout = zipfile.ZipFile(sortie, "w", zipfile.ZIP_DEFLATED)
+    for it in zin.infolist():
+        data = zin.read(it.filename)
+        if re.match(r"ppt/slides/slide\d+\.xml$", it.filename):
+            x = data.decode("utf-8")
+
+            def remplace(m):
+                choix, secours = m.group(1), m.group(2)
+                om = re.search(r"<m:oMath>.*</m:oMath>", choix, flags=re.S)
+                sz = re.search(r'<a:rPr[^>]*\bsz="(\d+)"', choix)
+                off = re.search(r'<a:off x="(-?\d+)" y="(-?\d+)"/>\s*<a:ext cx="(\d+)" cy="(\d+)"/>', secours)
+                if not (om and sz and off):
+                    return secours
+                we, he = mesure(om.group(0))
+                pt = int(sz.group(1)) / 100
+                x0, y0, cx, cy = (int(v) for v in off.groups())
+                l = int(we * pt * EMU); h = int(l * cy / cx)                      # même proportion que l'image
+                nx, ny = x0 + (cx - l) // 2, y0 + (cy - h) // 2
+                return secours.replace(off.group(0), f'<a:off x="{nx}" y="{ny}"/><a:ext cx="{l}" cy="{h}"/>')
+            x = re.sub(r"<mc:AlternateContent[^>]*>\s*<mc:Choice[^>]*>(.*?)</mc:Choice>\s*<mc:Fallback>(.*?)</mc:Fallback>\s*</mc:AlternateContent>",
+                       remplace, x, flags=re.S)
+            data = x.encode("utf-8")
+        zout.writestr(it, data)
+    zout.close()
+    return sortie

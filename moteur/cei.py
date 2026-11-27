@@ -100,7 +100,7 @@ def plus_petit_texte(fig):
     return t.get_fontsize(), t.get_text().strip()[:30]
 
 
-def save(fig, name, pad=0.05):
+def save(fig, name, pad=0.05, fond="white"):
     import json
     fig.canvas.draw()
     av = textes_sur_courbes(fig)
@@ -116,7 +116,8 @@ def save(fig, name, pad=0.05):
             for a in av:
                 f.write(f"{name} : {a}\n")
                 print(f"⚠ figure {name} : {a}")
-    fig.savefig(os.path.join(_DOSSIER, name), dpi=DPI, facecolor="white", bbox_inches="tight", pad_inches=pad)
+    # fond=None : image transparente (équations : l'équation éditable de PowerPoint n'a pas de fond, l'image de secours non plus)
+    fig.savefig(os.path.join(_DOSSIER, name), dpi=DPI, facecolor=fond or "none", transparent=fond is None, bbox_inches="tight", pad_inches=pad)
     plt.close(fig)
 
 
@@ -154,12 +155,12 @@ def fig_gate(key, name=None):
 # ------------------------------------------------------------------ équations (notation Floyd)
 def fig_eq(key, color=NAVY, name=None, fs=30):
     fig = plt.figure(figsize=(4, 0.9)); fig.text(0.5, 0.5, "$" + L.GATES[key][6] + "$", ha="center", va="center", fontsize=fs, color=color)
-    save(fig, name or f"eq_{key}.png", pad=0.08)
+    save(fig, name or f"eq_{key}.png", pad=0.08, fond=None)
 
 
 def fig_eq_txt(tex, name, color=NAVY, fs=30):
     fig = plt.figure(figsize=(4, 0.9)); fig.text(0.5, 0.5, "$" + tex + "$", ha="center", va="center", fontsize=fs, color=color)
-    save(fig, name, pad=0.08)
+    save(fig, name, pad=0.08, fond=None)
 
 
 # ------------------------------------------------------------------ chronogrammes

@@ -121,7 +121,12 @@ Modèle de Gaël (11/24/2026), dessiné par `moteur/cei.py` (`karnaugh`, `fig_ka
 4. Erreurs bloquantes de mise en page (ajoutées le 11/23/2026 après la séance TM2 120) :
    - Figures (`moteur/cei.save`) : un texte posé sur une courbe, un trait de repère ou une flèche, ou deux textes qui se chevauchent. S'applique aux graphiques comme aux schémas.
    - Lisibilité : une fois la figure placée, son plus petit texte fait au moins 8 pt dans une présentation et 7 pt dans une fiche. Sinon, on agrandit la figure ou ses textes.
-   - Équations éditables : PowerPoint les affiche à leur taille de police, sans les réduire à leur cadre. Le rendu LibreOffice montre l'image de secours et ne voit donc pas le débordement. `moteur/deck.js` borne la taille au cadre (une fraction occupe environ 2,6 fois le corps) et le contrôle bloque si une équation dépasse.
+   - Équations éditables : PowerPoint les affiche à leur taille de police, sans les réduire à leur cadre. LibreOffice et l'aperçu de claude.ai montrent l'image de secours, ajustée au cadre : ils ne voient pas le débordement. Depuis le 11/27/2026 (présentation 200 : 25 équations qui débordaient dans PowerPoint, invisibles au contrôle) :
+     - `moteur/omml.py` (`mesure`) mesure chaque équation comme Office la compose : Cambria Math, espaces autour de =, +, ·, barres, fractions, indices. `moteur/deck.js` réduit le corps pour que l'équation tienne dans son cadre réel, lu dans le fichier final (après `squeeze`).
+     - Le rendu de contrôle des présentations est une simulation PowerPoint (`controle/mise_en_page.simulation_powerpoint`) : chaque équation y a la taille que PowerPoint lui donnera. La relecture à 90 dpi se fait sur ce rendu.
+     - Le contrôle bloque si une équation dépasse son cadre ; `controle/test_equations.py` vérifie que la mesure voit toujours le cas de la 200.
+     - Images de secours des équations : fond transparent, comme l'équation éditable.
+     - Ne jamais placer une équation avec une autre fonction que `eqImg` / `eqName` avec la taille de son cadre : sans cadre, aucun ajustement n'est possible.
 5. Relecture des figures et des vidéos : `controle/ --rendu` produit des planches `sortie/_controle/<séance>/figures-*.png` (4 figures par page) et `video-*.png` (images clés des animations, une toutes les 5 s). Les pages interactives sont vérifiées automatiquement : textes des dessins qui se chevauchent ou posés sur un trait ou un cercle, dans les exercices et à chaque étape des animations. Chaque planche est lue en entier avant l'envoi : textes, flèches, étiquettes, porteurs. Le contrôle automatique ne remplace pas cette lecture.
 
 ## 10. Règles de travail du dépôt

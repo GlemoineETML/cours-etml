@@ -319,8 +319,16 @@ def module_formules():
 
 
 def rendu(chemin, dossier):
+    """Rendu PDF + PNG. Présentation : rendu d'une copie où les équations ont la taille que leur donne PowerPoint
+    (controle/mise_en_page.simulation_powerpoint), pour que la relecture voie ce que Gaël verra dans PowerPoint."""
     os.makedirs(dossier, exist_ok=True)
-    subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", dossier, chemin], check=True,
+    source = chemin
+    if chemin.endswith(".pptx"):
+        import tempfile
+        from controle.mise_en_page import simulation_powerpoint
+        source = os.path.join(tempfile.mkdtemp(), os.path.basename(chemin))
+        simulation_powerpoint(chemin, source)
+    subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", dossier, source], check=True,
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     pdf = os.path.join(dossier, os.path.splitext(os.path.basename(chemin))[0] + ".pdf")
     subprocess.run(["pdftoppm", "-r", "60", "-png", pdf, pdf[:-4]], check=True, stderr=subprocess.DEVNULL)
@@ -351,6 +359,8 @@ def main():
     if os.path.exists(fa):
         E += [f"figure · {l.strip()}" for l in open(fa, encoding="utf-8") if l.strip()]
     E += corps_figures(fichiers, os.path.join(travail, "tailles_figures.json"))
+    from controle.test_equations import tester as tester_equations      # la mesure des équations voit le cas de la 200 (REGLES 9.4)
+    E += [f"contrôle des équations : {x}" for x in tester_equations()]
     from controle.karnaugh import verifier as verifier_karnaugh          # tableaux de Karnaugh (REGLES 3.5)
     E += verifier_karnaugh(travail)
     verif = os.path.join(S.dossier, "verif.py")

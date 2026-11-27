@@ -131,7 +131,97 @@ def omath(src, color=None, sz=None, cible="docx"):
         _CIBLE[0] = "docx"
 
 
+# ---------------------------------------------------------------- taille réelle dans PowerPoint et Word
+# PowerPoint affiche l'équation éditable à sa taille de police, sans la réduire au cadre (l'image de secours, seule visible dans
+# LibreOffice et dans l'aperçu de claude.ai, est, elle, ajustée au cadre). On mesure donc l'équation comme Office la compose :
+# police Cambria Math (chasse ≈ Times × 1,05, mesurée sur Liberation Serif), espaces autour des opérateurs (binaire 4/18 em,
+# relation 5/18 em de chaque côté), fraction empilée, barre, indices à 70 %. Résultat en em (multiplier par la taille en pt).
+_POLICES = {}
+_BIN, _REL = set("+−-·×⊕±"), set("=≈≠≤≥→⇒")
+_M = "{http://schemas.openxmlformats.org/officeDocument/2006/math}"
+
+
+def _police(ital):
+    if ital not in _POLICES:
+        from PIL import ImageFont
+        f = "LiberationSerif-Italic.ttf" if ital else "LiberationSerif-Regular.ttf"
+        _POLICES[ital] = ImageFont.truetype("/usr/share/fonts/truetype/liberation/" + f, 1000)
+    return _POLICES[ital]
+
+
+def _chasse(t, ital):
+    w = 0.0
+    for ch in t:
+        if ch in _BIN: w += 0.62 + 2 * 4 / 18
+        elif ch in _REL: w += 0.62 + 2 * 5 / 18
+        elif ch in " \u00a0": w += 0.25
+        else: w += _police(ital).getlength(ch) / 1000 * 1.05
+    return w
+
+
+def _boite(el):
+    """(largeur, hauteur au-dessus de la ligne de base, profondeur) en em d'un élément OMML."""
+    tag = el.tag.replace(_M, "")
+    enf = lambda nom: el.find(_M + nom)
+    if tag == "r":
+        t = "".join(x.text or "" for x in el.iter(_M + "t"))
+        sty = el.find(f"{_M}rPr/{_M}sty")
+        return _chasse(t, sty is None or sty.get(_M + "val") == "i"), 0.75, 0.25
+    if tag == "bar":
+        w, a, d = _suite(enf("e"))
+        return w, a + 0.18, d
+    if tag == "f":
+        n, d_ = _suite(enf("num")), _suite(enf("den"))
+        return max(n[0], d_[0]) + 0.25, n[1] + n[2] + 0.35, d_[1] + d_[2] + 0.1
+    if tag in ("sSub", "sSup"):
+        b = _suite(enf("e")); x = _suite(enf("sub" if tag == "sSub" else "sup"))
+        return b[0] + 0.7 * x[0] + 0.05, b[1] + (0.35 if tag == "sSup" else 0), b[2] + (0.25 if tag == "sSub" else 0)
+    if tag == "rad":
+        w, a, d = _suite(enf("e"))
+        return w + 0.7, a + 0.2, d
+    if tag == "d":
+        w, a, d = _suite(el)
+        return w + 0.8, a, d
+    return _suite(el)
+
+
+def _suite(el):
+    W, A, D = 0.0, 0.75, 0.25
+    if el is None:
+        return W, A, D
+    for c in el:
+        if c.tag.endswith("Pr") or c.tag == _M + "deg":
+            continue
+        w, a, d = _boite(c)
+        W += w; A = max(A, a); D = max(D, d)
+    return W, A, D
+
+
+def mesure(xml):
+    """Largeur et hauteur (em) d'une équation OMML (<m:oMath>…</m:oMath>, préfixes m: a: w: acceptés)."""
+    import xml.etree.ElementTree as ET
+    ns = ('xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" '
+          'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" '
+          'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"')
+    racine = ET.fromstring("<racine %s>%s</racine>" % (ns, xml))
+    w, a, d = _suite(racine.find(_M + "oMath") if racine.find(_M + "oMath") is not None else racine)
+    return w, a + d
+
+
+def ajuster(src, color, sz, w_pt, h_pt):
+    """Taille (centièmes de point) qui fait tenir l'équation dans son cadre w_pt × h_pt, au plus sz."""
+    w, h = mesure(omath(src, color, 1000, "pptx"))
+    return int(min(sz, w_pt / w * 100, h_pt / h * 100 * 1.05))
+
+
 if __name__ == "__main__":
     # pour moteur/deck.js : lit [[source, couleur, taille], …] en JSON sur l'entrée standard, écrit la liste des m:oMath (cible pptx)
     import json, sys
-    print(json.dumps([omath(src, col, sz, "pptx") for src, col, sz in json.load(sys.stdin)]))
+    # avec la taille du cadre (pt), le corps est réduit pour que PowerPoint affiche l'équation dans son cadre (REGLES 9.4)
+    out = []
+    for e in json.load(sys.stdin):
+        src, col, sz = e[:3]
+        if len(e) > 4 and e[3] and e[4]:
+            sz = ajuster(src, col, sz, e[3] * 0.97, e[4])
+        out.append(omath(src, col, sz, "pptx"))
+    print(json.dumps(out))

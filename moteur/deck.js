@@ -192,27 +192,27 @@ function creer(cfg) {
   // éditable ; l'image reste en secours (mc:Fallback) pour les lecteurs qui ne lisent pas les équations (LibreOffice…).
   const EQS = [];
   const OMML = cfg.equations === "omml";
-  function eqName(src, sz, color) {
+  function eqName(src, sz, color, w, h) {
     if (!OMML) return undefined;
-    EQS.push({ src, sz: sz || 2400, color: color || NAVY });
+    EQS.push({ src, sz: sz || 2400, color: color || NAVY, w: (w || 0) * 72, h: (h || 0) * 72 });
     return "EQ:" + (EQS.length - 1);
   }
   // PowerPoint affiche l'équation éditable à sa taille de police, centrée, sans la réduire au cadre (contrairement à l'image
-  // de secours, seule visible dans LibreOffice). On borne donc le corps au cadre : une fraction occupe ≈ 2,6 corps en hauteur.
+  // de secours, seule visible dans LibreOffice et l'aperçu claude.ai). Premier bornage grossier ici ; la taille finale est
+  // calculée par omml.py (ajuster : mesure réelle en Cambria Math, espaces des opérateurs compris) au moment d'écrire le fichier.
   function eqTaille(src, sz, w, h) {
     const fr = (src.match(/\\f\{/g) || []).length;
     const car = src.replace(/\\(?:f|u|cdot|Delta|approx|Omega|mu|times|bar|sqrt)\b/g, "X").replace(/\\[a-zA-Z]+/g, "").replace(/[{}_^\s]/g, "").length;
     const maxH = Math.floor(h * 72 / (fr ? 2.6 : 1.3) * 100);
     const maxW = Math.floor(w * KSQ * 72 / (0.55 * car * (fr ? 0.6 : 1)) * 100);
     const ok = Math.min(sz || 2400, maxH, maxW);
-    if (ok < (sz || 2400)) console.log(`équation ramenée à ${ok / 100} pt pour tenir dans son cadre : ${src.slice(0, 40)}`);
     return ok;
   }
   function eqImg(s, file, src, x, y, w, maxH, sz, color) {
     let h = w * RATIO[file];
     if (maxH && h > maxH) { w = maxH / RATIO[file]; h = maxH; }
     sz = eqTaille(src, sz, w, h);
-    const o = { path: file, x, y, w, h }, nm = eqName(src, sz, color);
+    const o = { path: file, x, y, w, h }, nm = eqName(src, sz, color, w, h);
     if (nm) o.objectName = nm;
     s.addImage(o);
     return h;
@@ -347,8 +347,16 @@ function creer(cfg) {
   function ecrire(sortie) {
     return pres.write({ outputType: "nodebuffer" }).then(async (buf) => {
     const zip = await JSZip.loadAsync(buf);
+    // taille réelle du cadre de chaque équation, lue dans le XML final (squeeze() a pu le comprimer) : omml.py y ajuste le corps
+    const slides = Object.keys(zip.files).filter(n => /^ppt\/slides\/slide\d+\.xml$/.test(n));
+    for (const name of slides) {
+      const x = await zip.file(name).async("string");
+      for (const m of x.matchAll(/name="EQ:(\d+)"[\s\S]*?<a:ext cx="(\d+)" cy="(\d+)"/g)) {
+        EQS[+m[1]].w = +m[2] / 12700; EQS[+m[1]].h = +m[3] / 12700;
+      }
+    }
     const maths = EQS.length ? JSON.parse(require("child_process").execFileSync("python3", [path.join(__dirname, "omml.py")],
-      { input: JSON.stringify(EQS.map(e => [e.src, e.color, e.sz])), cwd: path.join(__dirname, "..") }).toString()) : [];
+      { input: JSON.stringify(EQS.map(e => [e.src, e.color, e.sz, e.w, e.h])), cwd: path.join(__dirname, "..") }).toString()) : [];
     for (const name of Object.keys(zip.files).filter(n => /^ppt\/slides\/slide\d+\.xml$/.test(n))) {
       let x = await zip.file(name).async("string");
       x = x.replace(/<a:p>([\s\S]*?)<\/a:p>/g, (m, inner) => {
