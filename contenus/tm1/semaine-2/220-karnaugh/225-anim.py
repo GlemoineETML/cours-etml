@@ -224,6 +224,8 @@ SCENES = [(s_intro, 9.0), (make_card(CARDS, 0, CARD_DUR), CARD_DUR), (s_remplir,
 
 def produire(ctx):
     render(SCENES, ctx.sortie_de("225"))
+    from moteur import voix                       # voix off calée sur 225-narration.md (demande de Gaël, 11/24/2026)
+    voix.produire(os.path.join(ICI, "225-narration.md"), ctx.sortie_de("225"))
 
 
 if __name__ == "__main__":
