@@ -232,7 +232,9 @@ lesson("L5", {
         const y = 84 + i * 42, ok = tc >= lo && tc <= hi;
         s += TX(155, y + 20, n, { size: 16, bold: true, anchor: "end" }) +
           `<rect x="${X(lo)}" y="${y}" width="${X(hi) - X(lo)}" height="28" rx="6" style="fill:${ok ? "var(--ok-bg)" : "var(--bad-bg)"};stroke:${ok ? "var(--ok)" : "var(--bad)"};stroke-width:2"/>` +
-          TX((X(lo) + X(hi)) / 2, y + 19, `${String(lo).replace("-", "−")} … ${hi} °C`, { size: 13.5, anchor: "middle" }) + okMark(X(hi) + 18, y + 14, ok, 10);
+          // libellé de la plage du côté opposé au trait rouge de la température (jamais posé sur le trait)
+          (X(tc) > (X(lo) + X(hi)) / 2 ? TX(X(lo) + 10, y + 19, `${String(lo).replace("-", "−")} … ${hi} °C`, { size: 13.5, anchor: "start" })
+            : TX(X(hi) - 10, y + 19, `${String(lo).replace("-", "−")} … ${hi} °C`, { size: 13.5, anchor: "end" })) + okMark(X(hi) + 18, y + 14, ok, 10);
       });
       const lab = tc > 50 ? "machine en extérieur, été" : tc < -10 ? "voiture en hiver" : "appareil de salon", xc = X(tc), bw = 310, bx = clamp(xc - bw / 2, 170, 920 - bw);
       s += `<line x1="${xc}" y1="40" x2="${xc}" y2="216" style="stroke:var(--bad);stroke-width:3"/><circle cx="${xc}" cy="60" r="7" style="fill:var(--bad)"/>` +

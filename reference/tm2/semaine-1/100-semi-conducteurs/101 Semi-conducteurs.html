@@ -542,7 +542,8 @@ function latticeG(ox, oy, d, o = {}) {
     [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(([dx, dy]) => {
       const ni = i + dx, nj = j + dy;
       if (ni >= 0 && ni < 3 && nj >= 0 && nj < 3) return;
-      s += `<line x1="${x}" y1="${y}" x2="${x + dx * d * 0.42}" y2="${y + dy * d * 0.42}" style="stroke:var(--muted);stroke-width:1.5"/>`;
+      // les liaisons partent du bord de l'atome : aucun trait sous le symbole (Si, B, P)
+      s += `<line x1="${x + dx * d * 0.2}" y1="${y + dy * d * 0.2}" x2="${x + dx * d * 0.42}" y2="${y + dy * d * 0.42}" style="stroke:var(--muted);stroke-width:1.5"/>`;
       s += e(x + dx * d * 0.3 - dy * d * 0.065, y + dy * d * 0.3 + dx * d * 0.065) + e(x + dx * d * 0.3 + dy * d * 0.065, y + dy * d * 0.3 - dx * d * 0.065);
     });
   }
@@ -552,9 +553,10 @@ function latticeG(ox, oy, d, o = {}) {
   for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) [["h", 1, 0], ["v", 0, 1]].forEach(([k, dx, dy]) => {
     if (i + dx > 2 || j + dy > 2) return;
     const [x0, y0] = P(i, j), [x1, y1] = P(i + dx, j + dy), mx = (x0 + x1) / 2, my = (y0 + y1) / 2, nx = -dy * d * 0.065, ny = dx * d * 0.065;
-    s += `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" style="stroke:var(--muted);stroke-width:1.5"/>`;
+    s += `<line x1="${x0 + dx * d * 0.2}" y1="${y0 + dy * d * 0.2}" x2="${x1 - dx * d * 0.2}" y2="${y1 - dy * d * 0.2}" style="stroke:var(--muted);stroke-width:1.5"/>`;
     s += e(mx + nx, my + ny);
-    if (broken.has([i, j, k].join(","))) { holes.push([mx - nx, my - ny]); if (!(center === "B" && [i, j, k].join(",") === "1,1,h")) frees.push([mx, my, frees.length]); }
+    // électron libéré : posé à un quart de maille de sa liaison, vers l'intérieur de la case (jamais sur un trou, un atome ou un autre électron)
+    if (broken.has([i, j, k].join(","))) { holes.push([mx - nx, my - ny]); if (!(center === "B" && [i, j, k].join(",") === "1,1,h")) frees.push([mx + dy * d * 0.27 * (i < 2 ? 1 : -1), my + dx * d * 0.27 * (j < 2 ? 1 : -1), frees.length]); }
     else s += e(mx - nx, my - ny);
   });
   holes.forEach(([x, y]) => { s += hole(x, y); });
@@ -567,8 +569,8 @@ function latticeG(ox, oy, d, o = {}) {
   if (center === "P") frees.push([ox + d * 1.5, oy + d * 0.5, 7]);
   // électrons libres : ils s'agitent dans les cases vides ; avec un champ, ils dérivent
   frees.forEach(([x, y, k]) => {
-    const fx = o.field ? ((x - ox + o.field * -1 * t * d * 0.35) % (2 * d) + 2 * d) % (2 * d) + ox : x + Math.sin(t * 2.1 + k) * d * 0.18;
-    const fy = y + Math.cos(t * 1.7 + k * 1.3) * d * 0.14 - (o.field ? 0 : d * 0.2);
+    const fx = o.field ? ((x - ox + o.field * -1 * t * d * 0.35) % (2 * d) + 2 * d) % (2 * d) + ox : x + Math.sin(t * 2.1 + k) * d * 0.05;
+    const fy = y + Math.cos(t * 1.7 + k * 1.3) * d * 0.05;
     s += `<circle cx="${fx}" cy="${fy}" r="${d * 0.075}" style="fill:var(--blue);stroke:#242852;stroke-width:2"/>` +
       TX(fx, fy + d * 0.04, "−", { size: d * 0.12, bold: true, anchor: "middle", color: "#fff" });
   });
@@ -673,9 +675,11 @@ lesson("L3", {
     if (on) s += TX(x0 - 11, y0 - 24, "+", { size: 30, bold: true, anchor: "middle", color: "var(--bad)" }) + TX(x1 + 11, y0 - 24, "−", { size: 30, bold: true, anchor: "middle", color: "var(--ink)" });
     const n = strong ? 14 + Math.min(16, Math.floor((t - 14) * 4)) : 7, W = x1 - x0 - 40;
     for (let q = 0; q < n; q++) {
-      const base = (q * 97) % W, drift = on ? (strong ? 160 : 55) * (t - 5) : 0, jit = Math.sin(t * 3 + q * 1.7) * 14;
-      const ex = x0 + 20 + (((base - drift + jit) % W) + W) % W, ey = y0 + 30 + (q * 23) % 50 + Math.cos(t * 2.5 + q) * 6;
-      const hx = x0 + 20 + (((base * 1.3 + drift - jit) % W) + W) % W, hy = y0 + 105 + (q * 29) % 40 + Math.sin(t * 2.2 + q) * 6;
+      // trois couloirs par sorte de porteur, porteurs régulièrement espacés dans chaque couloir : jamais deux porteurs l'un sur l'autre
+      const m = Math.ceil(n / 3), lane = q % 3, base = Math.floor(q / 3) * W / m + lane * W / (3 * m);
+      const drift = on ? (strong ? 160 : 55) * (t - 5) : 0, jit = Math.sin(t * 3 + q * 1.7) * 6;
+      const ex = x0 + 20 + (((base - drift + jit) % W) + W) % W, ey = y0 + 22 + lane * 24 + Math.cos(t * 2.5 + q) * 2;
+      const hx = x0 + 20 + (((base + W / (6 * m) + drift - jit) % W) + W) % W, hy = y0 + 92 + lane * 24 + Math.sin(t * 2.2 + q) * 2;
       s += `<circle cx="${ex}" cy="${ey}" r="10" style="fill:var(--blue);stroke:#242852;stroke-width:1.5"/>` + TX(ex, ey + 5, "−", { size: 14, bold: true, anchor: "middle", color: "#fff" });
       s += `<circle cx="${hx}" cy="${hy}" r="10" style="fill:var(--surface);stroke:var(--bad);stroke-width:2"/>` + TX(hx, hy + 5, "+", { size: 14, bold: true, anchor: "middle", color: "var(--bad)" });
     }

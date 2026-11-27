@@ -44,7 +44,7 @@ def gate_block(x, key, idx):
     corr = x.corr
     # titre de la porte
     p = x.d.add_paragraph(); f = p.paragraph_format; f.space_before = Pt(10); f.space_after = Pt(3); f.keep_with_next = True
-    f.page_break_before = idx in ((3, 5, 7) if corr else (2, 4, 6))   # deux portes par page ; corrigé : l'encadré enseignant repousse A.1 en page 2
+    f.page_break_before = idx in (3, 5, 7)   # deux portes par page ; la partie A commence en page 2 (chronogrammes lisibles, REGLES 9.4)
     rich(p, f"A.{idx} Porte {nom} ({en})", bold=True, size=12, color=NAVY)
     q = x.P("", italic=True, size=9, color=GREY, keep=True, after=3)
     hyperlink(q, fl(3, g[13]), f"Floyd {g[12]} p. {g[13]}", size=9); rich(q, " · ", size=9, color=GREY)
@@ -96,7 +96,7 @@ def gate_block(x, key, idx):
     # chronogramme
     p = chr_.paragraphs[0]; p.paragraph_format.space_before = Pt(3); p.paragraph_format.space_after = Pt(0)
     rich(p, "Chronogramme : ", bold=True, size=10); rich(p, "Y en rouge." if corr else "dessine Y.", size=10)
-    x.IMG(f"chrono_{key}_{'corr' if corr else 'q'}.png", 9.6 if n == 2 else 6.2, parent=chr_, after=2)
+    x.IMG(f"chrono_{key}_{'corr' if corr else 'q'}.png", 9.6, parent=chr_, after=2)
     # CI et exemple
     p = inf.paragraphs[0]; p.paragraph_format.space_before = Pt(2); p.paragraph_format.space_after = Pt(1); p.paragraph_format.line_spacing = 1.15
     rich(p, "CI : ", bold=True, size=10); rich(p, f"{g[9]} ({g[11]}) · série 4000 : {g[10]}", size=10)
@@ -109,7 +109,7 @@ def gate_block(x, key, idx):
         if k_ < nrows - 1:
             for c in tr.cells:
                 for pp in c.paragraphs: pp.paragraph_format.keep_with_next = True
-    if idx + 1 not in ((3, 5, 7) if corr else (2, 4, 6)):      # pas d'espaceur avant un saut de page (sinon page blanche)
+    if idx + 1 not in (3, 5, 7):      # pas d'espaceur avant un saut de page (sinon page blanche)
         spc = x.d.add_paragraph(); spc.paragraph_format.space_after = Pt(4)
 
 
@@ -140,7 +140,7 @@ def build(corr, out):
                                   ("page interactive 121", S.teams_url("121")), (" (Edge ou Chrome) · ", None), ("animation 125", S.teams_url("125"))])])
 
     # ================= PARTIE A
-    x.H1("Partie A : les sept portes de base", page_break=corr)
+    x.H1("Partie A : les sept portes de base", page_break=True)
     for i, k in enumerate(L.ORDER, 1):
         gate_block(x, k, i)
 
@@ -209,7 +209,7 @@ def build(corr, out):
     t = x.d.add_table(rows=1, cols=2); t.alignment = WD_TABLE_ALIGNMENT.CENTER; t.autofit = False
     for j, ref in enumerate(("74HC08", "74HC04")):
         c = t.cell(0, j); c.width = Cm(TW / 2)
-        x.IMG(f"dip_{ref}.png", 5.2, parent=c, after=0)
+        x.IMG(f"dip_{ref}.png", 6.0, parent=c, after=0)
         cp = c.add_paragraph(); cp.alignment = WD_ALIGN_PARAGRAPH.CENTER
         rich(cp, f"{ref} : {'4 portes ET à 2 entrées' if ref.endswith('08') else '6 inverseurs'} (vue de dessus)", italic=True, size=9, color=GREY)
     x.P("", after=2)

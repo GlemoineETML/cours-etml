@@ -198,7 +198,7 @@ module.exports = function (E) {
     order.forEach((k, i) => {
       const yy = y0 + hh + i * rh;
       const gx = 0.5 + colW[0], ex = gx + colW[1];
-      s.addImage({ path: `gate_${k}.png`, x: gx + 0.17, y: yy + 0.04, w: 0.58, h: 0.39 });
+      s.addImage({ path: `gate_${k}_mini.png`, x: gx + 0.17, y: yy + 0.04, w: 0.58, h: 0.39 });
       const EQD = tailles(/^eq_.*\.png$/), PX = 0.38 / Math.max(...Object.values(EQD).map(v => v[1]));
       const ew = EQD[`eq_${k}.png`][0] * PX, eh = EQD[`eq_${k}.png`][1] * PX;
       s.addImage({ path: `eq_${k}.png`, x: ex + (colW[2] - ew) / 2, y: yy + (rh - eh) / 2, w: ew, h: eh, objectName: eqName(G[k][14], 1600, undefined, ew, eh) });

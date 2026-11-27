@@ -126,11 +126,11 @@ def line(ax, pts, lw=1.8, c=K, **kw):
 
 
 # ------------------------------------------------------------------ symbole CEI d'une porte
-def gate_ax(ax, x, y, key, w=1.3, h=1.6, lw=2.0, fs=20, labels=("A", "B", "Y"), lab_fs=17, pin=0.55):
+def gate_ax(ax, x, y, key, w=1.3, h=1.6, lw=2.0, fs=20, labels=("A", "B", "Y"), lab_fs=17, pin=0.55, dq=0.32):
     g = L.GATES[key]
     qual, neg, n = g[2], g[3], g[4]
     ax.add_patch(Rectangle((x, y), w, h, fill=False, ec=K, lw=lw))
-    ax.text(x + w / 2, y + h - 0.32, qual, ha="center", va="center", fontsize=fs, color=K)
+    ax.text(x + w / 2, y + h - dq, qual, ha="center", va="center", fontsize=fs, color=K)       # dq : qualificatif sous le bord haut
     ys = [y + h / 2] if n == 1 else [y + h * 0.72, y + h * 0.28]
     for i, yy in enumerate(ys):
         line(ax, [(x - pin, yy), (x, yy)], lw=lw)
@@ -143,6 +143,14 @@ def gate_ax(ax, x, y, key, w=1.3, h=1.6, lw=2.0, fs=20, labels=("A", "B", "Y"), 
     line(ax, [(xo, yo), (xo + pin, yo)], lw=lw)
     if labels:
         ax.text(xo + pin + 0.08, yo, labels[-1], ha="left", va="center", fontsize=lab_fs, style="italic")
+
+
+def fig_gate_mini(key, name=None, larg=0.62):
+    """Symbole sans noms d'entrées, dessiné à sa taille d'emploi (larg en pouces) : qualificatif ≥ 8 pt dans un tableau."""
+    fig = plt.figure(figsize=(larg, larg * 1.8 / 2.6)); ax = fig.add_axes([0, 0, 1, 1]); ax.axis("off")
+    gate_ax(ax, 0.55, 0.12, key, w=1.3, h=1.56, lw=1.1, fs=9.5, labels=None, pin=0.5, dq=0.5)
+    ax.set_xlim(0, 2.6); ax.set_ylim(0, 1.8)
+    save(fig, name or f"gate_{key}_mini.png", pad=0.0)
 
 
 def fig_gate(key, name=None):
@@ -164,9 +172,9 @@ def fig_eq_txt(tex, name, color=NAVY, fs=30):
 
 
 # ------------------------------------------------------------------ chronogrammes
-def chrono_fig(rows, name, n=8, ycol=BLUE, blank_last=False, highlight=None, width=7.6, numbers=True, last_label=None):
-    """rows = [(nom, [bits] ou None)] ; la dernière ligne peut être vide (à compléter)."""
-    h = 0.95 * len(rows) + (0.45 if numbers else 0.1)
+def chrono_fig(rows, name, n=8, ycol=BLUE, blank_last=False, highlight=None, width=7.6, numbers=True, last_label=None, ligne=0.95):
+    """rows = [(nom, [bits] ou None)] ; la dernière ligne peut être vide (à compléter). ligne : hauteur d'une ligne (pouces)."""
+    h = ligne * len(rows) + (0.45 if numbers else 0.1)
     fig, ax = plt.subplots(figsize=(width, h)); ax.axis("off")
     top = len(rows) * 1.0
     if highlight is not None:
@@ -175,12 +183,13 @@ def chrono_fig(rows, name, n=8, ycol=BLUE, blank_last=False, highlight=None, wid
         ax.plot([k, k], [-0.25, top - 0.1], color="#b9c3d6", lw=0.9, ls=(0, (2, 3)))
     if numbers:
         for k in range(n):
-            ax.text(k + 0.5, top + 0.02, str(k + 1), ha="center", va="bottom", fontsize=10.5, color=GR)
+            ax.text(k + 0.5, top + 0.02, str(k + 1), ha="center", va="bottom", fontsize=13, color=GR)
     for i, (lab, bits) in enumerate(rows):
         y0 = top - 1.0 - i * 1.0 + 0.1
-        ax.text(-0.25, y0 + 0.3, lab, ha="right", va="center", fontsize=15, style="italic", color=NAVY)
-        ax.text(-0.08, y0 + 0.62, "1", ha="right", va="center", fontsize=8, color=GR)
-        ax.text(-0.08, y0 + 0.0, "0", ha="right", va="center", fontsize=8, color=GR)
+        # corps choisis pour rester ≥ 8 pt (présentation) et ≥ 7 pt (fiche) une fois le chronogramme placé (REGLES 9.4)
+        ax.text(-0.32, y0 + 0.3, lab, ha="right", va="center", fontsize=17, style="italic", color=NAVY)
+        ax.text(-0.08, y0 + 0.62, "1", ha="right", va="center", fontsize=12.5, color=GR)
+        ax.text(-0.08, y0 + 0.0, "0", ha="right", va="center", fontsize=12.5, color=GR)
         last = i == len(rows) - 1
         if bits is None:
             for lev in (0, 0.62):
@@ -191,7 +200,7 @@ def chrono_fig(rows, name, n=8, ycol=BLUE, blank_last=False, highlight=None, wid
         for k, bt in enumerate(bits):
             xs += [k, k + 1]; ys += [y0 + 0.62 * bt] * 2
         ax.plot(xs, ys, color=col, lw=2.6, solid_joinstyle="miter")
-    ax.set_xlim(-0.7, n + 0.05); ax.set_ylim(-0.35, top + (0.45 if numbers else 0.05))
+    ax.set_xlim(-0.8, n + 0.05); ax.set_ylim(-0.35, top + (0.45 if numbers else 0.05))
     save(fig, name)
 
 
@@ -222,8 +231,8 @@ def fig_dip(ref):
         # côté gauche : broches 1 à 7 ; côté droit : 14 à 8
         ax.add_patch(Rectangle((-0.3, y - 0.09), 0.3, 0.18, fc="white", ec=K, lw=1.2))
         ax.add_patch(Rectangle((W, y - 0.09), 0.3, 0.18, fc="white", ec=K, lw=1.2))
-        ax.text(0.08, y, str(i + 1), ha="left", va="center", fontsize=9, color=GR)
-        ax.text(W - 0.08, y, str(14 - i), ha="right", va="center", fontsize=9, color=GR)
+        ax.text(0.08, y, str(i + 1), ha="left", va="center", fontsize=12.5, color=GR)
+        ax.text(W - 0.08, y, str(14 - i), ha="right", va="center", fontsize=12.5, color=GR)
         lab_l, lab_r = p[i], p[13 - i]
         ax.text(-0.38, y, lab_l.replace("VCC", "V$_{CC}$"), ha="right", va="center", fontsize=11, fontweight="bold", color=NAVY)
         ax.text(W + 0.38, y, lab_r.replace("VCC", "V$_{CC}$"), ha="left", va="center", fontsize=11, fontweight="bold", color=NAVY)

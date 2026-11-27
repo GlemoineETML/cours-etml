@@ -5,7 +5,7 @@ Briques communes : moteur/cei.py ; données : moteur/logique.py."""
 import matplotlib
 from matplotlib.patches import Rectangle, Circle, FancyBboxPatch, Polygon
 from moteur import logique as D
-from moteur.cei import plt, save, line, fig_gate, fig_eq, fig_eq_txt, chrono_fig, switch, fig_dip, K, NAVY, BLUE, LBLUE, TINT, RED, GR
+from moteur.cei import plt, save, line, fig_gate, fig_gate_mini, fig_eq, fig_eq_txt, chrono_fig, switch, fig_dip, K, NAVY, BLUE, LBLUE, TINT, RED, GR
 
 
 def fig_chronos():
@@ -13,9 +13,10 @@ def fig_chronos():
     for k in D.ORDER:
         Y = D.chrono(k)
         ins = [("A", A)] if D.GATES[k][4] == 1 else [("A", A), ("B", B)]
-        chrono_fig(ins + [("Y", Y)], f"chrono_{k}.png")
-        chrono_fig(ins + [("Y", Y)], f"chrono_{k}_corr.png", ycol=RED)
-        chrono_fig(ins + [("Y", None)], f"chrono_{k}_q.png")
+        # largeur 5,6 pouces : placés à 9,6 cm (fiche) ou 4,75 pouces (présentation), les textes restent lisibles (REGLES 9.4)
+        chrono_fig(ins + [("Y", Y)], f"chrono_{k}.png", width=5.6, ligne=0.72)
+        chrono_fig(ins + [("Y", Y)], f"chrono_{k}_corr.png", ycol=RED, width=5.6, ligne=0.72)
+        chrono_fig(ins + [("Y", None)], f"chrono_{k}_q.png", width=5.6, ligne=0.72)
 
 
 # chronogrammes « mystère » (fiche 130, N°3) : autres motifs que le chronogramme du cours
@@ -149,11 +150,11 @@ def fig_ligne():
     ax.text(x0, 4.25, "Entrées (capteurs, boutons)", fontsize=11.5, fontweight="bold", color=BLUE, va="center")
     for i, (l, t) in enumerate((("B", "bouteille sous le bec"), ("N", "niveau de la cuve suffisant"), ("P", "porte de protection fermée"), ("U", "arrêt d'urgence actionné"))):
         y = 3.8 - i * 0.42; sq(x0 + 0.17, y, l, BLUE)
-        ax.text(x0 + 0.5, y, t, fontsize=10.5, va="center", color=K)
+        ax.text(x0 + 0.5, y, t, fontsize=11, va="center", color=K)
     ax.text(x0, 1.85, "Sorties (actionneurs)", fontsize=11.5, fontweight="bold", color=NAVY, va="center")
     for i, (l, t) in enumerate((("V", "vanne de remplissage"), ("M", "moteur du convoyeur"))):
         y = 1.4 - i * 0.42; sq(x0 + 0.17, y, l, NAVY, True)
-        ax.text(x0 + 0.5, y, t, fontsize=10.5, va="center", color=K)
+        ax.text(x0 + 0.5, y, t, fontsize=11, va="center", color=K)
     ax.set_xlim(0.0, 10.4); ax.set_ylim(0.15, 4.55)
     save(fig, "fig_ligne.png")
 
@@ -163,7 +164,7 @@ def produire(ctx):
     import moteur.cei as cei
     cei.ecrire_dans(ctx.images)
     for k in D.ORDER:
-        fig_gate(k); fig_eq(k); fig_eq(k, color=RED, name=f"eq_{k}_corr.png")
+        fig_gate(k); fig_gate_mini(k); fig_eq(k); fig_eq(k, color=RED, name=f"eq_{k}_corr.png")
     fig_chronos(); fig_myst(); fig_n2(); fig_lecture()
     fig_pushpull(); fig_marges(); fig_ligne()
     for r in D.PINS: fig_dip(r)
