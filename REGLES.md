@@ -8,7 +8,7 @@ Seule référence pour produire les présentations, fiches, corrigés, tests, pa
 
 - Apprentis électroniciens CFC, formation par compétences (réforme FutureMEM).
 - Chaque séance : théorie, présentation diapositive par diapositive, exercices, avec les méthodes d'apprentissage les plus solides connues (activation des acquis, exemples travaillés, pratique espacée, auto-évaluation).
-- Toute notion, tout exemple ou exercice nouveau arrive avec son contexte : à quoi ça sert, pourquoi on l'utilise, où on le retrouve dans le métier, pour que l'apprenti puisse se projeter. Pour TM1, le fil rouge est la situation de travail FutureMEM (ligne de remplissage de boissons).
+- Toute notion, tout exemple ou exercice nouveau arrive avec son contexte : à quoi ça sert, pourquoi on l'utilise, où on le retrouve dans le métier, pour que l'apprenti puisse se projeter. Pour TM1, le fil rouge est la situation de travail FutureMEM (ligne de remplissage de boissons) ; à partir de la série 120 (V2, 11/27/2026), les portes logiques s'appuient sur l'exercice TM1-A1-S2 du fascicule TM1 : le démarrage d'une voiture électrique (ceinture A et frein C actifs à 0, sélecteur B et mode service D actifs à 1, voyant S = B · (D + /(A + C)), câblé sur 74HC02, 74HC32 et 74HC08).
 
 ## 2. Avant chaque nouvelle édition : le cadrage part du plan de cours
 
@@ -53,7 +53,11 @@ Ne plus écrire « IntElect » ni « El Dim1 ».
 - Flèche de tension toujours du + vers le − (pointe du côté du potentiel le plus bas), toujours à droite de son composant et toujours en bleu ETML `297FD5`, nom de la tension à droite de la flèche. Convention récepteur (courant et tension dans le même sens), sauf pour les sources (convention générateur : sens contraires).
 - Nom et valeur d'un composant (R_1, 4k7, 9 V) à gauche de son symbole : la droite est réservée à la flèche de tension.
 - Masse (GND) : un trait horizontal relié par un court fil vertical à un nœud du circuit, avec l'étiquette « GND ». Le symbole de la terre (traits décroissants) est réservé à une vraie liaison à la terre.
-- Ces conventions sont imposées par `moteur/cei.py` (`fleche_tension`, `resistance`, `source_tension`, `masse`) : un nouveau schéma les suit sans réglage.
+- Alimentation (+5 V, V_CC) : même symbole que la masse, retourné : court fil vertical vers le haut, trait horizontal, étiquette au-dessus du trait. Elle est toujours plus haut que les composants qu'elle alimente (demande de Gaël du 11/27/2026).
+- Liaisons, comme dans Altium (demande de Gaël du 11/27/2026), sur les schémas comme sur les dessins de câblage des pages interactives (breadboard) :
+  - un point de liaison (point plein) à chaque jonction en T, y compris sur un rail d'alimentation ; jamais de point sur un simple croisement ;
+  - un croisement sans liaison se dessine avec un saut de fil (« jumpover ») : le tronçon horizontal saute le tronçon vertical par un petit demi-cercle.
+- Ces conventions sont imposées par `moteur/cei.py` (`fleche_tension`, `resistance`, `source_tension`, `masse`, `alimentation`, `fil` avec `noeuds` et `sauts`), dans les pages interactives par `moteur/pages/common.js` (`filP`, `liaison`, `alimG`, `masseG`) et dans les vidéos par `moteur/anim.py` (`masse`, `alimentation`, `noeud`) : un nouveau schéma les suit sans réglage.
 - Graphiques : chaque axe porte la grandeur et son unité ; mêmes couleurs ETML que les documents.
 
 ### 3.4 Numérique

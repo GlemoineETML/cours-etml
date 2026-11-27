@@ -385,6 +385,34 @@ const lerp = (a, b, p) => a + (b - a) * p;
 const TX = (x, y, s, o = {}) => `<text x="${x}" y="${y}" font-size="${o.size || 16}"${o.anchor ? ` text-anchor="${o.anchor}"` : ""}${o.bold ? ' font-weight="700"' : ""}${o.italic ? ' font-style="italic"' : ""}${o.mono ? ' font-family="IBM Plex Mono, Liberation Mono, monospace"' : ""} style="fill:${o.color || "var(--ink)"}${o.op != null ? ";opacity:" + o.op : ""}">${s}</text>`;
 const SUBV = (i, rest = "") => `V<tspan font-size="0.72em" dy="0.3em">${i}</tspan><tspan dy="-0.3em">${rest}</tspan>`;
 const wireP = (pts, v) => `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" style="${wireStyle(v)};stroke-linejoin:round"/>`;
+// Liaisons (REGLES 3.3) : point de liaison à chaque jonction en T ; un croisement sans liaison est un saut de fil
+// (« jumpover » d'Altium) : le tronçon horizontal saute le tronçon vertical (demi-cercle de rayon r), jamais de point.
+// cheminSauts(pts, autres) : chemin SVG d'un fil orthogonal ; autres = les autres fils (listes de points) qu'il peut croiser.
+function cheminSauts(pts, autres = [], r = 6) {
+  const verts = [];
+  autres.forEach((q) => { for (let i = 1; i < q.length; i++) if (q[i - 1][0] === q[i][0]) verts.push([q[i - 1], q[i]]); });
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 1; i < pts.length; i++) {
+    const [x1, y1] = pts[i - 1], [x2, y2] = pts[i];
+    if (y1 === y2 && x1 !== x2) {
+      const s = Math.sign(x2 - x1), lo = Math.min(x1, x2) + r, hi = Math.max(x1, x2) - r;
+      const xs = [...new Set(verts.filter(([a, b]) => y1 > Math.min(a[1], b[1]) + 0.5 && y1 < Math.max(a[1], b[1]) - 0.5 && a[0] > lo && a[0] < hi).map(([a]) => a[0]))];
+      xs.sort((u, v) => s * (u - v)).forEach((xc) => { d += ` L ${xc - s * r} ${y1} A ${r} ${r} 0 0 ${s > 0 ? 1 : 0} ${xc + s * r} ${y1}`; });
+    }
+    d += ` L ${x2} ${y2}`;
+  }
+  return d;
+}
+// fil dessiné avec ses sauts ; o.style remplace le style « valeur logique » (alimentation, masse) ; class="fil" : vu par le contrôle
+const filP = (pts, v, autres = [], o = {}) => `<path class="fil" d="${cheminSauts(pts, autres, o.r)}" fill="none" style="${o.style || wireStyle(v)};stroke-linejoin:round;stroke-linecap:round"/>`;
+const liaison = (x, y, c = "var(--ink)", r = 4) => `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${c}"/>`;
+// alimentation (+5 V) au-dessus du nœud (x, y) et masse (GND) au-dessous : court fil et trait horizontal (REGLES 3.3)
+const alimG = (x, y, lab = "+5 V", o = {}) => { const h = o.fil || 14, c = o.color || "var(--ink)";
+  return `<line x1="${x}" y1="${y}" x2="${x}" y2="${y - h}" style="stroke:${c};stroke-width:2.5"/><line x1="${x - 14}" y1="${y - h}" x2="${x + 14}" y2="${y - h}" style="stroke:${c};stroke-width:3.5"/>` +
+    TX(x, y - h - 8, lab, { size: o.size || 14, bold: true, anchor: "middle", color: c }); };
+const masseG = (x, y, o = {}) => { const h = o.fil || 14, c = o.color || "var(--ink)";
+  return `<line x1="${x}" y1="${y}" x2="${x}" y2="${y + h}" style="stroke:${c};stroke-width:2.5"/><line x1="${x - 14}" y1="${y + h}" x2="${x + 14}" y2="${y + h}" style="stroke:${c};stroke-width:3.5"/>` +
+    TX(x + 20, y + h + 5, "GND", { size: o.size || 13, color: c }); };
 const lampG = (x, y, r, on, col = "var(--one)") => (on ? `<circle cx="${x}" cy="${y}" r="${r + 8}" style="fill:${col};opacity:.25"/>` : "") +
   `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${on ? col : "var(--surface)"};stroke:var(--ink);stroke-width:2.5"/>`;
 const pill = (x, y, v, o = {}) => `<rect x="${x - 15}" y="${y - 15}" width="30" height="30" rx="7" style="fill:${v ? "var(--one)" : "var(--surface)"};stroke:var(--head);stroke-width:2"/>` +

@@ -4,7 +4,7 @@
 // diapositives de fin : exercices → page interactive → vidéo.
 //
 // Utilisation : node moteur/deck.js <config.json>
-//   config : { donnees: <json de la séance>, diapositives: <fichier .slides.js>, titre, version, travail, videos, sortie }
+//   config : { donnees: <json de la séance>, diapositives: <fichier .slides.js>, titre, version, date (facultative), travail, videos, sortie }
 //   Le fichier de diapositives exporte une fonction (E) => { … } qui reçoit les briques ci-dessous.
 // Les images sont lues dans le dossier « travail » (figures, logos, captures, couvertures).
 "use strict";
@@ -52,7 +52,7 @@ function creer(cfg) {
   const MATIERE = DATA.MATIERE;
   const TOPIC = MATIERE + " · " + cfg.titre;
   const CLASSE = DATA.CLASSE, ANNEE = DATA.ANNEE, CHAMP = DATA.CHAMP;
-  const DATE_US = DATA.DATE_US, VERSION = cfg.version;
+  const DATE_US = cfg.date || DATA.DATE_US, VERSION = cfg.version;   // date propre au fichier (seance.yaml, dates) ou date de la séance
   const FLOYDP = (chap, p) => DATA.FLOYD_PAGES[chap + "-" + p] || DATA.FLOYD[String(chap)][0];   // le lien ouvre le chapitre (REGLES 6)
   const LZURL = (c) => DATA.EDGE + DATA.LZ[c][2];   // lien propre à chaque LZ (donné par Gaël) ; microsoft-edge: sinon PowerPoint pour Windows perd l'ancre
   const LOGO_BAND = "logo_white_v.png";

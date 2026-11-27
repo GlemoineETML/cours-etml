@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """Figures propres à la semaine 1 TM1 : chronogrammes des sept portes, chronogrammes de la fiche 130, sortie push-pull (100),
-niveaux et marges de bruit (100), ligne de remplissage (120, 130), brochages DIP 14, équations en image (présentations).
+niveaux et marges de bruit (100), ligne de remplissage (130 V1), voiture électrique et commande de démarrage (120 V2 : entrées du fascicule, voyant actif à 1),
+brochages DIP 14, équations en image (présentations).
+120 V2 (11/27/2026) : sortie S (REGLES 3.4) ; les figures en Y restent pour les fichiers pas encore passés en V2.
 Briques communes : moteur/cei.py ; données : moteur/logique.py."""
+import re
 import matplotlib
-from matplotlib.patches import Rectangle, Circle, FancyBboxPatch, Polygon
+from matplotlib.patches import Rectangle, Circle, FancyBboxPatch, Polygon, Ellipse
 from moteur import logique as D
-from moteur.cei import plt, save, line, fig_gate, fig_gate_mini, fig_eq, fig_eq_txt, chrono_fig, switch, fig_dip, K, NAVY, BLUE, LBLUE, TINT, RED, GR
+from moteur.cei import (plt, save, line, fig_gate, fig_gate_mini, fig_eq, fig_eq_txt, chrono_fig, switch, fig_dip, porte, fil, noeud,
+                        borne, diode, resistance, alimentation, masse, K, NAVY, BLUE, LBLUE, TINT, RED, GR)
 
 
 def fig_chronos():
@@ -28,18 +32,18 @@ MYST = [("NON-OU", [1, 0, 0, 1, 1, 0, 0, 0], [0, 0, 1, 1, 0, 1, 0, 0]),
 def fig_myst():
     for i, (k, A, B) in enumerate(MYST, 1):
         Y = D.chrono(k, A, B)
-        chrono_fig([("A", A), ("B", B), ("Y", Y)], f"myst_{i}.png", ycol=NAVY)
+        chrono_fig([("A", A), ("B", B), ("S", Y)], f"myst_{i}.png", ycol=NAVY)
 
 
-# fiche 130, N°2 b) : chronogramme à compléter pour Y = A + B avec d'autres motifs
+# fiche 130, N°2 b) : chronogramme à compléter pour S = /(A + B) avec d'autres motifs
 N2_A = [1, 0, 0, 1, 0, 1, 1, 0]
 N2_B = [0, 0, 1, 1, 0, 0, 1, 1]
 
 
 def fig_n2():
     Y = D.chrono("NON-OU", N2_A, N2_B)
-    chrono_fig([("A", N2_A), ("B", N2_B), ("Y", None)], "n2_q.png")
-    chrono_fig([("A", N2_A), ("B", N2_B), ("Y", Y)], "n2_corr.png", ycol=RED)
+    chrono_fig([("A", N2_A), ("B", N2_B), ("S", None)], "n2_q.png")
+    chrono_fig([("A", N2_A), ("B", N2_B), ("S", Y)], "n2_corr.png", ycol=RED)
 
 
 def fig_lecture():
@@ -48,6 +52,112 @@ def fig_lecture():
     chrono_fig([("A", A), ("B", B), ("Y", D.chrono("ET"))], "chrono_lecture.png", highlight=3)
 
 
+# ------------------------------------------------------------------ 120 V2 : sortie S (REGLES 3.4)
+def figs_S():
+    A, B = D.CHRONO_A, D.CHRONO_B
+    for k in D.ORDER:
+        n = D.GATES[k][4]
+        fig_gate(k, f"gate_{k}_S.png", labels=("A", "S") if n == 1 else ("A", "B", "S"))
+        fig_eq_txt(re.sub(r"^Y", "S", D.GATES[k][6]), f"eq_{k}_S.png")
+        ins = [("A", A)] if n == 1 else [("A", A), ("B", B)]
+        # largeur 5,6 pouces, comme fig_chronos : textes lisibles une fois placés (REGLES 9.4)
+        chrono_fig(ins + [("S", D.chrono(k))], f"chrono_{k}_S.png", width=5.6, ligne=0.72)
+        chrono_fig(ins + [("S", D.chrono(k))], f"chrono_{k}_S_corr.png", ycol=RED, width=5.6, ligne=0.72)
+        chrono_fig(ins + [("S", None)], f"chrono_{k}_S_q.png", width=5.6, ligne=0.72)
+    chrono_fig([("A", A), ("B", B), ("S", D.chrono("ET"))], "chrono_lecture_S.png", highlight=3)
+    fig_eq_txt(r"S = B \cdot (D + \overline{A + C})", "eq_demarrage.png")
+
+
+# ------------------------------------------------------------------ 120 V2 : la voiture électrique (diapositive 2)
+DEM_ENTREES = (("A", "ceinture", "0 = bouclée"), ("B", "sélecteur", "1 = position P"),
+               ("C", "frein", "0 = pédale enfoncée"), ("D", "mode service", "1 = actif"))     # entrées du fascicule ; voyant actif à 1
+
+
+def fig_voiture():
+    """Voiture vue de côté (avant à droite) avec les repères A, B, C, D, S ; légende dessous, en deux colonnes."""
+    fig, ax = plt.subplots(figsize=(6.6, 4.4)); ax.axis("off"); ax.set_aspect("equal")
+    dx = 0.75
+    P = lambda pts: [(x + dx, y) for x, y in pts]
+    ax.add_patch(Polygon(P([(0.25, 0.62), (0.2, 1.45), (1.25, 1.62), (2.05, 2.42), (3.95, 2.48), (4.85, 1.72), (6.05, 1.52), (6.25, 1.05), (6.2, 0.62)]),
+                         closed=True, fc=TINT, ec=NAVY, lw=2.0))
+    ax.add_patch(Polygon(P([(2.2, 1.72), (2.3, 2.3), (3.85, 2.33), (4.5, 1.74)]), closed=True, fc="white", ec=NAVY, lw=1.4))
+    for xr in (1.45, 5.0):
+        ax.add_patch(Circle((xr + dx, 0.62), 0.43, fc="#3A3F52", ec=K, lw=1.4, zorder=3))
+        ax.add_patch(Circle((xr + dx, 0.62), 0.16, fc="#C8CEDA", ec=K, lw=1.0, zorder=4))
+    # siège et ceinture (A)
+    line(ax, P([(2.95, 0.98), (2.78, 2.05)]), lw=7, c="#5A6478")
+    line(ax, P([(2.95, 0.98), (3.65, 1.02)]), lw=7, c="#5A6478")
+    line(ax, P([(2.86, 1.92), (3.52, 1.06)]), lw=3.2, c=NAVY)
+    ax.add_patch(Rectangle((3.47 + dx, 0.98), 0.16, 0.13, fc=NAVY, ec=NAVY, zorder=4))
+    # volant, tableau de bord avec le voyant S
+    line(ax, P([(4.05, 1.32), (4.25, 1.78)]), lw=4, c=K)
+    ax.add_patch(Rectangle((4.32 + dx, 1.42), 0.62, 0.22, fc="#D5DDDF", ec=K, lw=1.2))
+    ax.add_patch(Circle((4.63 + dx, 1.53), 0.07, fc="#FF5A3C", ec=K, lw=1.0, zorder=4))
+    # sélecteur (B), pédale de frein (C), commutateur de service (D)
+    ax.add_patch(Rectangle((3.75 + dx, 0.98), 0.32, 0.2, fc="white", ec=K, lw=1.2))
+    line(ax, P([(3.91, 1.18), (3.91, 1.36)]), lw=2.6, c=K)
+    ax.add_patch(Circle((3.91 + dx, 1.38), 0.06, fc=K, ec=K))
+    line(ax, P([(4.75, 0.8), (4.95, 1.15)]), lw=4, c=K)
+    ax.add_patch(Rectangle((5.25 + dx, 1.12), 0.3, 0.18, fc="white", ec=K, lw=1.2))
+
+    def sq(x, y, lab, col, rounded=False):
+        if rounded:
+            ax.add_patch(FancyBboxPatch((x - 0.17, y - 0.17), 0.34, 0.34, boxstyle="round,pad=0,rounding_size=0.08", fc=col, ec=col, zorder=5))
+        else:
+            ax.add_patch(Rectangle((x - 0.17, y - 0.17), 0.34, 0.34, fc=col, ec=col, zorder=5))
+        ax.text(x, y, lab, ha="center", va="center", fontsize=13, fontweight="bold", color="white", zorder=6)
+
+    def repere(x, y, xc, yc, lab, col=BLUE, rounded=False):
+        line(ax, [(x + dx, y), (xc + dx, yc)], lw=1.2, c=GR)
+        sq(x + dx, y, lab, col, rounded)
+
+    repere(2.45, 2.85, 3.15, 1.62, "A")
+    repere(3.55, 2.85, 3.91, 1.38, "B")
+    repere(3.95, 0.28, 4.78, 0.86, "C")
+    repere(5.85, 0.28, 5.4, 1.12, "D")
+    repere(4.95, 2.85, 4.63, 1.6, "S", NAVY, True)
+    # légende : entrées à gauche, sortie à droite
+    ax.plot([0.1, 7.9], [-0.18, -0.18], color=LBLUE, lw=1.2)
+    ax.text(0.15, -0.5, "Entrées", fontsize=13, fontweight="bold", color=BLUE, va="center")
+    for i, (l, nom, niv) in enumerate(DEM_ENTREES):
+        y = -0.98 - i * 0.45; sq(0.32, y, l, BLUE)
+        ax.text(0.63, y, f"{nom} : {niv}", fontsize=12.5, va="center", color=K)
+    x0 = 4.85
+    ax.text(x0, -0.5, "Sortie", fontsize=13, fontweight="bold", color=NAVY, va="center")
+    sq(x0 + 0.17, -0.98, "S", NAVY, True)
+    ax.text(x0 + 0.48, -0.98, "voyant « démarrage »", fontsize=12.5, va="center", color=K)
+    ax.text(x0 + 0.48, -1.43, "allumé si S = 1", fontsize=12.5, va="center", color=K)
+    ax.set_xlim(0.0, 8.0); ax.set_ylim(-2.55, 3.1)
+    save(fig, "fig_voiture.png")
+
+
+# ------------------------------------------------------------------ 120 V2 : la commande de démarrage, porte par porte (diapositive 13)
+def fig_demarrage():
+    """S = B · (D + /(A + C)) : NON-OU (74HC02), OU (74HC32), ET (74HC08) ; LED entre S et GND, allumée si S = 1."""
+    fig, ax = plt.subplots(figsize=(6.6, 3.6)); ax.axis("off"); ax.set_aspect("equal")
+    fs = 15
+    (a_, c_), o1 = porte(ax, 1.0, 0.6, "OU", neg=True, fs=fs)             # NON-OU (74HC02)
+    (d_, x1), o2 = porte(ax, 2.9, 0.86, "OU", fs=fs)                      # OU (74HC32)
+    (b_, x2), o3 = porte(ax, 4.8, 1.12, "ET", fs=fs)                      # ET (74HC08)
+    fil(ax, o1, x1); fil(ax, o2, x2)
+    xg = 0.25                                                             # entrées, toutes à gauche
+    fil(ax, (xg, b_[1] + 0.75), (b_[0] - 0.25, b_[1] + 0.75), (b_[0] - 0.25, b_[1]), b_)
+    fil(ax, (xg, d_[1] + 0.6), (d_[0] - 0.25, d_[1] + 0.6), (d_[0] - 0.25, d_[1]), d_)
+    fil(ax, (xg, a_[1]), a_); fil(ax, (xg, c_[1]), c_)
+    for lab, y in (("B", b_[1] + 0.75), ("D", d_[1] + 0.6), ("A", a_[1]), ("C", c_[1])):
+        ax.text(xg - 0.1, y, lab, ha="right", va="center", fontsize=fs + 1, style="italic", fontweight="bold", color=NAVY)
+    for x, y, ci in ((1.45, 0.6, "74HC02"), (3.35, 0.86, "74HC32"), (5.25, 1.12, "74HC08")):
+        ax.text(x, y - 0.2, ci, ha="center", va="center", fontsize=12.5, color=GR)
+    # sortie S, résistance et LED vers GND (la LED s'allume quand S = 1)
+    xl = 6.75
+    fil(ax, o3, (xl, o3[1]), (xl, o3[1] - 0.1))
+    ax.text((o3[0] + xl) / 2, o3[1] + 0.17, "S", ha="center", va="center", fontsize=fs + 1, style="italic", fontweight="bold", color=NAVY)
+    resistance(ax, xl, o3[1] - 1.05, o3[1] - 0.1, nom="R", fs=14)
+    diode(ax, xl, o3[1] - 2.0, o3[1] - 1.05, sens="bas", genre="led", nom="LED", fs=13)
+    masse(ax, xl, o3[1] - 2.0, fs=12.5)
+    ax.text(xl - 0.55, o3[1] - 2.2, "LED allumée si S = 1", ha="right", va="center", fontsize=12.5, color=NAVY)
+    ax.set_xlim(-0.15, 7.9); ax.set_ylim(o3[1] - 2.5, o3[1] + 1.1)
+    save(fig, "fig_demarrage.png")
 
 
 def fig_pushpull():
@@ -167,6 +277,7 @@ def produire(ctx):
         fig_gate(k); fig_gate_mini(k); fig_eq(k); fig_eq(k, color=RED, name=f"eq_{k}_corr.png")
     fig_chronos(); fig_myst(); fig_n2(); fig_lecture()
     fig_pushpull(); fig_marges(); fig_ligne()
+    figs_S(); fig_voiture(); fig_demarrage()
     for r in D.PINS: fig_dip(r)
     # équation du convoyeur (fiche 130, N°1)
     fig_eq_txt(r"M = E \cdot L \cdot \overline{U}", "eq_convoyeur.png")

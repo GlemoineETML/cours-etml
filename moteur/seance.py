@@ -31,6 +31,7 @@ class Seance:
         self.fichiers = {str(k): v for k, v in (d.get("fichiers") or {}).items()}
         self.renvois = {str(k): v for k, v in (d.get("renvois") or {}).items()}     # fichiers d'autres séances cités (non produits ici)
         self.versions = {str(k): str(v) for k, v in (d.get("versions") or {}).items()}
+        self.dates = {str(k): str(v) for k, v in (d.get("dates") or {}).items()}       # date d'une nouvelle édition d'un seul fichier
         self.artefacts = {str(k): v for k, v in (d.get("artefacts") or {}).items()}
         self.videos = {str(k): v for k, v in (d.get("videos") or {}).items()}
         self.teams_dossier = d.get("teams_dossier", "")

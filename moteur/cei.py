@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Symboles et figures normalisés (CEI 60617), en PNG via matplotlib, aux couleurs ETML (REGLES 3.3) :
 portes logiques (CEI 60617-12 : rectangle + qualificatif, cercle de négation), équations en notation du Floyd,
-résistance, source de tension, masse (GND), terre, nœuds, flèches de tension (du + vers le −) et de courant (CEI 60617-2 et -4),
+résistance, source de tension, alimentation (+5 V), masse (GND), terre, nœuds, fils avec sauts de fil, flèches de tension
+(du + vers le −) et de courant (CEI 60617-2 et -4),
 chronogrammes, contact à fermeture (CEI 60617-7), brochage DIP 14.
 Les figures propres à une séance sont dans contenus/<matière>/<semaine>/figures.py et utilisent ces briques.
 ecrire_dans(dossier) fixe le dossier où save() écrit les images."""
@@ -153,9 +154,10 @@ def fig_gate_mini(key, name=None, larg=0.62):
     save(fig, name or f"gate_{key}_mini.png", pad=0.0)
 
 
-def fig_gate(key, name=None):
+def fig_gate(key, name=None, labels=("A", "B", "Y")):
+    """Symbole seul ; labels : entrées puis sortie (REGLES 3.4 : sortie S ; la semaine 1 de TM1 garde Y par défaut)."""
     fig, ax = plt.subplots(figsize=(3.2, 2.2)); ax.axis("off"); ax.set_aspect("equal")
-    gate_ax(ax, 0.9, 0.2, key)
+    gate_ax(ax, 0.9, 0.2, key, labels=labels)
     ax.set_xlim(-0.05, 3.5); ax.set_ylim(0, 2.0)
     save(fig, name or f"gate_{key}.png")
 
@@ -365,11 +367,35 @@ def porte(ax, x, y, fonction, n=2, neg=False, neg_in=(), w=0.9, h=None, lw=1.8, 
     return entrees, (xo + pin, yo)
 
 
-def fil(ax, *pts, lw=1.8, noeuds=()):
-    """Liaison orthogonale passant par les points donnés ; noeuds : points où poser un point de connexion."""
-    line(ax, list(pts), lw=lw)
+def fil(ax, *pts, lw=1.8, noeuds=(), sauts=(), r=0.09):
+    """Liaison orthogonale passant par les points donnés (REGLES 3.3).
+    noeuds : points de liaison à poser (jonctions en T) ; sauts : autres fils (listes de points) que celui-ci croise sans
+    liaison : ses tronçons horizontaux sautent leurs tronçons verticaux (demi-cercle de rayon r, comme le « jumpover » d'Altium)."""
+    import math
+    verts = [(a, b) for q in sauts for a, b in zip(q[:-1], q[1:]) if a[0] == b[0]]
+    out = [pts[0]]
+    for (x1, y1), (x2, y2) in zip(pts[:-1], pts[1:]):
+        if y1 == y2:
+            s = 1 if x2 > x1 else -1
+            xs = sorted({a[0] for a, b in verts if min(a[1], b[1]) < y1 < max(a[1], b[1]) and min(x1, x2) + r < a[0] < max(x1, x2) - r},
+                        key=lambda x: s * x)
+            for xc in xs:
+                th = [math.pi * (1 - k / 12) if s > 0 else math.pi * k / 12 for k in range(13)]
+                out += [(xc + r * math.cos(t), y1 + r * math.sin(t)) for t in th]
+        out.append((x2, y2))
+    line(ax, out, lw=lw)
     for p in noeuds:
         noeud(ax, *p)
+
+
+def alimentation(ax, x, y, etiquette="+5 V", fil=0.3, lw=2.2, fs=13):
+    """Alimentation (+5 V, V_CC) posée au-dessus du nœud (x, y) : court fil vertical et trait horizontal, étiquette au-dessus
+    du trait (miroir de la masse GND, REGLES 3.3) ; toujours plus haut que les composants qu'elle alimente."""
+    yh = y + fil
+    line(ax, [(x, y), (x, yh)], lw=lw)
+    line(ax, [(x - 0.3, yh), (x + 0.3, yh)], lw=lw + 0.6)
+    if etiquette:
+        ax.text(x, yh + 0.2, etiquette, ha="center", va="center", fontsize=fs, color=NAVY)
 
 
 # ------------------------------------------------------------------ tableau de Karnaugh

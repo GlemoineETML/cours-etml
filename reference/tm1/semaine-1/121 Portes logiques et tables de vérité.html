@@ -141,6 +141,11 @@ input[type="range"] { width: 100%; accent-color: var(--blue); }
 .pins label { display: grid; gap: 4px; font-weight: 700; }
 .pins label span { font-weight: 400; }
 table.tdv { justify-self: start; }
+table.tdv.t16 td, table.tdv.t16 th { padding: 2px 0; font-size: 16px; }
+.frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; line-height: 1.25; }
+.frac > span:first-child { border-bottom: 1.5px solid currentColor; padding: 0 4px; }
+.calc { font-size: 17px; }
+.pins h4 { grid-column: 1 / -1; margin: 6px 0 0; color: var(--head); font-size: 15px; }
 </style>
 </head>
 <body>
@@ -149,7 +154,7 @@ table.tdv { justify-self: start; }
   <div class="eyebrow">Test et Mesure 1 – El DT 1 · page interactive 121</div>
   <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASkAAABICAYAAACqRgPJAAAPX0lEQVR4Xu2deewkVRHHv7UsuIKCEkBFOU0EERBBAS80eIAJKPcR1D8MZjkisgQ80EQwIZKAIn9IuFSIssF1wQsQVBDldFVEiYBCkEMEAYFFDmVZynybqrX5HTPvvZnp7plffZIOu0vP0W/6fbuqXlU9UdULAWwK4HkA8zA3WQlgNQCfE5GrVXWeiHA8VuH/pqpbAzgXgAKQuTlc0/CxeBrAASLyyCxjuJqIrFTVjwM4Alg17l2Av/dyAP8C8HcAdwG4DcBfROShKffCfP7+vJY2v7jqqvE8keMOYAUAfrdePAdgdQCnicjZ/h5tXkc/eEE7Atis34lzhPXtOmcSH/+3tQHsNEfGIxfe7C/p8SIfw03GaAwfVlWK1Y0ArgRwvYg86dfISc4HvIhQqNtiIwBbZn74q3rc652CIsWnH58iYUmhesr0w8cqLKn/42PxlFmY/XjW7jeOd78nf9O42FBQ6VnwwcVjFwCfAXCvql4KYLGIXOvWVMsWCS0o3pcp4+nnpNzrnYA3CH8Id/PmqrvHG5PXnuq+8dwQqekilXr/uADU772uwt+ZAuD3yMYADuehqtcBOAPAEhF5ji4uL2JqqKABcsbTxzz1Xm+d1JsqCOYqnMx06fyB7hYLReudAC4A8FtV3Y/ixMNcwGBIhEgFQR6cMxQsihdjcDy2A/B9Vb1cVbezxQFxyyoYjBCpICiHFlYVODex2g3ADarKVWKu/oVVNQRCpIJgcDiPKFa0qhYA+IpZVRuaVdW1xYGxIkQqCIYHhYqxKq6cuVW1swXVQ6gKCZEKguHCWBUFiULFlcArVXWvEKpyQqSCYDRQqOj+rQngYlXdP4SqjFITlIPfZobtsPHrGdU18X07XXowA7703hWaHEPPOxo0l8iD6uRCVWWKwkWqOp+C1ZWB7TqlIsXBnyR8HNYY0UW5CxCU08YY1isxSr0Ovo7vw++/WFXfLyLXtJyhPlbkipRnWZ8C4GbL0n5RIe6Y4td1vX3/YV2Tv+8DAD5r1hRv1lFZbMPAv98rAHzVVqvazK734u+rAZxTW0UbJnzosiZzXSu23wKojvVq1Rj8Hm5h5eJCxYfgUlXdSUTunqkIO5hOqUhdIiK/ntQBHWKxqE/ux0TkO+M0XqrKWMrJJlJt4oJ+q4gsbuqLqCoFansAe9rBomhCscopoXL4Gr52AwDfU9V38++qTKdqtTi58+SKlLMO/eoRPdXaZOWIbpj5qsr8GcYhxsWSolUxaExmmCywe85XzkYJ74NHAPyMh6p+AcDeAD4FYIeaWOWGPXg+7wF2HjlZRI6xa4r4VA9KRYo/IgsqW++pMyZUuTM2Zp1+cvqTXVW7FujnwPGeo6U78knNcXCLSUSeAHC+qn4XwCcAnABgw8J+WC5Ui1T1RyLyq4hP9aY0GBgEE42VtfjDmHV4VcM+EWFcjNYUm0X66l1OjJHi5xbqN1SV/beq5/1ED+gAhEgFQR9csHiapQ88KCIHAziuFljPESovoXkTO5Raa5eYi7MQAxMEGXjfKLOsTgVwoKUYVBqW81Z2/vEWpGcxclhTMxAiFQSZWN8orsytLiJLABxkguPN8VLw1T6uIh5pCza5gfg5QYhUEBQiIitMqJbaxhLuxqXiHV4Xquo6npKQ+uK5QohUEAxATajOAsDDa/ZS8CTP1wDYJ6ypmQmRCoLBYWoErahF3ALLguk5KRyMZTG1gQyr2mFiCJEKggHxBGAReQbAUZZikOq2+RzcWVW3tG6eMS9rxGAEwRCwDpzMpWKW+o8zrCnvlU43kSU4JOZliFQQjAZLIzip1vkgBbe6dreTw+WrUVoWMxDmv6eaw6NgkHIebw+b0hnAN1zNiU9Mw2783OXpQa7RYfkJj37X6v9/5OUqpdTKXGbD85aKdyM2a2qeiCxT1WttQ1Hv4tALt5x2YM6UbVPf6fKpJmlFpHzX1zFl9YJdd1msW4zFPJoWAE4ctmvJged30lWxMUx6WAzYQsVX7M43kUqBAskHGtMQtgHwywx3ceJpVKRqxasLAbyh1l+pKfjEp0Vyr4icnvmhboLfw91AEs15/7yHSlZtauPFJepjEr+v77T7KIBTuESe+LqpsKiWhbSsLfOmbbPhn/lfAMvtpJzs65HhgqOqWwH4cg+r8H4AVwG4zNIKaBGVuF3+miuAatv5tRIsUeJWN/fwo0i16Wl0ikZFqtam5FAAb21xJP4K4PScXj61FZz7ABxf+t0zW8G4C0KROjbzMx/nNQJgwmGy61C7zn8DODHzM1eReZ2jxCf7qwHs2+eDuDL3B1VlPd2NJd0JbHWO432/qt4EgH2jKECp7jrr+YIaTYuUwwlE9yXFXx8m/nmPlb5pS/Ehjw2RfvEhfyLTkhrImrFeR1k00UalEFqUHEcfn9l4C4BfqOpuInJdoevn7VhuNJFK+R1cTDe3L1ZixU0kbYkUf0Tfqjr1CTMMfHOB4s9sKT5U7++dKlLF1+h0WHBK8DHsJ1IUMrpoF6jqmwE8kWOJTuEW+3uK6+bnbFBzUZMt4Emmk0HOIGgR7/zJdsGHFJaquOXE+CXJESkusjAOGBghUkEwHY8F7mH/K8Vdq+PnP1wwz15qe/UFBYM3048QBJOId898XWUGiSSlLszAfywOlgMNB6a5BDWRSjFFHX9CcCeR6vcrHMkICgbjQOn97TBYT6EiOdZYzrkTD1U7J4/GB48maQnuXt5tP1r8GMGkM6jQzXkoGsyHyYV7h5XgovTDAaywIAjmEBQpZkPn4rkcWXhtE4CfArjO0hByLLkgCOYYXG5lBjVJcb3cdH2jvaYotmRi9TGg2jp7Y0uwK3qvTBgA5XWWBkKDIGgYWjV3ZHymx5S2ZU9mLwHIeL2XDbAu6m+WjfsTK6akYI76YP4JPyO3cDYIgpbghP2zfXZKzpRXa3OHi7ep6pUl1drefVBE7gXwYVV9O4D3AtjM3q9fVnUptNZ4zXfxDTpUXxYEwSxwwt4KVLVsr0yoCyNeVvAREWGNU5Yl5dTapDL3/wYAPIIgCF7EfBF5UFVvB0BrJsWC8Zqw/VSV3QCeLK1t8lYYLTTBG0ZDuCAYZ1Ji0J3AC4zZRXDnhApx4j2Z2friABH5plXLFzdlGyCjNwiCMtYue1nzeByKDbooPilxKRcqKvFxqroGxa3U7QuCoBgPtZTkOm5U/KkN46LEvjf/MJFKSQXwFqlb2BbROU29giAYLv/MeDuf89tYmKbYA2qKeXTVRIRtTpkFTlJEyq0pnvslVd2EvYfYB6epLx4EwSqq1erEKg63vrYEXkjK7vq89b3oCRvHe0/uFPy1bB7/LR+kcPuCoDHcoGA7bO8z3w+KFK0nhmn2tpM7bVwwV2mldQJcZqUqJDUj29uk7qqqbPrP180PoQqCRvAVujuBaiMJ74PVDxelw1S12mijy3PWv6z/99REk7GOdzI8VlUX2e4kIVRBMGKYjGwGxtMAfm/WVEq4hvOdBsXrASy0VKCB202PikqcavGkSwD8zna2SLWmCC+Q539NVY82oeIIdtqMDIIJYOoKfWr+ky9+naiqm5oGdFKo6iLCpu8UmpLtmjx9ga8/zVw/7gRLMzKsqiAYHW45XQrgGSv7ShEqdw1Zx3qhqi6w0E/nhGqVSPkXFJGfA/iBWUc5y5N1oaLrd7mqbk6FNrN0tS77vUEwjpghwHnLOljO3ZwuH+4B7QRgCeNTpgNt7SI1I1PdMfq4FJtF1gzPTcJUfMsoWlS70XVU1U+7SptY0bIKwQqC4eFpBWdkJmV7qIbGyJ6236C7fgzXdMILepFi1lT5HlXltt7n2HJlbmzJFZpFy18H8ElV5X+XiAi3766wmFX9vVPM1FFCF7Xt7xAEWdRiyrSkmJjNErecjXd98etdAJap6ucBnOf7Ls4wTxtlmlnn5p6InKuq7wNwkAlVrglIoeKEp8/MraMpeF9UVbqSDNDfJCLsvpCyGhEEQW+qmLKqngDg8oLB4vymsK0P4FwAR6jqmZyrIvJAm/N0NuGpcqdoAZnAbJOpzI67fxQiChY3XDzaDnZf+BOA24Aqz4N7lD1ZkAIxDDyJdZl1hYidY4OxohZTvkJV2UiS7luONUXqhsX2AM4GsFxVmd7AucoNVB7NyKMcBitmFCmLHXGisg3LPpbkyc0Xci/acZeOYuX9qNhFgccHh3ElQ+JAuqQljfyCoAN4TPkoAO8B8LLE9kt1phoWrCjZ1Y5WmNWFq8Wn7lTVKqgG4OUDCBWhWLlguStYjwHVy3SaxIUzNoUIxpbanL2bC1YAvm1b1pVsNtprnjaB97Z7omecqRafYjBtL0tNYB+aUotqJsXuCjR1i7qMBkFXqM3Z81SVAfSFAwgVccuqaVyk5vddtbOVAwbSrzLXjG0hvGYvCILuwZgy5+iRFkSnJTW2XkJfkaqk9IU2LBSq3wDYBcAfLbOV+RWxZB8EHcLSaDycsj+A64HxFaokkaoJFTNb2RaCQbnFJlTeTjgIgo5gRcPV4heADwFV911aVGNnWCSLlAmVt3VZLiKHADgMwOPm/vnKXRAEHaC2dRwTqLn4xfwnxqHHyrDIEikTqqr3jLWIOAvAjgAurq3cMaie00EhCIIRUROqFSLCvMfDAbATr1eFdD6ZOlukTKiYREWxovt3h4jsy00+LSWfF+9JYWNnWgbBpOE7jdt8ZRY5t6+j+8d56r2laFh0Mr5cJFKOd/U0q4pZru8AqkDdNWZSumlJtaZgeeZ5EAQNwmB6LSv9FhHZHcDBAG42sfIUHM7TTglWbj3eNOobfFo/qqUAlqoqixU/CmAPAK+dsl2WrzxUhlmDv9VsUDy78D164WZ5vw1c6+d1FV6D3wP93A2PdQ7jKZ8aNx3mGNaTlnvdY/67DuM6Z8UNC46/iLCP1EVmWBxqC2J1TWhznvp4PD+wSNWtKv7Z8jPYTYAbjl6rqkz+pGB9wMxMboPFRltdaq41tY1y18jZE9Gvhb2ru4pb2NwMoB9+TknWdB2vdkjxHoY1hvzdFmTsZ0l4/kgfmFMMC+ZPcaV+saqyRpdhG85V/nndDszTtYYmUrOIFQeEKwuX2UER2xjAVgC2BrAZgE2Bqi5wrX536wjxDPrlI/yMQWDHRRZiV8+BPjexl/hwH8V+VkrTuJXwEIDbLcGw3z1I94MCdV/t+kvgUjzH0MenF37OHSUfVONZyylcM+F389+V37ORxEuzqvwBSMvqFgA8TlLVDW2ObmtbX9EbWq9B0fLxeOp/Fj7UQwtffrkAAAAASUVORK5CYII=" alt="ETML">
   <h1>Portes logiques et tables de vérité</h1>
-  <p>Six exercices tirés de la ligne de remplissage et de l'atelier. Les animations « Comprendre » reprennent la présentation 120 ; ensuite, à toi de jouer. Les tables de vérité vont du poids fort au poids faible : B A, puis la sortie Y. Va avec l'animation 125 et la fiche 130 EX.</p>
+  <p>Six exercices tirés de la voiture électrique et de l'atelier. Les animations « Comprendre » reprennent la présentation 120 ; ensuite, à toi de jouer. Les tables de vérité vont du poids fort au poids faible : B A, puis la sortie S. Va avec l'animation 125 et la fiche 130 EX.</p>
 </div></header>
 <div class="bar"><div class="in">
   <nav aria-label="Exercices"><a href="#ex1">N°1</a><a href="#ex2">N°2</a><a href="#ex3">N°3</a><a href="#ex4">N°4</a><a href="#ex5">N°5</a><a href="#ex6">N°6</a></nav>
@@ -162,11 +167,11 @@ table.tdv { justify-self: start; }
 <section class="ex" id="ex1">
   <header><span class="num">N°1</span><h2>Essaie chaque porte</h2>
     <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapos 5 à 12</a><a href="https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2003%20-%20Portes%20logiques.pdf?d=w0b4d71190cd446b9af28ab8cc4e69272&amp;csf=1&amp;web=1&amp;e=O8tdfS">Floyd 3-1 à 3-6 p. 112-138</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_01/#DCBD89FD-6D4A-5441-B4BC-4072FFACB3DC">LZ_130</a></span></header>
-  <div class="lesson" id="L1"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Des 0 et des 1 sur la ligne de remplissage</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapo 2</a></span></div>
+  <div class="lesson" id="L1"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>Des 0 et des 1 dans une voiture électrique</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapos 2 et 13</a></span></div>
     <div class="ls-body"></div>
-    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> dans une installation automatisée, chaque capteur (présence, niveau, fin de course) donne un signal binaire. La commande combine ces signaux avec des portes logiques ou un automate programmable.</p></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> dans une voiture, chaque capteur (ceinture, frein, sélecteur) donne un signal binaire. Le calculateur combine ces signaux, comme les trois portes de cette animation.</p></div>
   <div class="todo"><span class="ls-tag alt">À toi</span></div>
-  <div class="situ"><b>Au laboratoire :</b> deux interrupteurs sur les entrées A et B, une LED sur la sortie Y. On fait passer les quatre combinaisons et on note la sortie : c'est ainsi qu'on vérifie un CI avant de le monter.</div>
+  <div class="situ"><b>Au laboratoire :</b> deux interrupteurs sur les entrées A et B, une LED sur la sortie S. On fait passer les quatre combinaisons et on note la sortie : c'est ainsi qu'on vérifie un CI avant de le monter.</div>
   <div class="chips" id="g-chips" role="group" aria-label="Choix de la porte"></div>
   <div class="sim">
     <div>
@@ -175,7 +180,7 @@ table.tdv { justify-self: start; }
         <span class="muted">Entrées :</span>
         <button id="g-a" aria-label="Entrée A">A = 0</button>
         <button id="g-b" aria-label="Entrée B">B = 0</button>
-        <span class="muted">Sortie :</span><span class="lamp" id="g-lamp" aria-live="polite"></span><b id="g-y" class="eq">Y = 0</b>
+        <span class="muted">Sortie :</span><span class="lamp" id="g-lamp" aria-live="polite"></span><b id="g-y" class="eq">S = 0</b>
       </div>
     </div>
     <div class="panel">
@@ -210,18 +215,18 @@ table.tdv { justify-self: start; }
     <table class="tdv" id="t2-tab"></table>
     <div class="svgbox" id="t2-svg"></div>
   </div>
-  <p class="muted">Clique sur une case Y pour écrire 0 ou 1.</p>
+  <p class="muted">Clique sur une case S pour écrire 0 ou 1.</p>
   <div class="row"><button class="btn" id="t2-check">Vérifier</button><button class="btn ghost" id="t2-reset">Effacer</button></div>
   <div class="fb" id="t2-fb" aria-live="polite"></div>
 </section>
 
 <!-- ============================================ N°3 -->
 <section class="ex" id="ex3">
-  <header><span class="num">N°3</span><h2>Le voyant « défaut » de la ligne</h2>
-    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapos 2 et 3</a><a href="https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2001%20-%20Concepts%20num%C3%A9riques.pdf?d=w098062972a294c8d9838cc4a50cb26fa&amp;csf=1&amp;web=1&amp;e=gBoXeN">Floyd 1-2 p. 5</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_06/#110D829B-238F-A646-BDF0-DA72F7DA82A6">LZ_4242</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_00/#B73C7F1A-B86E-3C4F-9F00-D542352FC3CA">LZ_27</a></span></header>
-  <div class="situ"><b>Cahier des charges :</b> le voyant défaut D s'allume si la pompe est en défaut (P = 1) ou si le convoyeur est bloqué (C = 1), mais seulement quand la ligne est en marche (M = 1). Ligne arrêtée : le voyant reste éteint.</div>
-  <p class="q">a) Complète la table de vérité : M est le poids fort, C le poids faible.</p>
-  <table class="tdv" id="t3-tab"></table>
+  <header><span class="num">N°3</span><h2>Le voyant de démarrage</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapos 2, 3 et 13</a><a href="https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2001%20-%20Concepts%20num%C3%A9riques.pdf?d=w098062972a294c8d9838cc4a50cb26fa&amp;csf=1&amp;web=1&amp;e=gBoXeN">Floyd 1-2 p. 5</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_06/#110D829B-238F-A646-BDF0-DA72F7DA82A6">LZ_4242</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_00/#B73C7F1A-B86E-3C4F-9F00-D542352FC3CA">LZ_27</a></span></header>
+  <div class="situ"><b>Cahier des charges :</b> le capteur de ceinture donne A = 0 quand elle est bouclée, celui du sélecteur B = 1 en position P, celui de la pédale de frein C = 0 quand elle est enfoncée. La voiture peut démarrer si la ceinture est bouclée, le sélecteur sur P et la pédale enfoncée. En mode service (D = 1), la ceinture et le frein ne comptent plus, mais le sélecteur doit rester sur P. Le voyant est une LED branchée entre la sortie et GND : il s'allume quand S = 1, démarrage autorisé.</div>
+  <p class="q">a) Complète la colonne S : D est le poids fort, A le poids faible. Attention aux entrées actives à 0.</p>
+  <table class="tdv t16" id="t3-tab"></table>
   <p class="q">b) Quelle équation correspond à ce voyant ?</p>
   <div class="row" id="t3-eqs" role="radiogroup" aria-label="Équation du voyant"></div>
   <div class="row"><button class="btn" id="t3-check">Vérifier</button><button class="btn ghost" id="t3-reset">Effacer</button></div>
@@ -236,7 +241,7 @@ table.tdv { justify-self: start; }
     <div class="ls-body"></div>
     <p class="life" style="margin:0"><b>Dans la vraie vie :</b> au laboratoire, l'oscilloscope deux voies ou l'analyseur logique affiche ces signaux. En dépannage, on compare ce qu'on mesure à ce que la table de vérité prévoit.</p></div>
   <div class="todo"><span class="ls-tag alt">À toi</span></div>
-  <div class="situ"><b>À l'atelier :</b> une carte de commande de la ligne a perdu son schéma. L'analyseur logique affiche les entrées A, B et la sortie Y de trois portes. Pour chacune, trouve de quelle porte il s'agit.</div>
+  <div class="situ"><b>À l'atelier :</b> une carte de commande a perdu son schéma. L'analyseur logique affiche les entrées A, B et la sortie S de trois portes. Pour chacune, trouve de quelle porte il s'agit.</div>
   <div class="chrono" id="t4-list"></div>
   <div class="row"><button class="btn" id="t4-check">Vérifier</button></div>
   <div class="fb" id="t4-fb" aria-live="polite"></div>
@@ -254,16 +259,22 @@ table.tdv { justify-self: start; }
 
 <!-- ============================================ N°6 -->
 <section class="ex" id="ex6">
-  <header><span class="num">N°6</span><h2>Câble la vanne sur un 74HC08</h2>
-    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapo 13</a><a href="https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2003%20-%20Portes%20logiques.pdf?d=w0b4d71190cd446b9af28ab8cc4e69272&amp;csf=1&amp;web=1&amp;e=O8tdfS">Floyd 3-8 p. 146-149</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#33DAE379-F86D-8949-BD47-E29587F2C195">LZ_2223</a></span></header>
-  <div class="lesson" id="L4"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>De la porte au circuit intégré, sur breadboard</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapo 13</a></span></div>
+  <header><span class="num">N°6</span><h2>Câble le démarrage sur trois CI</h2>
+    <span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapos 13 et 14</a><a href="https://eduvaud.sharepoint.com/:b:/r/sites/msteams_76c9d9/Documents%20partages/Documentation/Electronique%20num%C3%A9rique%20TMLO/10%20Floyd%20V11/10%20Floyd%20V11%20Basse%20d%C3%A9finition%20par%20chapitre/Chap%2003%20-%20Portes%20logiques.pdf?d=w0b4d71190cd446b9af28ab8cc4e69272&amp;csf=1&amp;web=1&amp;e=O8tdfS">Floyd 3-8 p. 146-149</a><a href="https://skills.futuremem.swiss/fr/data/5000_lze_04/#33DAE379-F86D-8949-BD47-E29587F2C195">LZ_2223</a></span></header>
+  <div class="lesson" id="L4"><div class="ls-head"><span class="ls-tag">Comprendre</span><h3>De la porte au circuit intégré, sur breadboard</h3><span class="refs"><a href="https://eduvaud.sharepoint.com/:p:/r/sites/msteams_76c9d9/Documents%20partages/Enseignement%20professionnel/ChampsDApprentissage/El_DT1/120%20Portes%20logiques%20et%20tables%20de%20v%C3%A9rit%C3%A9.pptx?csf=1&amp;web=1">Présentation 120, diapos 13 et 14</a></span></div>
     <div class="ls-body"></div>
-    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> sur une vraie carte, la sortie du CI ne pilote pas la vanne directement : elle commande un transistor ou un relais, comme au laboratoire.</p></div>
+    <p class="life" style="margin:0"><b>Dans la vraie vie :</b> au laboratoire, on câble d'abord l'alimentation de chaque CI, puis les signaux, et on teste chaque ligne de la table de vérité avec les interrupteurs.</p></div>
   <div class="todo"><span class="ls-tag alt">À toi</span></div>
-  <div class="situ"><b>Sur breadboard :</b> tu câbles la commande de la vanne V = B · N avec un 74HC08 (4 portes ET). Choisis une porte et indique la broche de chaque signal.</div>
+  <div class="situ"><b>Sur breadboard :</b> tu câbles le démarrage avec une porte de chaque CI : NON‑OU du 74HC02, OU du 74HC32, ET du 74HC08. Le 74HC32 et le 74HC08 ont le même brochage ; le 74HC02, non. Choisis une porte dans chaque CI et indique la broche de chaque signal.</div>
   <div class="grid2">
-    <div class="svgbox" id="t6-svg"></div>
-    <div class="pins" id="t6-pins"></div>
+    <div class="svgbox" id="t6-svg02"></div>
+    <div class="svgbox" id="t6-svg08"></div>
+  </div>
+  <div class="pins" id="t6-pins"></div>
+  <p class="q">e) La LED du voyant (<i>I</i><sub>F</sub> = 2 mA, <i>U</i><sub>F</sub> = 2 V) est branchée entre la sortie S et GND, avec la résistance <i>R</i> en série. À l'état haut, la sortie du 74HC08 vaut <i>V</i><sub>OH</sub> = 4,9 V (valeur typique pour 2 mA). Calcule <i>R</i>, puis choisis la valeur de la série E12.</p>
+  <div class="row">
+    <label for="t6-r"><i>R</i> =</label><input type="number" id="t6-r" step="1" min="0" style="width:120px"> <span>Ω</span>
+    <label for="t6-e12">valeur E12 :</label><select id="t6-e12"><option value="">choisir…</option><option value="1000">1 kΩ</option><option value="1200">1,2 kΩ</option><option value="1500">1,5 kΩ</option><option value="1800">1,8 kΩ</option><option value="2200">2,2 kΩ</option></select>
   </div>
   <div class="row"><button class="btn" id="t6-check">Vérifier</button></div>
   <div class="fb" id="t6-fb" aria-live="polite"></div>
@@ -376,6 +387,34 @@ const lerp = (a, b, p) => a + (b - a) * p;
 const TX = (x, y, s, o = {}) => `<text x="${x}" y="${y}" font-size="${o.size || 16}"${o.anchor ? ` text-anchor="${o.anchor}"` : ""}${o.bold ? ' font-weight="700"' : ""}${o.italic ? ' font-style="italic"' : ""}${o.mono ? ' font-family="IBM Plex Mono, Liberation Mono, monospace"' : ""} style="fill:${o.color || "var(--ink)"}${o.op != null ? ";opacity:" + o.op : ""}">${s}</text>`;
 const SUBV = (i, rest = "") => `V<tspan font-size="0.72em" dy="0.3em">${i}</tspan><tspan dy="-0.3em">${rest}</tspan>`;
 const wireP = (pts, v) => `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" style="${wireStyle(v)};stroke-linejoin:round"/>`;
+// Liaisons (REGLES 3.3) : point de liaison à chaque jonction en T ; un croisement sans liaison est un saut de fil
+// (« jumpover » d'Altium) : le tronçon horizontal saute le tronçon vertical (demi-cercle de rayon r), jamais de point.
+// cheminSauts(pts, autres) : chemin SVG d'un fil orthogonal ; autres = les autres fils (listes de points) qu'il peut croiser.
+function cheminSauts(pts, autres = [], r = 6) {
+  const verts = [];
+  autres.forEach((q) => { for (let i = 1; i < q.length; i++) if (q[i - 1][0] === q[i][0]) verts.push([q[i - 1], q[i]]); });
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 1; i < pts.length; i++) {
+    const [x1, y1] = pts[i - 1], [x2, y2] = pts[i];
+    if (y1 === y2 && x1 !== x2) {
+      const s = Math.sign(x2 - x1), lo = Math.min(x1, x2) + r, hi = Math.max(x1, x2) - r;
+      const xs = [...new Set(verts.filter(([a, b]) => y1 > Math.min(a[1], b[1]) + 0.5 && y1 < Math.max(a[1], b[1]) - 0.5 && a[0] > lo && a[0] < hi).map(([a]) => a[0]))];
+      xs.sort((u, v) => s * (u - v)).forEach((xc) => { d += ` L ${xc - s * r} ${y1} A ${r} ${r} 0 0 ${s > 0 ? 1 : 0} ${xc + s * r} ${y1}`; });
+    }
+    d += ` L ${x2} ${y2}`;
+  }
+  return d;
+}
+// fil dessiné avec ses sauts ; o.style remplace le style « valeur logique » (alimentation, masse) ; class="fil" : vu par le contrôle
+const filP = (pts, v, autres = [], o = {}) => `<path class="fil" d="${cheminSauts(pts, autres, o.r)}" fill="none" style="${o.style || wireStyle(v)};stroke-linejoin:round;stroke-linecap:round"/>`;
+const liaison = (x, y, c = "var(--ink)", r = 4) => `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${c}"/>`;
+// alimentation (+5 V) au-dessus du nœud (x, y) et masse (GND) au-dessous : court fil et trait horizontal (REGLES 3.3)
+const alimG = (x, y, lab = "+5 V", o = {}) => { const h = o.fil || 14, c = o.color || "var(--ink)";
+  return `<line x1="${x}" y1="${y}" x2="${x}" y2="${y - h}" style="stroke:${c};stroke-width:2.5"/><line x1="${x - 14}" y1="${y - h}" x2="${x + 14}" y2="${y - h}" style="stroke:${c};stroke-width:3.5"/>` +
+    TX(x, y - h - 8, lab, { size: o.size || 14, bold: true, anchor: "middle", color: c }); };
+const masseG = (x, y, o = {}) => { const h = o.fil || 14, c = o.color || "var(--ink)";
+  return `<line x1="${x}" y1="${y}" x2="${x}" y2="${y + h}" style="stroke:${c};stroke-width:2.5"/><line x1="${x - 14}" y1="${y + h}" x2="${x + 14}" y2="${y + h}" style="stroke:${c};stroke-width:3.5"/>` +
+    TX(x + 20, y + h + 5, "GND", { size: o.size || 13, color: c }); };
 const lampG = (x, y, r, on, col = "var(--one)") => (on ? `<circle cx="${x}" cy="${y}" r="${r + 8}" style="fill:${col};opacity:.25"/>` : "") +
   `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${on ? col : "var(--surface)"};stroke:var(--ink);stroke-width:2.5"/>`;
 const pill = (x, y, v, o = {}) => `<rect x="${x - 15}" y="${y - 15}" width="30" height="30" rx="7" style="fill:${v ? "var(--one)" : "var(--surface)"};stroke:var(--head);stroke-width:2"/>` +
@@ -464,33 +503,36 @@ ready(() => requestAnimationFrame(lessonLoop));
 
 const D = {"GATES": {"NON": {"nom": "NON", "en": "NOT", "regle": "Y = 1 si A = 0 : la sortie est l'inverse de l'entrée.", "ci74": "74HC04", "ci4000": "4069", "contenu": "6 inverseurs", "sec": "3-1", "page": 112}, "ET": {"nom": "ET", "en": "AND", "regle": "Y = 1 seulement si A = 1 et B = 1.", "ci74": "74HC08", "ci4000": "4081", "contenu": "4 portes ET à 2 entrées", "sec": "3-2", "page": 115}, "OU": {"nom": "OU", "en": "OR", "regle": "Y = 1 si au moins une entrée vaut 1.", "ci74": "74HC32", "ci4000": "4071", "contenu": "4 portes OU à 2 entrées", "sec": "3-3", "page": 122}, "NON-ET": {"nom": "NON-ET", "en": "NAND", "regle": "Y = 0 seulement si A = 1 et B = 1.", "ci74": "74HC00", "ci4000": "4011", "contenu": "4 portes NON-ET à 2 entrées", "sec": "3-4", "page": 126}, "NON-OU": {"nom": "NON-OU", "en": "NOR", "regle": "Y = 1 seulement si A = 0 et B = 0.", "ci74": "74HC02", "ci4000": "4001", "contenu": "4 portes NON-OU à 2 entrées", "sec": "3-5", "page": 131}, "OUX": {"nom": "OU exclusif", "en": "XOR", "regle": "Y = 1 si les deux entrées sont différentes.", "ci74": "74HC86", "ci4000": "4070", "contenu": "4 portes OU exclusif à 2 entrées", "sec": "3-6", "page": 135}, "NON-OUX": {"nom": "NON-OU exclusif", "en": "XNOR", "regle": "Y = 1 si les deux entrées sont égales.", "ci74": "74HC7266", "ci4000": "4077", "contenu": "4 portes NON-OU exclusif à 2 entrées", "sec": "3-6", "page": 135}}, "ORDER": ["NON", "ET", "OU", "NON-ET", "NON-OU", "OUX", "NON-OUX"], "NIV": {"TTL": [0.8, 2.0, 0.4, 2.4], "HC": [1.5, 3.5, 0.33, 4.4], "HCT": [0.8, 2.0, 0.33, 4.4]}, "CHRONO_A": [0, 1, 0, 1, 1, 0, 1, 0], "CHRONO_B": [0, 0, 1, 1, 0, 1, 1, 0]};
 const LIFE = {
-  "NON": "Voyant « cuve vide » : il s'allume quand le capteur de niveau N vaut 0.",
-  "ET": "Vanne de remplissage : elle s'ouvre seulement si une bouteille est sous le bec ET si la cuve est assez pleine (V = B · N).",
-  "OU": "Plafonnier de voiture : il s'allume si l'une des portières est ouverte, ou les deux.",
+  "NON": "Ceinture : le capteur donne A = 0 quand elle est bouclée. Un inverseur donne 1 pour « ceinture bouclée ».",
+  "ET": "Démarrage : le sélecteur sur P ET les autres conditions remplies, en même temps : S = 1, le voyant s'allume.",
+  "OU": "Démarrage : le mode service OU la ceinture et le frein en ordre suffisent.",
   "NON-ET": "Le 74HC00 est très répandu : avec des NON-ET seulement, on peut construire toutes les autres portes.",
-  "NON-OU": "Le convoyeur peut tourner seulement si aucun des deux arrêts d'urgence n'est actionné.",
+  "NON-OU": "Ceinture bouclée (A = 0) et frein enfoncé (C = 0) : la NON-OU donne 1 seulement dans ce cas.",
   "OUX": "Éclairage d'escalier en va-et-vient : chaque interrupteur change l'état de la lampe.",
-  "NON-OUX": "Deux capteurs de niveau redondants : « capteurs cohérents » = 1 quand ils donnent la même valeur.",
+  "NON-OUX": "Deux capteurs redondants sur la pédale de frein : « capteurs cohérents » = 1 quand ils donnent la même valeur.",
 };
+// données du moteur écrites avec Y (semaine 1 V1) → sortie S (REGLES 3.4)
+const SO = (t) => t.replace(/\bY\b/g, "S");
+const EQS = (k) => SO(EQH[k]);
 
 // ---------------------------------------------- N°1 simulateur
 let gk = "ET", ga = 0, gb = 0;
 function drawSim() {
   const g = D.GATES[gk], n = gk === "NON" ? 1 : 2;
   const y = n === 1 ? FN[gk](ga) : FN[gk](ga, gb);
-  $("g-svg").innerHTML = gateSVG(gk, ga, gb, y, { scale: 1.6 });
+  $("g-svg").innerHTML = gateSVG(gk, ga, gb, y, { scale: 1.6, out: "S" });
   $("g-a").textContent = "A = " + ga; $("g-a").classList.toggle("on", ga === 1);
   $("g-b").textContent = "B = " + gb; $("g-b").classList.toggle("on", gb === 1); $("g-b").hidden = n === 1;
-  $("g-lamp").classList.toggle("on", y === 1); $("g-y").textContent = "Y = " + y;
+  $("g-lamp").classList.toggle("on", y === 1); $("g-y").textContent = "S = " + y;
   $("g-title").textContent = `Porte ${g.nom} (${g.en})`;
-  const head = n === 1 ? ["A", "Y"] : ["B", "A", "Y"];
+  const head = n === 1 ? ["A", "S"] : ["B", "A", "S"];
   let h = "<tr>" + head.map((c, i) => `<th class="${i === head.length - 1 ? "out" : ""}">${c}</th>`).join("") + "</tr>";
   tdv(gk).forEach((r) => {
     const cur = n === 1 ? r[0] === ga : (r[0] === gb && r[1] === ga);
     h += `<tr class="${cur ? "hl" : ""}">` + r.map((v, i) => `<td class="${i === r.length - 1 ? "out" : ""} ${i === r.length - 1 && v ? "one" : ""}">${v}</td>`).join("") + "</tr>";
   });
   $("g-tdv").innerHTML = h;
-  $("g-eq").innerHTML = EQH[gk]; $("g-rule").textContent = g.regle;
+  $("g-eq").innerHTML = EQS(gk); $("g-rule").textContent = SO(g.regle);
   $("g-ci").textContent = `CI : ${g.ci74} (${g.contenu}) · série 4000 : ${g.ci4000}`;
   $("g-life").innerHTML = "<b>Dans la vraie vie :</b> " + LIFE[gk];
   document.querySelectorAll("#g-chips .chip").forEach((c) => c.setAttribute("aria-pressed", c.dataset.k === gk ? "true" : "false"));
@@ -509,17 +551,17 @@ let t2 = [];
 T2_CI.forEach(([ci, k], i) => { const o = document.createElement("option"); o.value = i; o.textContent = `${ci} : ${D.GATES[k].contenu}`; $("t2-sel").appendChild(o); });
 function drawT2() {
   const k = T2_CI[$("t2-sel").value][1];
-  $("t2-q").textContent = `Complète la colonne Y d'une porte ${D.GATES[k].nom} du ${T2_CI[$("t2-sel").value][0]}.`;
+  $("t2-q").textContent = `Complète la colonne S d'une porte ${D.GATES[k].nom} du ${T2_CI[$("t2-sel").value][0]}.`;
   t2 = [null, null, null, null];
   renderT2(k, []);
-  $("t2-svg").innerHTML = gateSVG(k, null, null, null, { scale: 1.2 });
+  $("t2-svg").innerHTML = gateSVG(k, null, null, null, { scale: 1.2, out: "S" });
   $("t2-fb").className = "fb";
 }
 function renderT2(k, wrong) {
-  let h = '<tr><th>B</th><th>A</th><th class="out">Y</th></tr>';
+  let h = '<tr><th>B</th><th>A</th><th class="out">S</th></tr>';
   tdv(k).forEach((r, i) => {
     const v = t2[i];
-    h += `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="out ${wrong.includes(i) ? "wrong" : ""}"><button data-i="${i}" class="${v === null ? "" : "set"}" aria-label="Y pour B = ${r[0]}, A = ${r[1]}">${v === null ? "?" : v}</button></td></tr>`;
+    h += `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="out ${wrong.includes(i) ? "wrong" : ""}"><button data-i="${i}" class="${v === null ? "" : "set"}" aria-label="S pour B = ${r[0]}, A = ${r[1]}">${v === null ? "?" : v}</button></td></tr>`;
   });
   $("t2-tab").innerHTML = h;
   $("t2-tab").querySelectorAll("button").forEach((b) => b.onclick = () => {
@@ -530,49 +572,57 @@ $("t2-sel").onchange = drawT2;
 $("t2-reset").onclick = drawT2;
 $("t2-check").onclick = () => {
   const k = T2_CI[$("t2-sel").value][1], ref = tdv(k);
-  if (t2.includes(null)) { feedback($("t2-fb"), "info", "Il manque des cases.", "Écris un 0 ou un 1 dans chaque ligne de la colonne Y."); return; }
+  if (t2.includes(null)) { feedback($("t2-fb"), "info", "Il manque des cases.", "Écris un 0 ou un 1 dans chaque ligne de la colonne S."); return; }
   const wrong = ref.map((r, i) => (r[2] === t2[i] ? -1 : i)).filter((i) => i >= 0);
   renderT2(k, wrong);
-  if (!wrong.length) { feedback($("t2-fb"), "ok", "Juste.", ` ${D.GATES[k].regle} Équation : <span class="eq" style="font-size:18px">${EQH[k]}</span>.`); markDone("t2", true); }
+  if (!wrong.length) { feedback($("t2-fb"), "ok", "Juste.", ` ${SO(D.GATES[k].regle)} Équation : <span class="eq" style="font-size:18px">${EQS(k)}</span>.`); markDone("t2", true); }
   else {
     feedback($("t2-fb"), "bad", `${wrong.length} ligne${wrong.length > 1 ? "s" : ""} à revoir (en rouge).`,
-      ` Règle de la porte ${D.GATES[k].nom} : ${D.GATES[k].regle} Essaie-la dans le N°1 si tu hésites.`);
+      ` Règle de la porte ${D.GATES[k].nom} : ${SO(D.GATES[k].regle)} Essaie-la dans le N°1 si tu hésites.`);
     markDone("t2", false);
   }
 };
 drawT2();
 
-// ---------------------------------------------- N°3 voyant défaut D = M · (P + C)
-let t3 = Array(8).fill(null), t3eq = null;
-const T3REF = Array.from({ length: 8 }, (_, v) => ((v >> 2) & 1) & (((v >> 1) & 1) | (v & 1)));
-const T3EQ = [["D = M · (P + C)", true], ["D = M + P · C", false], ["D = M · P · C", false], ["D = (M + P) · C", false]];
+// ---------------------------------------------- N°3 voyant de démarrage : S = B · (D + /(A + C)), lignes D C B A
+// entrées du fascicule : A = 0 ceinture bouclée, B = 1 sur P, C = 0 frein enfoncé, D = 1 service ; voyant actif à 1
+const OV = (x) => `<span class="ov">${x}</span>`;
+const DEM = (d, c, b, a) => b & (d | (1 - (a | c)));          // S = 1 : démarrage autorisé, LED allumée
+let t3 = Array(16).fill(null), t3eq = null;
+const T3REF = Array.from({ length: 16 }, (_, v) => DEM((v >> 3) & 1, (v >> 2) & 1, (v >> 1) & 1, v & 1));
+const T3EQ = [[`S = B · (D + ${OV("A + C")})`, true], ["S = B · (D + A · C)", false], [`S = B · D · ${OV("A + C")}`, false], [`S = B + D + ${OV("A + C")}`, false]];
 function renderT3(wrong) {
-  let h = '<tr><th>M</th><th>P</th><th>C</th><th class="out">D</th></tr>';
-  for (let v = 0; v < 8; v++) {
+  let h = '<tr><th>D</th><th>C</th><th>B</th><th>A</th><th class="out">S</th></tr>';
+  for (let v = 0; v < 16; v++) {
     const val = t3[v];
-    h += `<tr><td>${(v >> 2) & 1}</td><td>${(v >> 1) & 1}</td><td>${v & 1}</td><td class="out ${wrong.includes(v) ? "wrong" : ""}"><button data-i="${v}" class="${val === null ? "" : "set"}" aria-label="D pour la ligne ${v}">${val === null ? "?" : val}</button></td></tr>`;
+    h += `<tr><td>${(v >> 3) & 1}</td><td>${(v >> 2) & 1}</td><td>${(v >> 1) & 1}</td><td>${v & 1}</td><td class="out ${wrong.includes(v) ? "wrong" : ""}"><button data-i="${v}" class="${val === null ? "" : "set"}" aria-label="S pour la ligne ${v}">${val === null ? "?" : val}</button></td></tr>`;
   }
   $("t3-tab").innerHTML = h;
   $("t3-tab").querySelectorAll("button").forEach((b) => b.onclick = () => { const i = +b.dataset.i; t3[i] = t3[i] === null ? 0 : (t3[i] === 0 ? 1 : null); renderT3([]); });
 }
 T3EQ.forEach(([e], i) => {
-  const b = document.createElement("button"); b.className = "chip"; b.textContent = e; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", "false");
+  const b = document.createElement("button"); b.className = "chip"; b.innerHTML = e; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", "false");
   b.onclick = () => { t3eq = i; $("t3-eqs").querySelectorAll(".chip").forEach((c, j) => { c.setAttribute("aria-pressed", j === i ? "true" : "false"); c.setAttribute("aria-checked", j === i ? "true" : "false"); }); };
   $("t3-eqs").appendChild(b);
 });
-$("t3-reset").onclick = () => { t3 = Array(8).fill(null); t3eq = null; renderT3([]); $("t3-eqs").querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", "false")); $("t3-fb").className = "fb"; };
+$("t3-reset").onclick = () => { t3 = Array(16).fill(null); t3eq = null; renderT3([]); $("t3-eqs").querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", "false")); $("t3-fb").className = "fb"; };
 $("t3-check").onclick = () => {
-  if (t3.includes(null) || t3eq === null) { feedback($("t3-fb"), "info", "Il manque des réponses.", "Remplis les 8 lignes de D et choisis une équation."); return; }
+  if (t3.includes(null) || t3eq === null) { feedback($("t3-fb"), "info", "Il manque des réponses.", "Remplis les 16 lignes de S et choisis une équation."); return; }
   const wrong = T3REF.map((r, i) => (r === t3[i] ? -1 : i)).filter((i) => i >= 0);
   renderT3(wrong);
   const eqOk = T3EQ[t3eq][1];
   if (!wrong.length && eqOk) {
-    feedback($("t3-fb"), "ok", "Juste.", " D = 1 sur trois lignes seulement : 101, 110 et 111. La ligne doit être en marche (M = 1) et au moins un défaut présent (P + C). D'où D = M · (P + C) : une porte OU suivie d'une porte ET.");
+    feedback($("t3-fb"), "ok", "Juste.", " S = 1 sur cinq lignes seulement (D C B A) : 0010, 1010, 1011, 1110 et 1111. Il faut toujours B = 1, puis soit D = 1, soit A = 0 et C = 0 : c'est la porte NON-OU. Une NON-OU, un OU et un ET donnent S = 1 et la LED s'allume.");
     markDone("t3", true);
   } else {
     let msg = "";
-    if (wrong.length) msg += ` ${wrong.length} ligne${wrong.length > 1 ? "s" : ""} de la table à revoir (en rouge). Ligne arrêtée (M = 0) : D = 0 dans tous les cas.`;
-    if (!eqOk) msg += " L'équation ne correspond pas : lis-la sur une ligne précise, par exemple M = 1, P = 0, C = 1.";
+    if (wrong.length) {
+      const bad = wrong.map((v) => [(v >> 3) & 1, (v >> 2) & 1, (v >> 1) & 1, v & 1]);
+      msg += ` ${wrong.length} ligne${wrong.length > 1 ? "s" : ""} à revoir (en rouge).`;
+      if (bad.some((r) => r[2] === 0)) msg += " Sélecteur hors de P (B = 0) : jamais de démarrage, donc S = 0.";
+      else msg += " Lis la ligne avec le cahier des charges : la ceinture est bouclée quand A = 0, le frein enfoncé quand C = 0. Avec B = 1, il faut D = 1, ou bien A = 0 et C = 0.";
+    }
+    if (!eqOk) msg += " L'équation ne correspond pas : teste-la sur une ligne précise, par exemple D C B A = 0 0 1 0 (démarrage normal, S = 1).";
     feedback($("t3-fb"), "bad", "Pas encore.", msg); markDone("t3", false);
   }
 };
@@ -585,8 +635,8 @@ const MYST = [
   { k: "NON-OU", A: [0, 0, 1, 0, 1, 0, 0, 1], B: [0, 1, 0, 0, 1, 0, 1, 0] },
 ];
 function chronoSVG(A, B, Y) {
-  const x0 = 40, pw = 64, H = 50, gap = 26, rows = [["A", A], ["B", B], ["Y", Y]];
-  let s = `<svg viewBox="0 0 ${x0 + 8 * pw + 10} ${3 * (H + gap) + 26}" width="${x0 + 8 * pw + 10}" role="img" aria-label="Chronogramme A, B, Y">`;
+  const x0 = 40, pw = 64, H = 50, gap = 26, rows = [["A", A], ["B", B], ["S", Y]];
+  let s = `<svg viewBox="0 0 ${x0 + 8 * pw + 10} ${3 * (H + gap) + 26}" width="${x0 + 8 * pw + 10}" role="img" aria-label="Chronogramme A, B, S">`;
   for (let i = 0; i < 8; i++) {
     s += `<text x="${x0 + i * pw + pw / 2}" y="14" text-anchor="middle" font-size="13" style="fill:var(--muted)">${i + 1}</text>`;
     s += `<line x1="${x0 + i * pw}" y1="20" x2="${x0 + i * pw}" y2="${3 * (H + gap) + 18}" style="stroke:var(--line);stroke-width:1;stroke-dasharray:3 4"/>`;
@@ -596,7 +646,7 @@ function chronoSVG(A, B, Y) {
     s += `<text x="${x0 - 12}" y="${yb - 14}" text-anchor="end" font-size="18" font-style="italic" font-weight="700" style="fill:var(--ink)">${nm}</text>`;
     let d = `M ${x0} ${sig[0] ? yh : yb}`;
     for (let i = 0; i < 8; i++) { const y = sig[i] ? yh : yb; d += ` L ${x0 + i * pw} ${y} L ${x0 + (i + 1) * pw} ${y}`; }
-    s += `<path d="${d}" fill="none" style="stroke:${nm === "Y" ? "var(--one)" : "var(--ink)"};stroke-width:3"/>`;
+    s += `<path d="${d}" fill="none" style="stroke:${nm === "S" ? "var(--one)" : "var(--ink)"};stroke-width:3"/>`;
   });
   return s + "</svg>";
 }
@@ -618,10 +668,10 @@ $("t4-check").onclick = () => {
     if (v && !good) {
       // l'intervalle qui contredit le choix
       const j = m.A.findIndex((a, t) => FN[v](a, m.B[t]) !== m.Y[t]);
-      notes.push(`Chronogramme ${i + 1} : intervalle ${j + 1}, A = ${m.A[j]} et B = ${m.B[j]}. Une porte ${D.GATES[v].nom} donnerait Y = ${FN[v](m.A[j], m.B[j])}, l'écran montre Y = ${m.Y[j]}.`);
+      notes.push(`Chronogramme ${i + 1} : intervalle ${j + 1}, A = ${m.A[j]} et B = ${m.B[j]}. Une porte ${D.GATES[v].nom} donnerait S = ${FN[v](m.A[j], m.B[j])}, l'écran montre S = ${m.Y[j]}.`);
     }
   });
-  if (ok === 3) { feedback($("t4-fb"), "ok", "Les trois sont justes.", " Méthode : chercher la combinaison qui départage. A = B = 1 sépare OU (Y = 1) et OU exclusif (Y = 0) ; A = B = 0 sépare NON-OU (Y = 1) de OU (Y = 0)."); markDone("t4", true); }
+  if (ok === 3) { feedback($("t4-fb"), "ok", "Les trois sont justes.", " Méthode : chercher la combinaison qui départage. A = B = 1 sépare OU (S = 1) et OU exclusif (S = 0) ; A = B = 0 sépare NON-OU (S = 1) de OU (S = 0)."); markDone("t4", true); }
   else feedback($("t4-fb"), "bad", `${ok} sur 3.`, notes.length ? " " + notes.join(" ") : " Choisis une porte pour chaque chronogramme.");
   if (ok < 3) markDone("t4", false);
 };
@@ -630,9 +680,9 @@ $("t4-check").onclick = () => {
 const SITU = [
   ["Presse à deux mains : la presse ne descend que si l'opérateur appuie sur les deux boutons à la fois.", "ET", "74HC08"],
   ["Plafonnier de voiture : la lampe s'allume si l'une des deux portières est ouverte, ou les deux.", "OU", "74HC32"],
-  ["Voyant « cuve vide » : il s'allume quand le capteur de niveau N donne 0.", "NON", "74HC04"],
-  ["Voyant « remplir » : les capteurs des cuves de sirop et d'eau donnent 1 quand le niveau est bon. Le voyant s'allume dès qu'une cuve n'a plus assez de liquide.", "NON-ET", "74HC00"],
-  ["Surveillance : deux capteurs redondants mesurent le même niveau. L'alarme sonne quand ils ne donnent pas la même valeur.", "OUX", "74HC86"],
+  ["Phares automatiques : le capteur de lumière donne 1 quand il fait jour. Les phares s'allument quand il fait nuit.", "NON", "74HC04"],
+  ["Alarme des vitres : chaque capteur donne 1 quand sa vitre est fermée. Le voyant s'allume dès qu'une des deux vitres est ouverte.", "NON-ET", "74HC00"],
+  ["Accélérateur : deux capteurs redondants mesurent la position de la pédale. L'alarme sonne quand ils ne donnent pas la même valeur.", "OUX", "74HC86"],
 ];
 const CIS = ["74HC00", "74HC02", "74HC04", "74HC08", "74HC32", "74HC86", "74HC7266"];
 SITU.forEach(([s], i) => {
@@ -655,11 +705,12 @@ $("t5-check").onclick = () => {
   else { feedback($("t5-fb"), "bad", `${ok} sur ${SITU.length}.`, notes.length ? " " + notes.join(" ") : " Relis chaque situation : quelles entrées, et quand la sortie vaut-elle 1 ?"); markDone("t5", false); }
 };
 
-// ---------------------------------------------- N°6 brochage du 74HC08
-const PL = ["1A", "1B", "1Y", "2A", "2B", "2Y", "GND"], PR = ["VCC", "4B", "4A", "4Y", "3B", "3A", "3Y"];
-function dipSVG() {
+// ---------------------------------------------- N°6 démarrage sur 74HC02, 74HC32 et 74HC08 ; résistance de la LED
+const PIN02 = ["1Y", "1A", "1B", "2Y", "2A", "2B", "GND", "3A", "3B", "3Y", "4A", "4B", "4Y", "VCC"];
+const PIN08 = ["1A", "1B", "1Y", "2A", "2B", "2Y", "GND", "3Y", "3A", "3B", "4Y", "4A", "4B", "VCC"];
+function dipSVG(nom, pins, sous) {
   const bx = 150, by = 20, bw = 170, ph = 46;
-  let s = `<svg viewBox="0 0 470 ${by * 2 + ph * 7 + 20}" width="470" role="img" aria-label="Brochage du 74HC08 vu de dessus">`;
+  let s = `<svg viewBox="0 0 470 ${by * 2 + ph * 7 + 50}" width="470" role="img" aria-label="Brochage du ${nom} vu de dessus">`;
   s += `<rect x="${bx}" y="${by}" width="${bw}" height="${ph * 7 + 20}" rx="10" style="fill:#343848;stroke:var(--ink);stroke-width:2"/>`;
   s += `<path d="M ${bx + bw / 2 - 18} ${by} a 18 18 0 0 0 36 0" style="fill:#1E2030"/>`;
   for (let i = 0; i < 7; i++) {
@@ -667,98 +718,121 @@ function dipSVG() {
     s += `<rect x="${bx - 24}" y="${y - 9}" width="24" height="18" style="fill:#C8CEDA;stroke:var(--ink);stroke-width:1.5"/>`;
     s += `<rect x="${bx + bw}" y="${y - 9}" width="24" height="18" style="fill:#C8CEDA;stroke:var(--ink);stroke-width:1.5"/>`;
     s += `<text x="${bx + 10}" y="${y + 5}" font-size="13" fill="#B8BED0">${i + 1}</text><text x="${bx + bw - 10}" y="${y + 5}" font-size="13" text-anchor="end" fill="#B8BED0">${14 - i}</text>`;
-    s += `<text x="${bx - 32}" y="${y + 6}" font-size="16" font-weight="700" text-anchor="end" style="fill:var(--ink)">${PL[i]}</text>`;
-    s += `<text x="${bx + bw + 32}" y="${y + 6}" font-size="16" font-weight="700" style="fill:var(--ink)">${PR[i]}</text>`;
+    s += `<text x="${bx - 32}" y="${y + 6}" font-size="16" font-weight="700" text-anchor="end" style="fill:var(--ink)">${pins[i]}</text>`;
+    s += `<text x="${bx + bw + 32}" y="${y + 6}" font-size="16" font-weight="700" style="fill:var(--ink)">${pins[13 - i]}</text>`;
   }
-  s += `<text x="${bx + bw / 2}" y="${by + ph * 3.5 + 6}" text-anchor="middle" font-size="22" font-weight="700" fill="#EEF1F7" font-family="IBM Plex Mono, monospace">74HC08</text>`;
+  s += `<text x="${bx + bw / 2}" y="${by + ph * 3.5 + 6}" text-anchor="middle" font-size="22" font-weight="700" fill="#EEF1F7" font-family="IBM Plex Mono, monospace">${nom}</text>`;
+  s += `<text x="235" y="${by * 2 + ph * 7 + 40}" text-anchor="middle" font-size="15" style="fill:var(--muted)">${sous}</text>`;
   return s + "</svg>";
 }
-$("t6-svg").innerHTML = dipSVG();
-const SIG = [["B", "capteur bouteille"], ["N", "capteur niveau"], ["V", "vanne"], ["+5 V", "alimentation"], ["GND", "masse"]];
-SIG.forEach(([s, l], i) => {
-  const lab = document.createElement("label"); lab.setAttribute("for", `t6-p${i}`);
-  lab.innerHTML = `<div>${s} <span class="muted">(${l})</span></div><select id="t6-p${i}"><option value="">broche…</option>${Array.from({ length: 14 }, (_, j) => `<option value="${j + 1}">${j + 1}</option>`).join("")}</select>`;
-  $("t6-pins").appendChild(lab);
+$("t6-svg02").innerHTML = dipSVG("74HC02", PIN02, "74HC02 : 4 portes NON-OU");
+$("t6-svg08").innerHTML = dipSVG("74HC08", PIN08, "74HC08 (ET) et 74HC32 (OU) : même brochage");
+// [entrée, entrée, sortie] de chaque porte
+const G02 = [[2, 3, 1], [5, 6, 4], [8, 9, 10], [11, 12, 13]], G08 = [[1, 2, 3], [4, 5, 6], [9, 10, 8], [12, 13, 11]];
+const T6 = [
+  { ci: "a) 74HC02, porte NON-OU", g: G02, sig: [["A", "ceinture"], ["C", "frein"], ["sortie", "vers le 74HC32"]] },
+  { ci: "b) 74HC32, porte OU", g: G08, sig: [["entrée", "venant du 74HC02"], ["D", "mode service"], ["sortie", "vers le 74HC08"]] },
+  { ci: "c) 74HC08, porte ET", g: G08, sig: [["entrée", "venant du 74HC32"], ["B", "sélecteur"], ["S", "vers la LED"]] },
+  { ci: "d) Alimentation des trois CI", sig: [["+5 V", "alimentation"], ["GND", "masse"]] },
+];
+const OPTS = `<option value="">broche…</option>${Array.from({ length: 14 }, (_, j) => `<option value="${j + 1}">${j + 1}</option>`).join("")}`;
+T6.forEach((c, i) => {
+  const h = document.createElement("h4"); h.textContent = c.ci; $("t6-pins").appendChild(h);
+  c.sig.forEach(([sg, l], j) => {
+    const lab = document.createElement("label"); lab.setAttribute("for", `t6-p${i}${j}`);
+    lab.innerHTML = `<div>${sg} <span class="muted">(${l})</span></div><select id="t6-p${i}${j}">${OPTS}</select>`;
+    $("t6-pins").appendChild(lab);
+  });
 });
-const GATES08 = [[1, 2, 3], [4, 5, 6], [9, 10, 8], [12, 13, 11]];
+const FR = (n, d) => `<span class="frac"><span>${n}</span><span>${d}</span></span>`;
 $("t6-check").onclick = () => {
-  const p = SIG.map((_, i) => +$(`t6-p${i}`).value || 0);
-  if (p.includes(0)) { feedback($("t6-fb"), "info", "Il manque des broches.", "Choisis une broche pour chaque signal."); return; }
-  const g = GATES08.find((x) => [x[0], x[1]].includes(p[0]) && [x[0], x[1]].includes(p[1]) && p[0] !== p[1]);
+  const p = T6.map((c, i) => c.sig.map((_, j) => +$(`t6-p${i}${j}`).value || 0));
+  const r = parseFloat($("t6-r").value), e12 = +$("t6-e12").value || 0;
+  if (p.flat().includes(0) || isNaN(r) || !e12) { feedback($("t6-fb"), "info", "Il manque des réponses.", "Choisis une broche pour chaque signal, écris R et choisis la valeur E12."); return; }
   const notes = [];
-  if (!g) notes.push("B et N doivent arriver sur les deux entrées d'une même porte (par exemple 1A et 1B, broches 1 et 2).");
-  else if (p[2] !== g[2]) notes.push(`La sortie de cette porte est la broche ${g[2]}.`);
-  if (p[3] !== 14) notes.push("Le +5 V va sur VCC, broche 14.");
-  if (p[4] !== 7) notes.push("La masse va sur GND, broche 7.");
-  if (!notes.length) { feedback($("t6-fb"), "ok", "Câblage juste.", ` Porte utilisée : ${p[0]}, ${p[1]} → ${p[2]}. N'oublie pas de relier les entrées des trois autres portes à GND : une entrée CMOS ne reste jamais en l'air.`); markDone("t6", true); }
-  else { feedback($("t6-fb"), "bad", "À corriger.", " " + notes.join(" ")); markDone("t6", false); }
+  T6.slice(0, 3).forEach((c, i) => {
+    const [e1, e2, o] = p[i], g = c.g.find((x) => [x[0], x[1]].includes(e1) && [x[0], x[1]].includes(e2) && e1 !== e2);
+    const comme08 = i === 0 && G08.some((x) => [x[0], x[1]].includes(e1) && [x[0], x[1]].includes(e2) && o === x[2]);
+    if (comme08) notes.push("74HC02 : tu as pris le brochage du 74HC08. Sur le 74HC02, la sortie 1Y est la broche 1 et les entrées 1A, 1B sont les broches 2 et 3.");
+    else if (!g) notes.push(`${c.ci.slice(3)} : les deux entrées doivent arriver sur la même porte (par exemple ${c.g[0][0]} et ${c.g[0][1]}).`);
+    else if (o !== g[2]) notes.push(`${c.ci.slice(3)} : la sortie de cette porte est la broche ${g[2]}.`);
+  });
+  if (p[3][0] !== 14) notes.push("Le +5 V va sur VCC, broche 14 des trois CI.");
+  if (p[3][1] !== 7) notes.push("La masse va sur GND, broche 7 des trois CI.");
+  const rOk = Math.abs(r - 1450) <= 15, eOk = e12 === 1500;
+  if (!rOk) notes.push("<i>R</i> : la résistance prend la tension qui reste, <i>V</i><sub>OH</sub> − <i>U</i><sub>F</sub>, et laisse passer <i>I</i><sub>F</sub> = 2 mA.");
+  else if (!eOk) notes.push("E12 : prends la valeur juste au-dessus de 1450 Ω, pour ne pas dépasser 2 mA.");
+  const an = `<i>R</i> = ${FR("<i>V</i><sub>OH</sub> − <i>U</i><sub>F</sub>", "<i>I</i><sub>F</sub>")} = ${FR("4,9 [V] − 2 [V]", "2 [mA]")}`;
+  const calc = `<div class="calc" style="margin-top:6px">${an} = 1,45 [kΩ]</div><div>Valeur E12 juste au-dessus, pour ne pas dépasser 2 mA : 1,5 kΩ.</div>` +
+    `<div class="calc">Contrôle : <i>I</i> = ${FR("2,9 [V]", "1,5 [kΩ]")} = 1,933 [mA], pas plus de 2 mA.</div>`;
+  if (!notes.length) {
+    feedback($("t6-fb"), "ok", "Câblage et calcul justes.", ` Le 74HC02 a ses sorties sur les broches 1, 4, 10 et 13 : son brochage n'est pas celui du 74HC32 et du 74HC08. Relie à GND les entrées des portes inutilisées : une entrée CMOS ne reste jamais en l'air.${calc}`);
+    markDone("t6", true);
+  } else { feedback($("t6-fb"), "bad", "À corriger.", " " + notes.join(" ") + (rOk ? "" : `<div class="calc" style="margin-top:6px">${an} = …</div>`)); markDone("t6", false); }
 };
 // ================================================================ leçons animées de la page 121 (présentation 120)
-const OVN = '<tspan style="text-decoration:overline">N</tspan>';
+// Sortie S, entrées A, B, C, D (REGLES 3.4). V2 (11/27/2026) : la voiture électrique remplace la ligne de remplissage.
 
-// ---------------------------------------------------------------- L1 la ligne de remplissage (diapo 2)
-// temps du scénario u = t / 1.5 (ralenti), boucle de 27 s de scénario
-const LK = (u) => { let k = 0; for (const [a, b] of [[0, 3], [6, 9], [12, 15], [21, 24]]) { if (u >= b) k++; else if (u > a) return k + ease((u - a) / (b - a)); else return k; } return k; };
-const LFILL = { 1: [3, 6], 2: [9, 12], 3: [18, 21], 4: [24, 27] };
-const lfill = (j, u) => j <= 0 ? 1 : LFILL[j] ? clamp((u - LFILL[j][0]) / 3) : 0;
-const inI = (u, iv) => iv.some(([a, b]) => u >= a && u < b);
-const LB = (u) => inI(u, [[3, 6], [9, 12], [15, 21], [24, 27]]) ? 1 : 0;
-const LL = (u) => u < 3 ? 0.7 : u < 6 ? lerp(0.7, 0.6, (u - 3) / 3) : u < 9 ? 0.6 : u < 12 ? lerp(0.6, 0.5, (u - 9) / 3) : u < 18 ? 0.5 :
-  u < 23 ? lerp(0.5, 0.8, (u - 18) / 5) : u < 24 ? 0.8 : u < 27 ? lerp(0.8, 0.7, (u - 24) / 3) : 0.7;
-const LN = (u) => LL(u) > 0.5001 ? 1 : 0;
-const LV = (u) => LB(u) & LN(u);
+// ---------------------------------------------------------------- L1 la voiture électrique (diapositives 2 et 13)
+// Entrées du fascicule (A = 0 ceinture bouclée, B = 1 sur P, C = 0 frein enfoncé, D = 1 service), voyant actif à 1 (Gaël, 11/27/2026) :
+// S = B · (D + /(A + C)) ; S = 1 : LED allumée, démarrage autorisé. Scénario : [instant (s), changements]
+const L1SC = [[0, { A: 1, B: 0, C: 1, D: 0 }], [5, { A: 0 }], [10, { B: 1 }], [15, { C: 0 }], [21, { C: 1 }], [25, { A: 1 }], [27, { D: 1 }], [32, { B: 0 }]];
+const l1at = (u) => { const v = {}; for (const [t0, ch] of L1SC) if (u >= t0) Object.assign(v, ch); return v; };
+const l1S = (v) => v.B & (v.D | (1 - (v.A | v.C)));
+const L1CARD = [["B", "Sélecteur", (x) => (x ? "sur P" : "sur D (conduite)")], ["D", "Mode service", (x) => (x ? "actif" : "inactif")],
+  ["A", "Ceinture", (x) => (x ? "débouclée" : "bouclée")], ["C", "Frein", (x) => (x ? "pédale relâchée" : "pédale enfoncée")]];
 lesson("L1", {
-  dur: 40.5, label: "Animation : la ligne de remplissage, avec le capteur de bouteille B, le capteur de niveau N, la vanne V = B · N et son chronogramme",
+  dur: 42, label: "Animation : la commande de démarrage d'une voiture électrique, avec les entrées A, B, C, D, trois portes (NON-OU, OU, ET), la LED entre S et GND, et le chronogramme",
   steps: [
-    [0, "Sur la ligne de remplissage, chaque capteur donne un 0 ou un 1. B = 1 : une bouteille vide est sous le bec."],
-    [6, "N = 1 : la cuve contient assez de liquide. La vanne s'ouvre seulement si B = 1 et N = 1 : V = B · N, une porte ET."],
-    [13.5, "La cuve se vide peu à peu. Quand le liquide passe sous le capteur, N tombe à 0."],
-    [22.5, "Une bouteille attend (B = 1), mais N = 0 : la vanne reste fermée et le voyant « cuve vide » s'allume."],
-    [27, "La pompe remplit la cuve : N repasse à 1 et la vanne s'ouvre enfin."],
-    [33, "Le chronogramme garde la trace de B, N et V : V vaut 1 seulement quand B et N valent 1 en même temps."],
+    [0, "Chaque entrée donne un 0 ou un 1. Attention : la ceinture donne A = 0 quand elle est bouclée, le frein C = 0 quand la pédale est enfoncée. La LED s'allume quand S = 1."],
+    [5, "Ceinture bouclée : A passe à 0. Le sélecteur n'est pas sur P (B = 0) : S = 0, la LED reste éteinte."],
+    [10, "Sélecteur sur P : B = 1. Il manque encore le frein : la NON-OU donne 0, donc S = 0."],
+    [15, "Pédale de frein enfoncée : C = 0. La NON-OU donne 1 (A = 0 et C = 0), l'OU donne 1, le ET donne S = 1 : la LED s'allume."],
+    [21, "Frein relâché : C = 1. La NON-OU repasse à 0, S = 0 : la LED s'éteint."],
+    [25, "Au garage, ceinture débouclée (A = 1). Le technicien active le mode service : D = 1 suffit à l'OU, et S = 1."],
+    [32, "Sélecteur hors de P : B = 0. Même en mode service, S = 0 : sans P, pas de démarrage."],
+    [37, "Le chronogramme garde la trace : S vaut 1 seulement quand B = 1, avec D = 1 ou A = C = 0."],
   ],
   draw(t) {
-    const u = t / 1.5, k = LK(u), B = LB(u), N = LN(u), V = LV(u), L = LL(u), pump = u >= 18 && u < 23;
-    let s = '<svg viewBox="0 0 960 400">';
-    // pompe et cuve
-    s += `<line x1="110" y1="60" x2="194" y2="60" style="stroke:var(--muted);stroke-width:6"/><line x1="226" y1="60" x2="270" y2="60" style="stroke:var(--muted);stroke-width:6"/>`;
-    s += `<circle cx="210" cy="60" r="16" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/>`;
-    const an = pump ? u * 7 : 0.6;
-    s += `<line x1="${210 - 11 * Math.cos(an)}" y1="${60 - 11 * Math.sin(an)}" x2="${210 + 11 * Math.cos(an)}" y2="${60 + 11 * Math.sin(an)}" style="stroke:${pump ? "var(--one)" : "var(--ink)"};stroke-width:3"/>`;
-    s += TX(210, 98, pump ? "pompe : marche" : "pompe", { size: 13, anchor: "middle", color: pump ? "var(--one)" : "var(--muted)", bold: pump });
-    s += `<rect x="270" y="${150 - L * 120}" width="160" height="${L * 120}" style="fill:var(--one);opacity:.45"/>`;
-    s += `<rect x="270" y="30" width="160" height="120" rx="4" style="fill:none;stroke:var(--ink);stroke-width:3"/>` + TX(350, 24, "cuve", { size: 13, anchor: "middle", color: "var(--muted)" });
-    s += `<line x1="272" y1="90" x2="428" y2="90" style="stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4"/><path d="M 444 90 l 12 -8 v 16 z" style="fill:${N ? "var(--one)" : "var(--ink)"}"/>`;
-    s += TX(462, 96, "N", { size: 18, bold: true, italic: true }) + pill(500, 90, N);
-    s += lampG(570, 72, 14, !N, "var(--warn)") + TX(570, 106, "cuve vide", { size: 13, anchor: "middle", bold: !N, color: !N ? "var(--warn)" : "var(--muted)" }) +
-      TX(570, 124, "= " + OVN, { size: 14, anchor: "middle", italic: true });
-    // bec, vanne, jet
-    s += `<line x1="350" y1="150" x2="350" y2="214" style="stroke:var(--muted);stroke-width:8"/>`;
-    s += `<polygon points="336,170 336,186 350,178 364,170 364,186 350,178" style="fill:${V ? "var(--one)" : "var(--surface)"};stroke:var(--ink);stroke-width:2"/>`;
-    s += TX(374, 184, "V", { size: 18, bold: true, italic: true }) + pill(410, 178, V);
-    if (V) s += `<rect x="346" y="214" width="8" height="24" style="fill:var(--one);opacity:.8"/>`;
-    // convoyeur et bouteilles
-    s += `<rect x="10" y="310" width="610" height="14" rx="7" style="fill:var(--line);stroke:var(--ink);stroke-width:1.5"/>`;
-    for (let i = 0; i < 16; i++) { const x = 10 + ((i * 40 + k * 120) % 640); if (x < 616) s += `<line x1="${x}" y1="312" x2="${x}" y2="322" style="stroke:var(--muted);stroke-width:2"/>`; }
-    const bot = [];
-    for (let j = Math.floor(k) - 3; j <= Math.floor(k) + 4; j++) {
-      const x = 350 + (k - j) * 120; if (x < 26 || x > 604) continue;
-      const f = lfill(j, u); bot.push(x);
-      s += `<rect x="${x - 6}" y="236" width="12" height="15" style="fill:var(--surface);stroke:var(--ink);stroke-width:1.8"/>`;
-      s += `<rect x="${x - 16}" y="250" width="32" height="60" rx="5" style="fill:var(--surface);stroke:var(--ink);stroke-width:1.8"/>`;
-      if (f > 0) s += `<rect x="${x - 14}" y="${308 - 56 * f}" width="28" height="${56 * f}" rx="3" style="fill:var(--one);opacity:.7"/>`;
-    }
-    // barrière lumineuse B
-    const hit = bot.filter((x) => x + 16 > 304 && x - 16 < 396).map((x) => x - 16).sort((a, b) => a - b)[0];
-    s += `<rect x="296" y="276" width="8" height="18" style="fill:var(--ink)"/><rect x="396" y="276" width="8" height="18" style="fill:var(--ink)"/>`;
-    s += `<line x1="304" y1="285" x2="${hit != null ? Math.max(304, hit) : 396}" y2="285" style="stroke:var(--bad);stroke-width:2;stroke-dasharray:5 3"/>`;
-    s += pill(150, 352, B) + TX(124, 359, "B", { size: 18, bold: true, italic: true, anchor: "end" }) +
-      TX(176, 358, "barrière lumineuse : une bouteille vide est sous le bec", { size: 14, color: "var(--muted)" });
-    // logique et chronogramme
-    const g = gateAt("ET", B, N, V, 640, 0, 0.85, { labels: ["B", "N"], out: "V" });
-    s += g.svg + TX(790, 142, "V = B · N", { size: 20, bold: true, anchor: "middle", color: "var(--head)" });
-    s += traceG(700, 156, 240, [{ name: "B", f: LB }, { name: "N", f: LN }, { name: "V", f: LV, color: "var(--one)" }], u, 27, { rh: 42, dt: 0.05 });
-    s += TX(820, 298, "chronogramme", { size: 12, anchor: "middle", color: "var(--muted)" });
+    const v = l1at(t), N = 1 - (v.A | v.C), O = v.D | N, S = l1S(v), sc = 0.7, dy = 97.52 * sc;
+    const g1 = gateAt("NON-OU", v.A, v.C, N, 330, 152.5, sc, { labels: ["", ""], out: "" });
+    const g2 = gateAt("OU", v.D, N, O, 510, g1.outY - dy, sc, { labels: ["", ""], out: "" });
+    const g3 = gateAt("ET", v.B, O, S, 680, g2.outY - dy, sc, { labels: ["", ""], out: "" });
+    const ROW = { B: 60, D: 120, A: g1.inY[0], C: 255 };
+    const wS = (pts, x) => wireP(pts, x).replace(/stroke-width:(\d+)/, (m, w) => "stroke-width:" + w * sc);   // même épaisseur que les portes réduites
+    let s = '<svg viewBox="0 0 960 462">';
+    // entrées : une carte par capteur
+    L1CARD.forEach(([n, nom, etat]) => {
+      const y = ROW[n], x = v[n];
+      s += `<rect x="16" y="${y - 23}" width="258" height="46" rx="8" style="fill:var(--surface);stroke:var(--line);stroke-width:1.5"/>`;
+      s += TX(28, y - 4, nom, { size: 15, bold: true }) + TX(28, y + 15, etat(x), { size: 14, color: "var(--muted)" });
+      s += TX(208, y + 7, n, { size: 20, bold: true, italic: true, anchor: "middle" }) + pill(244, y, x);
+    });
+    s += wS([[259, ROW.A], [g1.inX, g1.inY[0]]], v.A);
+    s += wS([[259, ROW.C], [312, ROW.C], [312, g1.inY[1]], [g1.inX, g1.inY[1]]], v.C);
+    s += wS([[259, ROW.D], [g2.inX - 16, ROW.D], [g2.inX - 16, g2.inY[0]], [g2.inX, g2.inY[0]]], v.D);
+    s += wS([[259, ROW.B], [g3.inX - 16, ROW.B], [g3.inX - 16, g3.inY[0]], [g3.inX, g3.inY[0]]], v.B);
+    s += wS([[g1.outX, g1.outY], [g2.inX, g2.inY[1]]], N) + wS([[g2.outX, g2.outY], [g3.inX, g3.inY[1]]], O);
+    s += g1.svg + g2.svg + g3.svg;
+    [[g1, 330, "74HC02"], [g2, 510, "74HC32"], [g3, 680, "74HC08"]].forEach(([g, X, ci]) => {
+      s += TX(X + 129 * sc, g.outY + 58 * sc + 20, ci, { size: 13, anchor: "middle", color: "var(--muted)" });
+    });
+    // sortie S, résistance et LED vers GND (la LED s'allume quand S = 1)
+    const xl = 905, yo = g3.outY, led = S === 1;
+    s += wS([[g3.outX, yo], [xl, yo], [xl, yo + 12]], S) + TX((g3.outX + xl) / 2, yo - 10, "S", { size: 18, bold: true, italic: true, anchor: "middle" });
+    s += `<line x1="${xl}" y1="${yo + 12}" x2="${xl}" y2="${yo + 100}" style="stroke:var(--ink);stroke-width:2.5"/>`;
+    s += `<rect x="${xl - 7}" y="${yo + 12}" width="14" height="36" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.2"/>` + TX(xl - 16, yo + 36, "R", { size: 15, italic: true, anchor: "end" });
+    if (led) s += `<circle cx="${xl}" cy="${yo + 70}" r="24" style="fill:#FF5A3C;opacity:.3"/>`;
+    s += `<polygon points="${xl - 12},${yo + 60} ${xl + 12},${yo + 60} ${xl},${yo + 80}" style="fill:${led ? "#FF5A3C" : "var(--surface)"};stroke:var(--ink);stroke-width:2"/>`;
+    s += `<line x1="${xl - 12}" y1="${yo + 81}" x2="${xl + 12}" y2="${yo + 81}" style="stroke:var(--ink);stroke-width:2.6"/>` + TX(xl - 30, yo + 76, "LED", { size: 13, anchor: "end" });
+    s += `<path d="M ${xl + 15} ${yo + 66} l 10 -8 m -4 0 h 4 v 4 M ${xl + 15} ${yo + 74} l 10 -8 m -4 0 h 4 v 4" style="fill:none;stroke:${led ? "#D0312D" : "var(--ink)"};stroke-width:1.6"/>`;
+    s += masseG(xl, yo + 100, { fil: 0 });
+    s += TX(870, 272, led ? "LED allumée : démarrage autorisé" : "LED éteinte", { size: 14, bold: led, anchor: "end", color: led ? "var(--bad)" : "var(--muted)" });
+    // chronogramme
+    s += TX(520, 288, "chronogramme", { size: 12, anchor: "middle", color: "var(--muted)" });
+    const f = (k) => (u) => l1at(u)[k];
+    s += traceG(120, 296, 800, [{ name: "A", f: f("A") }, { name: "B", f: f("B") }, { name: "C", f: f("C") }, { name: "D", f: f("D") },
+      { name: "S", f: (u) => l1S(l1at(u)), color: "var(--one)" }], Math.min(t, 40), 40, { rh: 32, dt: 0.05 });
     return s + "</svg>";
   },
 });
@@ -774,7 +848,7 @@ $("g-b").onclick = () => { gAuto = false; gBtn(); gSet(ga, 1 - gb); };
 if ("IntersectionObserver" in window) new IntersectionObserver((es) => es.forEach((e) => { gVis = e.isIntersecting; gLast = null; }), { threshold: 0.1 }).observe($("g-chrono"));
 function gChrono() {
   const W = 20, x0 = 60, x1 = 940, X = (tm) => x1 - (gT - tm) * (x1 - x0) / W, ws = gT - W, one = gk === "NON";
-  const rows = [["A", (h) => h.a, "var(--ink)"], ["B", (h) => h.b, one ? "var(--line)" : "var(--ink)"], ["Y", (h) => (one ? FN.NON(h.a) : FN[gk](h.a, h.b)), "var(--one)"]];
+  const rows = [["A", (h) => h.a, "var(--ink)"], ["B", (h) => h.b, one ? "var(--line)" : "var(--ink)"], ["S", (h) => (one ? FN.NON(h.a) : FN[gk](h.a, h.b)), "var(--one)"]];
   let s = '<svg viewBox="0 0 960 186">';
   for (let k = Math.ceil(ws); k <= gT; k++) s += `<line x1="${X(k)}" y1="8" x2="${X(k)}" y2="176" style="stroke:var(--line);stroke-width:1;stroke-dasharray:2 5"/>`;
   rows.forEach(([nm, f, col], i) => {
@@ -804,7 +878,7 @@ lesson("L2", {
   dur: 30, label: "Animation : la table de vérité d'une porte ET à trois entrées se remplit ligne par ligne, en comptant en binaire de 000 à 111",
   steps: [
     [0, "Une table de vérité donne la sortie pour toutes les combinaisons des entrées. Exemple : une porte ET à 3 entrées (74HC11), testée sur un banc."],
-    [3, "Colonnes du poids fort au poids faible : C B A, puis la sortie Y. Les lignes suivent le comptage binaire, de 000 à 111."],
+    [3, "Colonnes du poids fort au poids faible : C B A, puis la sortie S. Les lignes suivent le comptage binaire, de 000 à 111."],
     [16, "Pour ne rien oublier : A change à chaque ligne, B toutes les 2 lignes, C toutes les 4 lignes."],
     [24, "3 entrées : 2³ = 8 lignes. Avec n entrées, la table a 2ⁿ lignes."],
   ],
@@ -826,10 +900,10 @@ lesson("L2", {
       s += `<line x1="276" y1="${yy}" x2="306" y2="${yy}" style="${wireStyle(cur[i])}"/>` + TX(268, yy + 5, n, { size: 15, bold: true, italic: true, anchor: "end" });
     });
     s += `<rect x="306" y="56" width="70" height="92" style="fill:var(--surface);stroke:var(--ink);stroke-width:3"/>` + TX(341, 86, "&amp;", { size: 22, bold: true, anchor: "middle" });
-    s += `<line x1="376" y1="102" x2="408" y2="102" style="${wireStyle(y)}"/>` + lampG(424, 102, 13, y) + TX(424, 136, "Y", { size: 15, bold: true, italic: true, anchor: "middle" });
+    s += `<line x1="376" y1="102" x2="408" y2="102" style="${wireStyle(y)}"/>` + lampG(424, 102, 13, y) + TX(424, 136, "S", { size: 15, bold: true, italic: true, anchor: "middle" });
     // tableau
     const tx = 520, cw = 70, ry = (r) => 64 + r * 36;
-    ["C", "B", "A", "Y"].forEach((n, i) => {
+    ["C", "B", "A", "S"].forEach((n, i) => {
       s += `<rect x="${tx + i * cw}" y="28" width="${cw}" height="36" style="fill:var(--light);stroke:var(--line)"/>` + TX(tx + i * cw + cw / 2, 53, n, { size: 18, bold: true, anchor: "middle", color: "#242852" });
     });
     for (let r = 0; r < 8; r++) {
@@ -852,7 +926,7 @@ lesson("L2", {
       s += `<g style="opacity:${o}">` +
         TX(820, 110 + i * 60, txt, { size: 16, bold: true, color: "var(--blue)" }) + "</g>";
     });
-    if (cr >= 0 && t < 24) s += TX(60, 230, `ligne ${cr} : C B A = ${cur.join(" ")}`, { size: 20, bold: true }) + TX(60, 262, `Y = A · B · C = ${y}`, { size: 20, color: y ? "var(--one)" : "var(--ink)", bold: true });
+    if (cr >= 0 && t < 24) s += TX(60, 230, `ligne ${cr} : C B A = ${cur.join(" ")}`, { size: 20, bold: true }) + TX(60, 262, `S = A · B · C = ${y}`, { size: 20, color: y ? "var(--one)" : "var(--ink)", bold: true });
     if (t >= 24) { const o = prog(t, 24, 25); s += `<g style="opacity:${o}">` + TX(60, 236, "3 entrées → 2³ = 8 lignes", { size: 26, bold: true, color: "var(--head)" }) + TX(60, 274, "n entrées → 2ⁿ lignes", { size: 22, color: "var(--head)" }) + "</g>"; }
     return s + "</svg>";
   },
@@ -861,12 +935,12 @@ lesson("L2", {
 // ---------------------------------------------------------------- L3 lire un chronogramme (diapo 4)
 let l3g = "ET";
 const L3C = lesson("L3", {
-  dur: 27, label: "Animation : un curseur parcourt le chronogramme intervalle par intervalle, lit A et B, et trouve Y dans la table de vérité",
+  dur: 27, label: "Animation : un curseur parcourt le chronogramme intervalle par intervalle, lit A et B, et trouve S dans la table de vérité",
   extra: '<span class="muted">Porte :</span><span class="chips" id="l3-g"></span>',
   steps: [
     [0, "Le temps avance de gauche à droite. On découpe le chronogramme en intervalles : dans chacun, aucun signal ne change."],
-    [2, "Pour chaque intervalle, on lit A et B, puis on cherche la ligne B A dans la table : elle donne Y."],
-    [12.4, "On continue jusqu'au bout. La courbe Y obtenue est le chronogramme de sortie de la porte."],
+    [2, "Pour chaque intervalle, on lit A et B, puis on cherche la ligne B A dans la table : elle donne S."],
+    [12.4, "On continue jusqu'au bout. La courbe S obtenue est le chronogramme de sortie de la porte."],
     [23, "Si un seul intervalle ne correspond pas à la table, ce n'est pas cette porte : c'est la méthode de cet exercice."],
   ],
   draw(t) {
@@ -876,7 +950,7 @@ const L3C = lesson("L3", {
     if (cur >= 0 && !done) s += `<rect x="${x0 + cur * pw}" y="30" width="${pw}" height="232" style="fill:var(--tint);stroke:var(--blue);stroke-width:2"/>`;
     for (let i = 0; i <= n; i++) s += `<line x1="${x0 + i * pw}" y1="30" x2="${x0 + i * pw}" y2="262" style="stroke:var(--line);stroke-dasharray:3 4"/>`;
     for (let i = 0; i < n; i++) s += TX(x0 + i * pw + pw / 2, 22, i + 1, { size: 13, anchor: "middle", color: "var(--muted)" });
-    [["A", CA, n, "var(--ink)"], ["B", CB, n, "var(--ink)"], ["Y", CY, done ? n : cur + 1, "var(--one)"]].forEach(([nm, sig, upto, col], r) => {
+    [["A", CA, n, "var(--ink)"], ["B", CB, n, "var(--ink)"], ["S", CY, done ? n : cur + 1, "var(--one)"]].forEach(([nm, sig, upto, col], r) => {
       const yb = 100 + r * 75, yh = yb - 42;
       s += TX(x0 - 14, yb - 12, nm, { size: 20, bold: true, italic: true, anchor: "end" }) + `<line x1="${x0}" y1="${yb}" x2="${x0 + n * pw}" y2="${yb}" style="stroke:var(--line)"/>`;
       if (upto > 0) {
@@ -889,7 +963,7 @@ const L3C = lesson("L3", {
     // table B A Y
     const tx = 690, cw = 64;
     s += TX(tx + 1.5 * cw, 22, `Porte ${D.GATES[l3g].nom}`, { size: 15, bold: true, anchor: "middle", color: "var(--head)" });
-    ["B", "A", "Y"].forEach((h, i) => { s += `<rect x="${tx + i * cw}" y="32" width="${cw}" height="34" style="fill:var(--light);stroke:var(--line)"/>` + TX(tx + i * cw + cw / 2, 56, h, { size: 18, bold: true, anchor: "middle", color: "#242852" }); });
+    ["B", "A", "S"].forEach((h, i) => { s += `<rect x="${tx + i * cw}" y="32" width="${cw}" height="34" style="fill:var(--light);stroke:var(--line)"/>` + TX(tx + i * cw + cw / 2, 56, h, { size: 18, bold: true, anchor: "middle", color: "#242852" }); });
     const row = cur >= 0 && !done ? CB[cur] * 2 + CA[cur] : -1;
     tdv(l3g).forEach((r, k) => {
       const y = 66 + k * 36;
@@ -898,7 +972,7 @@ const L3C = lesson("L3", {
     });
     s += `<line x1="${tx + 2 * cw}" y1="32" x2="${tx + 2 * cw}" y2="210" style="stroke:var(--head);stroke-width:3"/>`;
     if (row >= 0) s += TX(tx + 1.5 * cw, 244, `intervalle ${cur + 1} : B A = ${CB[cur]} ${CA[cur]}`, { size: 16, anchor: "middle" }) +
-      TX(tx + 1.5 * cw, 272, `→ Y = ${CY[cur]}`, { size: 22, bold: true, anchor: "middle", color: CY[cur] ? "var(--one)" : "var(--head)" });
+      TX(tx + 1.5 * cw, 272, `→ S = ${CY[cur]}`, { size: 22, bold: true, anchor: "middle", color: CY[cur] ? "var(--one)" : "var(--head)" });
     return s + "</svg>";
   },
 });
@@ -908,50 +982,124 @@ D.ORDER.filter((k) => k !== "NON").forEach((k) => {
   $("l3-g").appendChild(b);
 });
 
-// ---------------------------------------------------------------- L4 le 74HC08 sur breadboard (diapo 13)
+// ---------------------------------------------------------------- L4 le démarrage sur breadboard (diapositives 13 et 14)
+// Entrées : résistance de pull-up vers +5 V, interrupteur vers GND : fermé → 0 (ceinture bouclée, frein enfoncé), ouvert → 1.
+// 74HC02 : A → 1A (2), C → 1B (3), 1Y (1) → 74HC32 1A (1) ; D → 1B (2) ; 1Y (3) → 74HC08 1A (1) ; B → 1B (2) ; 1Y (3) = S → R → LED → GND.
+// Liaisons (REGLES 3.3) : point à chaque jonction en T, saut de fil à chaque croisement sans liaison.
+const L4UNUSED = [[[8, 9, 11, 12], [5, 6]], [[9, 10, 12, 13], [4, 5]], [[9, 10, 12, 13], [4, 5]]];     // entrées inutilisées : [haut, bas]
+const L4T = [0, 5, 10, 16, 22, 28, 34, 40, 46];
+
+// contact à fermeture (CEI 60617-7) vertical entre y0 et y1 : languette fixe en haut, levier qui pivote en bas ; fermé : il touche la languette
+function contact(x, y0, y1, ferme, c, k = 1) {
+  const a = y0 + 8 * k, b = y1 - 8 * k, st = `stroke:${c};stroke-width:${2.4 * Math.min(k, 1.2)};stroke-linecap:round`;
+  return `<line x1="${x}" y1="${y0}" x2="${x}" y2="${a}" style="${st}"/><line x1="${x}" y1="${a}" x2="${x + 8 * k}" y2="${a}" style="${st}"/>` +
+    `<line x1="${x}" y1="${b}" x2="${x}" y2="${y1}" style="${st}"/><circle cx="${x}" cy="${b}" r="${2.2 * k}" style="fill:${c}"/>` +
+    `<line x1="${x}" y1="${b}" x2="${x + (ferme ? 7 : 17) * k}" y2="${ferme ? a : a + 6 * k}" style="${st}"/>`;
+}
+
+// zoom sur une entrée : pull-up et interrupteur (étapes 1 et 2)
+function l4zoom(t) {
+  const ferme = t >= 5, v = ferme ? 0 : 1, x = 300, yn = 240;
+  let s = '<svg viewBox="0 0 960 440">';
+  s += TX(30, 34, "Zoom sur une entrée : résistance de pull-up et interrupteur", { size: 17, bold: true, color: "var(--head)" });
+  s += alimG(x, 92, "+5 V") + `<line x1="${x}" y1="92" x2="${x}" y2="110" style="stroke:var(--ink);stroke-width:2.5"/>`;
+  s += `<rect x="${x - 11}" y="110" width="22" height="70" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/>`;
+  s += TX(x - 24, 140, "R", { size: 17, italic: true, anchor: "end" }) + TX(x - 24, 162, "10 kΩ", { size: 15, anchor: "end", color: "var(--muted)" });
+  s += filP([[x, 180], [x, 280]], v) + liaison(x, yn, "var(--ink)", 5);
+  s += filP([[x, yn], [600, yn]], v) + `<path d="M 600 ${yn - 7} L 614 ${yn} L 600 ${yn + 7} z" style="fill:${v ? "var(--one)" : "var(--zero)"}"/>`;
+  s += TX(624, yn + 6, "vers l'entrée du CI", { size: 15, color: "var(--muted)" });
+  s += TX(500, yn - 24, "entrée", { size: 15, anchor: "end", color: "var(--muted)" }) + pill(526, yn - 30, v);
+  // interrupteur (contact à fermeture, CEI 60617-7) vers GND
+  s += contact(x, 280, 352, ferme, "var(--ink)", 1.6);
+  s += TX(x - 24, 306, "interrupteur", { size: 15, anchor: "end", color: "var(--muted)" }) + TX(x - 24, 326, ferme ? "fermé" : "ouvert", { size: 15, bold: true, anchor: "end" });
+  s += masseG(x, 352);
+  if (ferme) {   // courant : +5 V → R → interrupteur → GND
+    s += `<path d="M ${x - 7} 200 L ${x} 214 L ${x + 7} 200 z" style="fill:var(--bad)"/>` + TX(x + 16, 212, '<tspan font-style="italic">I</tspan> = 0,5 mA', { size: 15, bold: true, color: "var(--bad)" });
+  }
+  s += TX(640, 110, ferme ? "Interrupteur fermé" : "Interrupteur ouvert", { size: 17, bold: true });
+  s += TX(640, 138, ferme ? "courant dans la résistance : 0,5 mA" : "aucun courant dans la résistance", { size: 16 });
+  s += TX(640, 164, ferme ? "entrée reliée à GND : 0" : "entrée tirée à +5 V : 1", { size: 16, bold: true, color: ferme ? "var(--ink)" : "var(--one)" });
+  return s + "</svg>";
+}
+
 lesson("L4", {
-  dur: 20, label: "Animation : un 74HC08 câblé sur breadboard, deux interrupteurs B et N sur la porte 1 et une LED sur sa sortie",
+  dur: 52, label: "Animation : une entrée avec résistance de pull-up, puis la commande de démarrage câblée sur breadboard (74HC02, 74HC32, 74HC08, quatre interrupteurs avec pull-up, LED entre S et GND)",
   steps: [
-    [0, "Le 74HC08 contient 4 portes ET. On utilise la porte 1 : entrées 1A (broche 1) et 1B (broche 2), sortie 1Y (broche 3)."],
-    [5, "Alimentation : +5 V sur VCC (broche 14), masse sur GND (broche 7). Sans elles, le CI ne fonctionne pas."],
-    [10, "Les entrées des portes inutilisées (broches 4, 5, 9, 10, 12, 13) vont à GND : une entrée CMOS ne reste jamais en l'air."],
-    [15, "Avec B = 1 et N = 1, la sortie 1Y passe à 1 et la LED (la vanne) s'allume. Dans les trois autres cas, elle reste éteinte."],
+    [0, "Zoom sur une entrée : la résistance de pull-up R relie l'entrée à +5 V. Interrupteur ouvert : aucun courant dans R, l'entrée est tirée à +5 V, elle vaut 1."],
+    [5, "Interrupteur fermé : il relie l'entrée à GND, elle vaut 0. Le courant passe dans R : 5 V divisés par 10 kΩ, soit 0,5 mA. Sans R, l'interrupteur court-circuiterait l'alimentation."],
+    [10, "Chaque interrupteur a sa résistance de pull-up : A ceinture, C frein, D service, B sélecteur. Ceinture bouclée et frein enfoncé ferment le contact : A = 0 et C = 0."],
+    [16, "Trois CI : 74HC02 (NON-OU), 74HC32 (OU) et 74HC08 (ET). Chacun reçoit +5 V sur la broche 14 et GND sur la broche 7."],
+    [22, "Sur le 74HC02, la sortie 1Y est la broche 1 ; les entrées 1A et 1B sont les broches 2 et 3. A et C y arrivent."],
+    [28, "La sortie du 74HC02 va sur l'entrée 1A du 74HC32 (broche 1), D sur 1B (broche 2). La sortie 1Y est la broche 3."],
+    [34, "Le 74HC08 reçoit la sortie de l'OU (broche 1) et B (broche 2). Sa sortie 1Y (broche 3) est S : elle commande la LED, branchée vers GND à travers R."],
+    [40, "Les entrées des portes inutilisées vont à GND. Un point : les fils sont reliés. Un demi-cercle : les fils se croisent sans contact."],
+    [46, "Essai : ceinture bouclée et frein enfoncé (A et C fermés : 0), sélecteur sur P (B ouvert : 1). S = 1 : la LED s'allume."],
   ],
   draw(t) {
-    const CMB = [[0, 0], [1, 0], [0, 1], [1, 1]][Math.min(3, Math.floor(t / 5))], [B, N] = CMB, V = B & N;
-    const cx = 330, cy = 160, cw = 300, ch = 70, P = (k) => dipPin(cx, cy, cw, ch, k);
-    const ink = "#242852", wv = (v) => v ? "stroke:#297FD5;stroke-width:5" : "stroke:#242852;stroke-width:3", pl = (pts, st) => `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" style="${st};stroke-linejoin:round"/>`;
+    if (t < 10) return l4zoom(t);
+    const essai = t >= 46, V = { A: essai ? 0 : 1, B: essai ? 1 : 0, C: essai ? 0 : 1, D: 0 };
+    const N = 1 - (V.A | V.C), O = V.D | N, S = V.B & O, led = S === 1;
+    const cy = 130, ch = 56, cw = 160, CX = [300, 490, 680], P = (c, k) => dipPin(CX[c], cy, cw, ch, k);
+    const R5 = 36, GT = 62, GB = 440, Y7 = 212, LO = 226, SW0 = 360, SW1 = 400, xl = 860;
+    const COL = [["A", 55, 260, [0, 2]], ["C", 110, 285, [0, 3]], ["D", 165, 310, [1, 2]], ["B", 220, 335, [2, 2]]];
+    const ink = "#242852", red = "#D0312D", gnd = "#5A6478";
+    const ROUGE = `stroke:${red};stroke-width:2.5`, GRIS = `stroke:${gnd};stroke-width:2.2`;
+    const sig = (x) => (x ? "stroke:#297FD5;stroke-width:4.5" : `stroke:${ink};stroke-width:3`);
     const T2 = (x, y, s, o = {}) => TX(x, y, s, Object.assign({ color: ink }, o));
-    let s = '<svg viewBox="0 0 960 380">';
-    s += `<rect x="20" y="28" width="920" height="340" rx="12" style="fill:#F4F5F8;stroke:#C9D2E3"/>`;
-    for (let x = 40; x <= 920; x += 20) for (const y of [120, 300]) s += `<circle cx="${x}" cy="${y}" r="2" style="fill:#C9CFDB"/>`;
-    s += `<line x1="40" y1="52" x2="920" y2="52" style="stroke:#D0312D;stroke-width:4"/>` + T2(44, 46, "+5 V", { size: 13, bold: true, color: "#D0312D" });
-    s += `<line x1="380" y1="80" x2="920" y2="80" style="stroke:${ink};stroke-width:4"/>` + T2(916, 74, "GND", { size: 13, bold: true, anchor: "end" });
-    s += `<line x1="40" y1="348" x2="920" y2="348" style="stroke:${ink};stroke-width:4"/>` + T2(916, 364, "GND", { size: 13, bold: true, anchor: "end" });
-    // alimentation et entrées inutilisées
-    s += pl([P(14), [P(14)[0], 52]], "stroke:#D0312D;stroke-width:3") + `<circle cx="${P(14)[0]}" cy="52" r="4" style="fill:#D0312D"/>`;
-    [13, 12, 10, 9].forEach((k) => { s += pl([P(k), [P(k)[0], 80]], "stroke:#5A6478;stroke-width:2.5") + `<circle cx="${P(k)[0]}" cy="80" r="3.5" style="fill:${ink}"/>`; });
-    s += pl([P(7), [P(7)[0], 348]], `stroke:${ink};stroke-width:3`) + `<circle cx="${P(7)[0]}" cy="348" r="4" style="fill:${ink}"/>`;
-    s += pl([P(4), [P(4)[0], 262], [P(7)[0], 262]], "stroke:#5A6478;stroke-width:2.5") + pl([P(5), [P(5)[0], 262]], "stroke:#5A6478;stroke-width:2.5") + `<circle cx="${P(7)[0]}" cy="262" r="3.5" style="fill:${ink}"/>`;
-    // interrupteurs B et N
-    [["B", "bouteille", B, 280, 1], ["N", "niveau", N, 318, 2]].forEach(([n, l, v, y, pin]) => {
-      s += `<rect x="54" y="${y - 16}" width="140" height="32" rx="6" style="fill:#FFFFFF;stroke:#9AA2B4"/>` + T2(64, y + 6, `${n} ${l}`, { size: 14, bold: true });
-      s += `<rect x="150" y="${y - 8}" width="34" height="16" rx="8" style="fill:${v ? "#297FD5" : "#C9CFDB"}"/><circle cx="${v ? 176 : 158}" cy="${y}" r="7" style="fill:#FFFFFF;stroke:${ink}"/>`;
-      s += pl([[194, y], [P(pin)[0], y], P(pin)], wv(v)) + T2(204, y - 6, n + " = " + v, { size: 13, bold: true, color: v ? "#297FD5" : ink });
+    // tous les fils : [points, style] ; chaque fil saute les tronçons verticaux des autres (REGLES 3.3)
+    const F = [], pts = [], dots = [];
+    const add = (p, st) => { F.push([p, st]); pts.push(p); };
+    add([[30, R5], [930, R5]], `stroke:${red};stroke-width:4`);
+    add([[290, GT], [820, GT]], `stroke:${ink};stroke-width:4`);
+    add([[30, GB], [930, GB]], `stroke:${ink};stroke-width:4`);
+    CX.forEach((_, c) => {
+      const [x14] = P(c, 14), [x7] = P(c, 7);
+      add([P(c, 14), [x14, R5]], ROUGE); dots.push([x14, R5, red]);
+      add([P(c, 7), [x7, GB]], GRIS); dots.push([x7, GB, ink]);
+      L4UNUSED[c][0].forEach((k) => { const [x] = P(c, k); add([P(c, k), [x, GT]], GRIS); dots.push([x, GT, ink]); });
+      const bas = L4UNUSED[c][1].map((k) => P(c, k)[0]);
+      L4UNUSED[c][1].forEach((k, j) => { add([P(c, k), [bas[j], Y7]], GRIS); if (j > 0) dots.push([bas[j], Y7, gnd]); });
+      add([[bas[0], Y7], [x7, Y7]], GRIS); dots.push([x7, Y7, gnd]);
     });
-    // sortie 1Y → LED → résistance → GND
-    const xo = P(3)[0], on = V === 1;
-    s += pl([P(3), [xo, 266]], wv(V));
-    if (on) s += `<circle cx="${xo}" cy="282" r="22" style="fill:#FF5A3C;opacity:.3"/>`;
-    s += `<polygon points="${xo - 11},266 ${xo + 11},266 ${xo},286" style="fill:${on ? "#FF5A3C" : "#FFFFFF"};stroke:${ink};stroke-width:2"/><line x1="${xo - 11}" y1="287" x2="${xo + 11}" y2="287" style="stroke:${ink};stroke-width:2.5"/>`;
-    s += `<path d="M ${xo + 13} 272 l 10 -8 m -4 0 h 4 v 4 M ${xo + 13} 280 l 10 -8 m -4 0 h 4 v 4" style="fill:none;stroke:${on ? "#FF5A3C" : ink};stroke-width:1.6"/>`;
-    s += pl([[xo, 287], [xo, 300]], `stroke:${ink};stroke-width:2.5`) + `<rect x="${xo - 6}" y="300" width="12" height="30" style="fill:#FFFFFF;stroke:${ink};stroke-width:2"/>` + pl([[xo, 330], [xo, 348]], `stroke:${ink};stroke-width:2.5`);
-    s += T2(xo + 30, 296, "LED = vanne V", { size: 13, bold: true, color: on ? "#D0312D" : ink });
-    s += dipG(cx, cy, cw, ch, "74HC08", { nums: true, fs: 24 });
+    COL.forEach(([n, x, ly, [c, k]]) => {
+      const v = V[n], [px, py] = P(c, k);
+      add([[x, R5], [x, 70]], ROUGE); dots.push([x, R5, red]);
+      add([[x, 110], [x, SW0]], sig(v)); dots.push([x, ly, v ? "#297FD5" : ink]);
+      add([[x, ly], [px, ly], [px, py]], sig(v));
+      add([[x, SW1], [x, GB]], GRIS); dots.push([x, GB, ink]);
+    });
+    add([P(0, 1), [P(0, 1)[0], LO], [P(1, 1)[0], LO], P(1, 1)], sig(N));
+    add([P(1, 3), [P(1, 3)[0], LO], [P(2, 1)[0], LO], P(2, 1)], sig(O));
+    add([P(2, 3), [P(2, 3)[0], LO], [xl, LO], [xl, 250]], sig(S));
+    add([[xl, 332], [xl, GB]], GRIS); dots.push([xl, GB, ink]);
+    let s = '<svg viewBox="0 0 960 460">';
+    s += `<rect x="14" y="14" width="932" height="440" rx="12" style="fill:#F4F5F8;stroke:#C9D2E3"/>`;
+    s += T2(34, 29, "+5 V", { size: 13, bold: true, color: red }) + T2(284, 67, "GND", { size: 13, bold: true, anchor: "end" }) + T2(926, 433, "GND", { size: 13, bold: true, anchor: "end" });
+    CX.forEach((x, c) => { s += dipG(x, cy, cw, ch, ["74HC02", "74HC32", "74HC08"][c], { nums: true, fs: 18 }); });
+    F.forEach(([p, st], i) => { s += filP(p, null, pts.filter((_, j) => j !== i), { style: st }); });
+    dots.forEach(([x, y, c]) => { s += liaison(x, y, c, 3.8); });
+    // résistances de pull-up et interrupteurs (contact à fermeture, CEI 60617-7)
+    s += T2(236, 88, "pull-up", { size: 13, bold: true }) + T2(236, 106, "10 kΩ", { size: 13, color: gnd });
+    COL.forEach(([n, x]) => {
+      s += `<rect x="${x - 5}" y="70" width="10" height="40" style="fill:#FFFFFF;stroke:${ink};stroke-width:1.8"/>`;
+      s += contact(x, SW0, SW1, V[n] === 0, ink, 1) + T2(x - 15, 386, n, { size: 16, bold: true, italic: true, anchor: "end" });
+    });
+    // sortie S → R → LED → GND
+    s += `<rect x="${xl - 6}" y="250" width="12" height="40" style="fill:#FFFFFF;stroke:${ink};stroke-width:2"/>` + T2(xl - 12, 276, "R", { size: 14, italic: true, anchor: "end" });
+    s += `<line x1="${xl}" y1="290" x2="${xl}" y2="302" style="stroke:${ink};stroke-width:2.5"/>`;
+    if (led) s += `<circle cx="${xl}" cy="311" r="22" style="fill:#FF5A3C;opacity:.3"/>`;
+    s += `<polygon points="${xl - 11},302 ${xl + 11},302 ${xl},320" style="fill:${led ? "#FF5A3C" : "#FFFFFF"};stroke:${ink};stroke-width:2"/><line x1="${xl - 11}" y1="321" x2="${xl + 11}" y2="321" style="stroke:${ink};stroke-width:2.5"/>`;
+    s += `<line x1="${xl}" y1="321" x2="${xl}" y2="332" style="stroke:${ink};stroke-width:2.5"/>`;
+    s += `<path d="M ${xl + 13} 308 l 10 -8 m -4 0 h 4 v 4 M ${xl + 13} 316 l 10 -8 m -4 0 h 4 v 4" style="fill:none;stroke:${led ? "#FF5A3C" : ink};stroke-width:1.6"/>`;
+    s += T2(842, 218, "S", { size: 16, bold: true, italic: true, anchor: "middle" });
+    s += T2(876, 366, "LED", { size: 14, bold: true, color: led ? red : gnd }) + T2(876, 384, led ? "allumée" : "éteinte", { size: 14, bold: true, color: led ? red : gnd });
     // repères de l'étape en cours
-    const step = Math.min(3, Math.floor(t / 5)), pulse = 0.55 + 0.45 * Math.sin(t * 5);
-    const ring = (k) => `<circle cx="${P(k)[0]}" cy="${P(k)[1] + (k <= 7 ? -7 : 7)}" r="13" style="fill:none;stroke:#EE8A00;stroke-width:3;opacity:${pulse}"/>`;
-    ({ 0: [1, 2, 3], 1: [14, 7], 2: [4, 5, 9, 10, 12, 13], 3: [3] })[step].forEach((k) => { s += ring(k); });
+    const step = L4T.filter((x) => t >= x).length - 1, pulse = 0.55 + 0.45 * Math.sin(t * 5);
+    const ring = (x, y) => `<circle cx="${x}" cy="${y}" r="11" style="fill:none;stroke:#EE8A00;stroke-width:3;opacity:${pulse}"/>`;
+    const pin = (c, k) => { const [x, y] = P(c, k); return [x, y + (k <= 7 ? -6 : 6)]; };
+    const R = { 2: COL.map(([, x]) => [x, (SW0 + SW1) / 2]), 3: [0, 1, 2].flatMap((c) => [pin(c, 14), pin(c, 7)]), 4: [1, 2, 3].map((k) => pin(0, k)),
+      5: [1, 2, 3].map((k) => pin(1, k)), 6: [1, 2, 3].map((k) => pin(2, k)), 7: L4UNUSED.flatMap(([h, b], c) => h.concat(b).map((k) => pin(c, k))), 8: [pin(2, 3)] }[step] || [];
+    R.forEach(([x, y]) => { s += ring(x, y); });
     return s + "</svg>";
   },
 });

@@ -18,6 +18,8 @@ PORTES = {
 FLOYD_NIV = {"TTL": (0.8, 2.0, 0.4, 2.4), "HC": (1.5, 3.5, 0.33, 4.4), "HCT": (0.8, 2.0, 0.33, 4.4)}
 # fiches techniques 74HC08 et 74HC04 : (entrées) → sortie, alimentation
 BROCHES = {"74HC08": {"portes": [((1, 2), 3), ((4, 5), 6), ((9, 10), 8), ((12, 13), 11)], "GND": 7, "VCC": 14},
+           "74HC32": {"portes": [((1, 2), 3), ((4, 5), 6), ((9, 10), 8), ((12, 13), 11)], "GND": 7, "VCC": 14},
+           "74HC02": {"portes": [((2, 3), 1), ((5, 6), 4), ((8, 9), 10), ((11, 12), 13)], "GND": 7, "VCC": 14},
            "74HC04": {"portes": [((1,), 2), ((3,), 4), ((5,), 6), ((9,), 8), ((11,), 10), ((13,), 12)], "GND": 7, "VCC": 14}}
 CI_74HC = {"NON": "74HC04", "ET": "74HC08", "OU": "74HC32", "NON-ET": "74HC00", "NON-OU": "74HC02", "OUX": "74HC86", "NON-OUX": "74HC7266"}
 v = lambda x: f"{x:g}".replace(".", ",") + " V"
@@ -89,11 +91,20 @@ def verifier():
         i = t110.find(sp(v(m)) + "\n" + etat + "\n")
         ok(i >= 0, f"110 N°5 : « {v(m)} → {etat} » introuvable dans le corrigé")
 
-    # ---- fiche 130 EX C
+    # ---- fiche 130 EX C (V2 : démarrage de la voiture, TM1-A1-S2)
     t130 = sp(texte("130 EX C Portes logiques de base.docx"))
-    M = [(e, l, u, int(e and l and not u)) for e in (0, 1) for l in (0, 1) for u in (0, 1)]
-    ok(sum(m[3] for m in M) == 1 and M[6] == (1, 1, 0, 1), "130 N°1 : M = E · L · /U")
-    ok("\n".join("\n".join(str(x) for x in m) for m in M) in t130, "130 N°1 : table de vérité de M introuvable dans le corrigé")
+    # cahier des charges relu ici : ceinture bouclée ⇔ A = 0, sélecteur sur P ⇔ B = 1, frein enfoncé ⇔ C = 0, service ⇔ D = 1
+    demarre = lambda d, c, b, a: int(b == 1 and (d == 1 or (a == 0 and c == 0)))
+    T = [(d, c, b, a, demarre(d, c, b, a)) for d in (0, 1) for c in (0, 1) for b in (0, 1) for a in (0, 1)]
+    ok([f"{d}{c}{b}{a}" for d, c, b, a, s_ in T if s_] == ["0010", "1010", "1011", "1110", "1111"], "130 N°1 : lignes où S = 1")
+    ok("\n".join("\n".join(str(x) for x in t) for t in T) in t130, "130 N°1 : table de vérité de S introuvable dans le corrigé")
+    ok(all(demarre(d, c, b, a) == PORTES["ET"](b, PORTES["OU"](d, PORTES["NON-OU"](a, c))) for d, c, b, a, _ in T), "130 N°1 d) : S = B · (D + /(A + C))")
+    for s_ in ["0010, 1010, 1011, 1110 et 1111", "1,45 [kΩ]", "1,5 kΩ", "1,933 [mA]"]:
+        ok(s_ in t130, f"130 : « {s_} » introuvable dans le corrigé")
+    # LED : V_OH = 4,9 V, U_F = 2 V, I_F = 2 mA ; série E12 : 1,0 1,2 1,5 1,8 2,2 …
+    R = (4.9 - 2) / 2e-3
+    ok(round(R) == 1450 and min(x for x in (1000, 1200, 1500, 1800, 2200) if x >= R) == 1500, "130 N°4 c) : R = 1,45 kΩ → 1,5 kΩ")
+    ok(round((4.9 - 2) / 1500 * 1e3, 3) == 1.933, "130 N°4 c) : contrôle 1,933 mA")
     import importlib.util
     spec = importlib.util.spec_from_file_location("fig_s1", os.path.join(ICI, "figures.py")); F = importlib.util.module_from_spec(spec); spec.loader.exec_module(F)
     deux = [k for k in PORTES if k != "NON"]
@@ -102,5 +113,5 @@ def verifier():
         possibles = [g for g in deux if [PORTES[g](a, b) for a, b in zip(A, B)] == Y]
         ok(possibles == [k], f"130 N°3 chronogramme {i} : portes compatibles {possibles} (une seule attendue : {k})")
     Y2 = [PORTES["NON-OU"](a, b) for a, b in zip(F.N2_A, F.N2_B)]
-    ok(Y2 == L.chrono("NON-OU", F.N2_A, F.N2_B), "130 N°2 b) : chronogramme de Y = /(A + B)")
+    ok(Y2 == L.chrono("NON-OU", F.N2_A, F.N2_B), "130 N°2 b) : chronogramme de S = /(A + B)")
     return E

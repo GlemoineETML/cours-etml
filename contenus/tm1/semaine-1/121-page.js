@@ -1,69 +1,66 @@
 // ================================================================ leçons animées de la page 121 (présentation 120)
-const OVN = '<tspan style="text-decoration:overline">N</tspan>';
+// Sortie S, entrées A, B, C, D (REGLES 3.4). V2 (11/27/2026) : la voiture électrique remplace la ligne de remplissage.
 
-// ---------------------------------------------------------------- L1 la ligne de remplissage (diapo 2)
-// temps du scénario u = t / 1.5 (ralenti), boucle de 27 s de scénario
-const LK = (u) => { let k = 0; for (const [a, b] of [[0, 3], [6, 9], [12, 15], [21, 24]]) { if (u >= b) k++; else if (u > a) return k + ease((u - a) / (b - a)); else return k; } return k; };
-const LFILL = { 1: [3, 6], 2: [9, 12], 3: [18, 21], 4: [24, 27] };
-const lfill = (j, u) => j <= 0 ? 1 : LFILL[j] ? clamp((u - LFILL[j][0]) / 3) : 0;
-const inI = (u, iv) => iv.some(([a, b]) => u >= a && u < b);
-const LB = (u) => inI(u, [[3, 6], [9, 12], [15, 21], [24, 27]]) ? 1 : 0;
-const LL = (u) => u < 3 ? 0.7 : u < 6 ? lerp(0.7, 0.6, (u - 3) / 3) : u < 9 ? 0.6 : u < 12 ? lerp(0.6, 0.5, (u - 9) / 3) : u < 18 ? 0.5 :
-  u < 23 ? lerp(0.5, 0.8, (u - 18) / 5) : u < 24 ? 0.8 : u < 27 ? lerp(0.8, 0.7, (u - 24) / 3) : 0.7;
-const LN = (u) => LL(u) > 0.5001 ? 1 : 0;
-const LV = (u) => LB(u) & LN(u);
+// ---------------------------------------------------------------- L1 la voiture électrique (diapositives 2 et 13)
+// Entrées du fascicule (A = 0 ceinture bouclée, B = 1 sur P, C = 0 frein enfoncé, D = 1 service), voyant actif à 1 (Gaël, 11/27/2026) :
+// S = B · (D + /(A + C)) ; S = 1 : LED allumée, démarrage autorisé. Scénario : [instant (s), changements]
+const L1SC = [[0, { A: 1, B: 0, C: 1, D: 0 }], [5, { A: 0 }], [10, { B: 1 }], [15, { C: 0 }], [21, { C: 1 }], [25, { A: 1 }], [27, { D: 1 }], [32, { B: 0 }]];
+const l1at = (u) => { const v = {}; for (const [t0, ch] of L1SC) if (u >= t0) Object.assign(v, ch); return v; };
+const l1S = (v) => v.B & (v.D | (1 - (v.A | v.C)));
+const L1CARD = [["B", "Sélecteur", (x) => (x ? "sur P" : "sur D (conduite)")], ["D", "Mode service", (x) => (x ? "actif" : "inactif")],
+  ["A", "Ceinture", (x) => (x ? "débouclée" : "bouclée")], ["C", "Frein", (x) => (x ? "pédale relâchée" : "pédale enfoncée")]];
 lesson("L1", {
-  dur: 40.5, label: "Animation : la ligne de remplissage, avec le capteur de bouteille B, le capteur de niveau N, la vanne V = B · N et son chronogramme",
+  dur: 42, label: "Animation : la commande de démarrage d'une voiture électrique, avec les entrées A, B, C, D, trois portes (NON-OU, OU, ET), la LED entre S et GND, et le chronogramme",
   steps: [
-    [0, "Sur la ligne de remplissage, chaque capteur donne un 0 ou un 1. B = 1 : une bouteille vide est sous le bec."],
-    [6, "N = 1 : la cuve contient assez de liquide. La vanne s'ouvre seulement si B = 1 et N = 1 : V = B · N, une porte ET."],
-    [13.5, "La cuve se vide peu à peu. Quand le liquide passe sous le capteur, N tombe à 0."],
-    [22.5, "Une bouteille attend (B = 1), mais N = 0 : la vanne reste fermée et le voyant « cuve vide » s'allume."],
-    [27, "La pompe remplit la cuve : N repasse à 1 et la vanne s'ouvre enfin."],
-    [33, "Le chronogramme garde la trace de B, N et V : V vaut 1 seulement quand B et N valent 1 en même temps."],
+    [0, "Chaque entrée donne un 0 ou un 1. Attention : la ceinture donne A = 0 quand elle est bouclée, le frein C = 0 quand la pédale est enfoncée. La LED s'allume quand S = 1."],
+    [5, "Ceinture bouclée : A passe à 0. Le sélecteur n'est pas sur P (B = 0) : S = 0, la LED reste éteinte."],
+    [10, "Sélecteur sur P : B = 1. Il manque encore le frein : la NON-OU donne 0, donc S = 0."],
+    [15, "Pédale de frein enfoncée : C = 0. La NON-OU donne 1 (A = 0 et C = 0), l'OU donne 1, le ET donne S = 1 : la LED s'allume."],
+    [21, "Frein relâché : C = 1. La NON-OU repasse à 0, S = 0 : la LED s'éteint."],
+    [25, "Au garage, ceinture débouclée (A = 1). Le technicien active le mode service : D = 1 suffit à l'OU, et S = 1."],
+    [32, "Sélecteur hors de P : B = 0. Même en mode service, S = 0 : sans P, pas de démarrage."],
+    [37, "Le chronogramme garde la trace : S vaut 1 seulement quand B = 1, avec D = 1 ou A = C = 0."],
   ],
   draw(t) {
-    const u = t / 1.5, k = LK(u), B = LB(u), N = LN(u), V = LV(u), L = LL(u), pump = u >= 18 && u < 23;
-    let s = '<svg viewBox="0 0 960 400">';
-    // pompe et cuve
-    s += `<line x1="110" y1="60" x2="194" y2="60" style="stroke:var(--muted);stroke-width:6"/><line x1="226" y1="60" x2="270" y2="60" style="stroke:var(--muted);stroke-width:6"/>`;
-    s += `<circle cx="210" cy="60" r="16" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/>`;
-    const an = pump ? u * 7 : 0.6;
-    s += `<line x1="${210 - 11 * Math.cos(an)}" y1="${60 - 11 * Math.sin(an)}" x2="${210 + 11 * Math.cos(an)}" y2="${60 + 11 * Math.sin(an)}" style="stroke:${pump ? "var(--one)" : "var(--ink)"};stroke-width:3"/>`;
-    s += TX(210, 98, pump ? "pompe : marche" : "pompe", { size: 13, anchor: "middle", color: pump ? "var(--one)" : "var(--muted)", bold: pump });
-    s += `<rect x="270" y="${150 - L * 120}" width="160" height="${L * 120}" style="fill:var(--one);opacity:.45"/>`;
-    s += `<rect x="270" y="30" width="160" height="120" rx="4" style="fill:none;stroke:var(--ink);stroke-width:3"/>` + TX(350, 24, "cuve", { size: 13, anchor: "middle", color: "var(--muted)" });
-    s += `<line x1="272" y1="90" x2="428" y2="90" style="stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4"/><path d="M 444 90 l 12 -8 v 16 z" style="fill:${N ? "var(--one)" : "var(--ink)"}"/>`;
-    s += TX(462, 96, "N", { size: 18, bold: true, italic: true }) + pill(500, 90, N);
-    s += lampG(570, 72, 14, !N, "var(--warn)") + TX(570, 106, "cuve vide", { size: 13, anchor: "middle", bold: !N, color: !N ? "var(--warn)" : "var(--muted)" }) +
-      TX(570, 124, "= " + OVN, { size: 14, anchor: "middle", italic: true });
-    // bec, vanne, jet
-    s += `<line x1="350" y1="150" x2="350" y2="214" style="stroke:var(--muted);stroke-width:8"/>`;
-    s += `<polygon points="336,170 336,186 350,178 364,170 364,186 350,178" style="fill:${V ? "var(--one)" : "var(--surface)"};stroke:var(--ink);stroke-width:2"/>`;
-    s += TX(374, 184, "V", { size: 18, bold: true, italic: true }) + pill(410, 178, V);
-    if (V) s += `<rect x="346" y="214" width="8" height="24" style="fill:var(--one);opacity:.8"/>`;
-    // convoyeur et bouteilles
-    s += `<rect x="10" y="310" width="610" height="14" rx="7" style="fill:var(--line);stroke:var(--ink);stroke-width:1.5"/>`;
-    for (let i = 0; i < 16; i++) { const x = 10 + ((i * 40 + k * 120) % 640); if (x < 616) s += `<line x1="${x}" y1="312" x2="${x}" y2="322" style="stroke:var(--muted);stroke-width:2"/>`; }
-    const bot = [];
-    for (let j = Math.floor(k) - 3; j <= Math.floor(k) + 4; j++) {
-      const x = 350 + (k - j) * 120; if (x < 26 || x > 604) continue;
-      const f = lfill(j, u); bot.push(x);
-      s += `<rect x="${x - 6}" y="236" width="12" height="15" style="fill:var(--surface);stroke:var(--ink);stroke-width:1.8"/>`;
-      s += `<rect x="${x - 16}" y="250" width="32" height="60" rx="5" style="fill:var(--surface);stroke:var(--ink);stroke-width:1.8"/>`;
-      if (f > 0) s += `<rect x="${x - 14}" y="${308 - 56 * f}" width="28" height="${56 * f}" rx="3" style="fill:var(--one);opacity:.7"/>`;
-    }
-    // barrière lumineuse B
-    const hit = bot.filter((x) => x + 16 > 304 && x - 16 < 396).map((x) => x - 16).sort((a, b) => a - b)[0];
-    s += `<rect x="296" y="276" width="8" height="18" style="fill:var(--ink)"/><rect x="396" y="276" width="8" height="18" style="fill:var(--ink)"/>`;
-    s += `<line x1="304" y1="285" x2="${hit != null ? Math.max(304, hit) : 396}" y2="285" style="stroke:var(--bad);stroke-width:2;stroke-dasharray:5 3"/>`;
-    s += pill(150, 352, B) + TX(124, 359, "B", { size: 18, bold: true, italic: true, anchor: "end" }) +
-      TX(176, 358, "barrière lumineuse : une bouteille vide est sous le bec", { size: 14, color: "var(--muted)" });
-    // logique et chronogramme
-    const g = gateAt("ET", B, N, V, 640, 0, 0.85, { labels: ["B", "N"], out: "V" });
-    s += g.svg + TX(790, 142, "V = B · N", { size: 20, bold: true, anchor: "middle", color: "var(--head)" });
-    s += traceG(700, 156, 240, [{ name: "B", f: LB }, { name: "N", f: LN }, { name: "V", f: LV, color: "var(--one)" }], u, 27, { rh: 42, dt: 0.05 });
-    s += TX(820, 298, "chronogramme", { size: 12, anchor: "middle", color: "var(--muted)" });
+    const v = l1at(t), N = 1 - (v.A | v.C), O = v.D | N, S = l1S(v), sc = 0.7, dy = 97.52 * sc;
+    const g1 = gateAt("NON-OU", v.A, v.C, N, 330, 152.5, sc, { labels: ["", ""], out: "" });
+    const g2 = gateAt("OU", v.D, N, O, 510, g1.outY - dy, sc, { labels: ["", ""], out: "" });
+    const g3 = gateAt("ET", v.B, O, S, 680, g2.outY - dy, sc, { labels: ["", ""], out: "" });
+    const ROW = { B: 60, D: 120, A: g1.inY[0], C: 255 };
+    const wS = (pts, x) => wireP(pts, x).replace(/stroke-width:(\d+)/, (m, w) => "stroke-width:" + w * sc);   // même épaisseur que les portes réduites
+    let s = '<svg viewBox="0 0 960 462">';
+    // entrées : une carte par capteur
+    L1CARD.forEach(([n, nom, etat]) => {
+      const y = ROW[n], x = v[n];
+      s += `<rect x="16" y="${y - 23}" width="258" height="46" rx="8" style="fill:var(--surface);stroke:var(--line);stroke-width:1.5"/>`;
+      s += TX(28, y - 4, nom, { size: 15, bold: true }) + TX(28, y + 15, etat(x), { size: 14, color: "var(--muted)" });
+      s += TX(208, y + 7, n, { size: 20, bold: true, italic: true, anchor: "middle" }) + pill(244, y, x);
+    });
+    s += wS([[259, ROW.A], [g1.inX, g1.inY[0]]], v.A);
+    s += wS([[259, ROW.C], [312, ROW.C], [312, g1.inY[1]], [g1.inX, g1.inY[1]]], v.C);
+    s += wS([[259, ROW.D], [g2.inX - 16, ROW.D], [g2.inX - 16, g2.inY[0]], [g2.inX, g2.inY[0]]], v.D);
+    s += wS([[259, ROW.B], [g3.inX - 16, ROW.B], [g3.inX - 16, g3.inY[0]], [g3.inX, g3.inY[0]]], v.B);
+    s += wS([[g1.outX, g1.outY], [g2.inX, g2.inY[1]]], N) + wS([[g2.outX, g2.outY], [g3.inX, g3.inY[1]]], O);
+    s += g1.svg + g2.svg + g3.svg;
+    [[g1, 330, "74HC02"], [g2, 510, "74HC32"], [g3, 680, "74HC08"]].forEach(([g, X, ci]) => {
+      s += TX(X + 129 * sc, g.outY + 58 * sc + 20, ci, { size: 13, anchor: "middle", color: "var(--muted)" });
+    });
+    // sortie S, résistance et LED vers GND (la LED s'allume quand S = 1)
+    const xl = 905, yo = g3.outY, led = S === 1;
+    s += wS([[g3.outX, yo], [xl, yo], [xl, yo + 12]], S) + TX((g3.outX + xl) / 2, yo - 10, "S", { size: 18, bold: true, italic: true, anchor: "middle" });
+    s += `<line x1="${xl}" y1="${yo + 12}" x2="${xl}" y2="${yo + 100}" style="stroke:var(--ink);stroke-width:2.5"/>`;
+    s += `<rect x="${xl - 7}" y="${yo + 12}" width="14" height="36" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.2"/>` + TX(xl - 16, yo + 36, "R", { size: 15, italic: true, anchor: "end" });
+    if (led) s += `<circle cx="${xl}" cy="${yo + 70}" r="24" style="fill:#FF5A3C;opacity:.3"/>`;
+    s += `<polygon points="${xl - 12},${yo + 60} ${xl + 12},${yo + 60} ${xl},${yo + 80}" style="fill:${led ? "#FF5A3C" : "var(--surface)"};stroke:var(--ink);stroke-width:2"/>`;
+    s += `<line x1="${xl - 12}" y1="${yo + 81}" x2="${xl + 12}" y2="${yo + 81}" style="stroke:var(--ink);stroke-width:2.6"/>` + TX(xl - 30, yo + 76, "LED", { size: 13, anchor: "end" });
+    s += `<path d="M ${xl + 15} ${yo + 66} l 10 -8 m -4 0 h 4 v 4 M ${xl + 15} ${yo + 74} l 10 -8 m -4 0 h 4 v 4" style="fill:none;stroke:${led ? "#D0312D" : "var(--ink)"};stroke-width:1.6"/>`;
+    s += masseG(xl, yo + 100, { fil: 0 });
+    s += TX(870, 272, led ? "LED allumée : démarrage autorisé" : "LED éteinte", { size: 14, bold: led, anchor: "end", color: led ? "var(--bad)" : "var(--muted)" });
+    // chronogramme
+    s += TX(520, 288, "chronogramme", { size: 12, anchor: "middle", color: "var(--muted)" });
+    const f = (k) => (u) => l1at(u)[k];
+    s += traceG(120, 296, 800, [{ name: "A", f: f("A") }, { name: "B", f: f("B") }, { name: "C", f: f("C") }, { name: "D", f: f("D") },
+      { name: "S", f: (u) => l1S(l1at(u)), color: "var(--one)" }], Math.min(t, 40), 40, { rh: 32, dt: 0.05 });
     return s + "</svg>";
   },
 });
@@ -79,7 +76,7 @@ $("g-b").onclick = () => { gAuto = false; gBtn(); gSet(ga, 1 - gb); };
 if ("IntersectionObserver" in window) new IntersectionObserver((es) => es.forEach((e) => { gVis = e.isIntersecting; gLast = null; }), { threshold: 0.1 }).observe($("g-chrono"));
 function gChrono() {
   const W = 20, x0 = 60, x1 = 940, X = (tm) => x1 - (gT - tm) * (x1 - x0) / W, ws = gT - W, one = gk === "NON";
-  const rows = [["A", (h) => h.a, "var(--ink)"], ["B", (h) => h.b, one ? "var(--line)" : "var(--ink)"], ["Y", (h) => (one ? FN.NON(h.a) : FN[gk](h.a, h.b)), "var(--one)"]];
+  const rows = [["A", (h) => h.a, "var(--ink)"], ["B", (h) => h.b, one ? "var(--line)" : "var(--ink)"], ["S", (h) => (one ? FN.NON(h.a) : FN[gk](h.a, h.b)), "var(--one)"]];
   let s = '<svg viewBox="0 0 960 186">';
   for (let k = Math.ceil(ws); k <= gT; k++) s += `<line x1="${X(k)}" y1="8" x2="${X(k)}" y2="176" style="stroke:var(--line);stroke-width:1;stroke-dasharray:2 5"/>`;
   rows.forEach(([nm, f, col], i) => {
@@ -109,7 +106,7 @@ lesson("L2", {
   dur: 30, label: "Animation : la table de vérité d'une porte ET à trois entrées se remplit ligne par ligne, en comptant en binaire de 000 à 111",
   steps: [
     [0, "Une table de vérité donne la sortie pour toutes les combinaisons des entrées. Exemple : une porte ET à 3 entrées (74HC11), testée sur un banc."],
-    [3, "Colonnes du poids fort au poids faible : C B A, puis la sortie Y. Les lignes suivent le comptage binaire, de 000 à 111."],
+    [3, "Colonnes du poids fort au poids faible : C B A, puis la sortie S. Les lignes suivent le comptage binaire, de 000 à 111."],
     [16, "Pour ne rien oublier : A change à chaque ligne, B toutes les 2 lignes, C toutes les 4 lignes."],
     [24, "3 entrées : 2³ = 8 lignes. Avec n entrées, la table a 2ⁿ lignes."],
   ],
@@ -131,10 +128,10 @@ lesson("L2", {
       s += `<line x1="276" y1="${yy}" x2="306" y2="${yy}" style="${wireStyle(cur[i])}"/>` + TX(268, yy + 5, n, { size: 15, bold: true, italic: true, anchor: "end" });
     });
     s += `<rect x="306" y="56" width="70" height="92" style="fill:var(--surface);stroke:var(--ink);stroke-width:3"/>` + TX(341, 86, "&amp;", { size: 22, bold: true, anchor: "middle" });
-    s += `<line x1="376" y1="102" x2="408" y2="102" style="${wireStyle(y)}"/>` + lampG(424, 102, 13, y) + TX(424, 136, "Y", { size: 15, bold: true, italic: true, anchor: "middle" });
+    s += `<line x1="376" y1="102" x2="408" y2="102" style="${wireStyle(y)}"/>` + lampG(424, 102, 13, y) + TX(424, 136, "S", { size: 15, bold: true, italic: true, anchor: "middle" });
     // tableau
     const tx = 520, cw = 70, ry = (r) => 64 + r * 36;
-    ["C", "B", "A", "Y"].forEach((n, i) => {
+    ["C", "B", "A", "S"].forEach((n, i) => {
       s += `<rect x="${tx + i * cw}" y="28" width="${cw}" height="36" style="fill:var(--light);stroke:var(--line)"/>` + TX(tx + i * cw + cw / 2, 53, n, { size: 18, bold: true, anchor: "middle", color: "#242852" });
     });
     for (let r = 0; r < 8; r++) {
@@ -157,7 +154,7 @@ lesson("L2", {
       s += `<g style="opacity:${o}">` +
         TX(820, 110 + i * 60, txt, { size: 16, bold: true, color: "var(--blue)" }) + "</g>";
     });
-    if (cr >= 0 && t < 24) s += TX(60, 230, `ligne ${cr} : C B A = ${cur.join(" ")}`, { size: 20, bold: true }) + TX(60, 262, `Y = A · B · C = ${y}`, { size: 20, color: y ? "var(--one)" : "var(--ink)", bold: true });
+    if (cr >= 0 && t < 24) s += TX(60, 230, `ligne ${cr} : C B A = ${cur.join(" ")}`, { size: 20, bold: true }) + TX(60, 262, `S = A · B · C = ${y}`, { size: 20, color: y ? "var(--one)" : "var(--ink)", bold: true });
     if (t >= 24) { const o = prog(t, 24, 25); s += `<g style="opacity:${o}">` + TX(60, 236, "3 entrées → 2³ = 8 lignes", { size: 26, bold: true, color: "var(--head)" }) + TX(60, 274, "n entrées → 2ⁿ lignes", { size: 22, color: "var(--head)" }) + "</g>"; }
     return s + "</svg>";
   },
@@ -166,12 +163,12 @@ lesson("L2", {
 // ---------------------------------------------------------------- L3 lire un chronogramme (diapo 4)
 let l3g = "ET";
 const L3C = lesson("L3", {
-  dur: 27, label: "Animation : un curseur parcourt le chronogramme intervalle par intervalle, lit A et B, et trouve Y dans la table de vérité",
+  dur: 27, label: "Animation : un curseur parcourt le chronogramme intervalle par intervalle, lit A et B, et trouve S dans la table de vérité",
   extra: '<span class="muted">Porte :</span><span class="chips" id="l3-g"></span>',
   steps: [
     [0, "Le temps avance de gauche à droite. On découpe le chronogramme en intervalles : dans chacun, aucun signal ne change."],
-    [2, "Pour chaque intervalle, on lit A et B, puis on cherche la ligne B A dans la table : elle donne Y."],
-    [12.4, "On continue jusqu'au bout. La courbe Y obtenue est le chronogramme de sortie de la porte."],
+    [2, "Pour chaque intervalle, on lit A et B, puis on cherche la ligne B A dans la table : elle donne S."],
+    [12.4, "On continue jusqu'au bout. La courbe S obtenue est le chronogramme de sortie de la porte."],
     [23, "Si un seul intervalle ne correspond pas à la table, ce n'est pas cette porte : c'est la méthode de cet exercice."],
   ],
   draw(t) {
@@ -181,7 +178,7 @@ const L3C = lesson("L3", {
     if (cur >= 0 && !done) s += `<rect x="${x0 + cur * pw}" y="30" width="${pw}" height="232" style="fill:var(--tint);stroke:var(--blue);stroke-width:2"/>`;
     for (let i = 0; i <= n; i++) s += `<line x1="${x0 + i * pw}" y1="30" x2="${x0 + i * pw}" y2="262" style="stroke:var(--line);stroke-dasharray:3 4"/>`;
     for (let i = 0; i < n; i++) s += TX(x0 + i * pw + pw / 2, 22, i + 1, { size: 13, anchor: "middle", color: "var(--muted)" });
-    [["A", CA, n, "var(--ink)"], ["B", CB, n, "var(--ink)"], ["Y", CY, done ? n : cur + 1, "var(--one)"]].forEach(([nm, sig, upto, col], r) => {
+    [["A", CA, n, "var(--ink)"], ["B", CB, n, "var(--ink)"], ["S", CY, done ? n : cur + 1, "var(--one)"]].forEach(([nm, sig, upto, col], r) => {
       const yb = 100 + r * 75, yh = yb - 42;
       s += TX(x0 - 14, yb - 12, nm, { size: 20, bold: true, italic: true, anchor: "end" }) + `<line x1="${x0}" y1="${yb}" x2="${x0 + n * pw}" y2="${yb}" style="stroke:var(--line)"/>`;
       if (upto > 0) {
@@ -194,7 +191,7 @@ const L3C = lesson("L3", {
     // table B A Y
     const tx = 690, cw = 64;
     s += TX(tx + 1.5 * cw, 22, `Porte ${D.GATES[l3g].nom}`, { size: 15, bold: true, anchor: "middle", color: "var(--head)" });
-    ["B", "A", "Y"].forEach((h, i) => { s += `<rect x="${tx + i * cw}" y="32" width="${cw}" height="34" style="fill:var(--light);stroke:var(--line)"/>` + TX(tx + i * cw + cw / 2, 56, h, { size: 18, bold: true, anchor: "middle", color: "#242852" }); });
+    ["B", "A", "S"].forEach((h, i) => { s += `<rect x="${tx + i * cw}" y="32" width="${cw}" height="34" style="fill:var(--light);stroke:var(--line)"/>` + TX(tx + i * cw + cw / 2, 56, h, { size: 18, bold: true, anchor: "middle", color: "#242852" }); });
     const row = cur >= 0 && !done ? CB[cur] * 2 + CA[cur] : -1;
     tdv(l3g).forEach((r, k) => {
       const y = 66 + k * 36;
@@ -203,7 +200,7 @@ const L3C = lesson("L3", {
     });
     s += `<line x1="${tx + 2 * cw}" y1="32" x2="${tx + 2 * cw}" y2="210" style="stroke:var(--head);stroke-width:3"/>`;
     if (row >= 0) s += TX(tx + 1.5 * cw, 244, `intervalle ${cur + 1} : B A = ${CB[cur]} ${CA[cur]}`, { size: 16, anchor: "middle" }) +
-      TX(tx + 1.5 * cw, 272, `→ Y = ${CY[cur]}`, { size: 22, bold: true, anchor: "middle", color: CY[cur] ? "var(--one)" : "var(--head)" });
+      TX(tx + 1.5 * cw, 272, `→ S = ${CY[cur]}`, { size: 22, bold: true, anchor: "middle", color: CY[cur] ? "var(--one)" : "var(--head)" });
     return s + "</svg>";
   },
 });
@@ -213,50 +210,124 @@ D.ORDER.filter((k) => k !== "NON").forEach((k) => {
   $("l3-g").appendChild(b);
 });
 
-// ---------------------------------------------------------------- L4 le 74HC08 sur breadboard (diapo 13)
+// ---------------------------------------------------------------- L4 le démarrage sur breadboard (diapositives 13 et 14)
+// Entrées : résistance de pull-up vers +5 V, interrupteur vers GND : fermé → 0 (ceinture bouclée, frein enfoncé), ouvert → 1.
+// 74HC02 : A → 1A (2), C → 1B (3), 1Y (1) → 74HC32 1A (1) ; D → 1B (2) ; 1Y (3) → 74HC08 1A (1) ; B → 1B (2) ; 1Y (3) = S → R → LED → GND.
+// Liaisons (REGLES 3.3) : point à chaque jonction en T, saut de fil à chaque croisement sans liaison.
+const L4UNUSED = [[[8, 9, 11, 12], [5, 6]], [[9, 10, 12, 13], [4, 5]], [[9, 10, 12, 13], [4, 5]]];     // entrées inutilisées : [haut, bas]
+const L4T = [0, 5, 10, 16, 22, 28, 34, 40, 46];
+
+// contact à fermeture (CEI 60617-7) vertical entre y0 et y1 : languette fixe en haut, levier qui pivote en bas ; fermé : il touche la languette
+function contact(x, y0, y1, ferme, c, k = 1) {
+  const a = y0 + 8 * k, b = y1 - 8 * k, st = `stroke:${c};stroke-width:${2.4 * Math.min(k, 1.2)};stroke-linecap:round`;
+  return `<line x1="${x}" y1="${y0}" x2="${x}" y2="${a}" style="${st}"/><line x1="${x}" y1="${a}" x2="${x + 8 * k}" y2="${a}" style="${st}"/>` +
+    `<line x1="${x}" y1="${b}" x2="${x}" y2="${y1}" style="${st}"/><circle cx="${x}" cy="${b}" r="${2.2 * k}" style="fill:${c}"/>` +
+    `<line x1="${x}" y1="${b}" x2="${x + (ferme ? 7 : 17) * k}" y2="${ferme ? a : a + 6 * k}" style="${st}"/>`;
+}
+
+// zoom sur une entrée : pull-up et interrupteur (étapes 1 et 2)
+function l4zoom(t) {
+  const ferme = t >= 5, v = ferme ? 0 : 1, x = 300, yn = 240;
+  let s = '<svg viewBox="0 0 960 440">';
+  s += TX(30, 34, "Zoom sur une entrée : résistance de pull-up et interrupteur", { size: 17, bold: true, color: "var(--head)" });
+  s += alimG(x, 92, "+5 V") + `<line x1="${x}" y1="92" x2="${x}" y2="110" style="stroke:var(--ink);stroke-width:2.5"/>`;
+  s += `<rect x="${x - 11}" y="110" width="22" height="70" style="fill:var(--surface);stroke:var(--ink);stroke-width:2.5"/>`;
+  s += TX(x - 24, 140, "R", { size: 17, italic: true, anchor: "end" }) + TX(x - 24, 162, "10 kΩ", { size: 15, anchor: "end", color: "var(--muted)" });
+  s += filP([[x, 180], [x, 280]], v) + liaison(x, yn, "var(--ink)", 5);
+  s += filP([[x, yn], [600, yn]], v) + `<path d="M 600 ${yn - 7} L 614 ${yn} L 600 ${yn + 7} z" style="fill:${v ? "var(--one)" : "var(--zero)"}"/>`;
+  s += TX(624, yn + 6, "vers l'entrée du CI", { size: 15, color: "var(--muted)" });
+  s += TX(500, yn - 24, "entrée", { size: 15, anchor: "end", color: "var(--muted)" }) + pill(526, yn - 30, v);
+  // interrupteur (contact à fermeture, CEI 60617-7) vers GND
+  s += contact(x, 280, 352, ferme, "var(--ink)", 1.6);
+  s += TX(x - 24, 306, "interrupteur", { size: 15, anchor: "end", color: "var(--muted)" }) + TX(x - 24, 326, ferme ? "fermé" : "ouvert", { size: 15, bold: true, anchor: "end" });
+  s += masseG(x, 352);
+  if (ferme) {   // courant : +5 V → R → interrupteur → GND
+    s += `<path d="M ${x - 7} 200 L ${x} 214 L ${x + 7} 200 z" style="fill:var(--bad)"/>` + TX(x + 16, 212, '<tspan font-style="italic">I</tspan> = 0,5 mA', { size: 15, bold: true, color: "var(--bad)" });
+  }
+  s += TX(640, 110, ferme ? "Interrupteur fermé" : "Interrupteur ouvert", { size: 17, bold: true });
+  s += TX(640, 138, ferme ? "courant dans la résistance : 0,5 mA" : "aucun courant dans la résistance", { size: 16 });
+  s += TX(640, 164, ferme ? "entrée reliée à GND : 0" : "entrée tirée à +5 V : 1", { size: 16, bold: true, color: ferme ? "var(--ink)" : "var(--one)" });
+  return s + "</svg>";
+}
+
 lesson("L4", {
-  dur: 20, label: "Animation : un 74HC08 câblé sur breadboard, deux interrupteurs B et N sur la porte 1 et une LED sur sa sortie",
+  dur: 52, label: "Animation : une entrée avec résistance de pull-up, puis la commande de démarrage câblée sur breadboard (74HC02, 74HC32, 74HC08, quatre interrupteurs avec pull-up, LED entre S et GND)",
   steps: [
-    [0, "Le 74HC08 contient 4 portes ET. On utilise la porte 1 : entrées 1A (broche 1) et 1B (broche 2), sortie 1Y (broche 3)."],
-    [5, "Alimentation : +5 V sur VCC (broche 14), masse sur GND (broche 7). Sans elles, le CI ne fonctionne pas."],
-    [10, "Les entrées des portes inutilisées (broches 4, 5, 9, 10, 12, 13) vont à GND : une entrée CMOS ne reste jamais en l'air."],
-    [15, "Avec B = 1 et N = 1, la sortie 1Y passe à 1 et la LED (la vanne) s'allume. Dans les trois autres cas, elle reste éteinte."],
+    [0, "Zoom sur une entrée : la résistance de pull-up R relie l'entrée à +5 V. Interrupteur ouvert : aucun courant dans R, l'entrée est tirée à +5 V, elle vaut 1."],
+    [5, "Interrupteur fermé : il relie l'entrée à GND, elle vaut 0. Le courant passe dans R : 5 V divisés par 10 kΩ, soit 0,5 mA. Sans R, l'interrupteur court-circuiterait l'alimentation."],
+    [10, "Chaque interrupteur a sa résistance de pull-up : A ceinture, C frein, D service, B sélecteur. Ceinture bouclée et frein enfoncé ferment le contact : A = 0 et C = 0."],
+    [16, "Trois CI : 74HC02 (NON-OU), 74HC32 (OU) et 74HC08 (ET). Chacun reçoit +5 V sur la broche 14 et GND sur la broche 7."],
+    [22, "Sur le 74HC02, la sortie 1Y est la broche 1 ; les entrées 1A et 1B sont les broches 2 et 3. A et C y arrivent."],
+    [28, "La sortie du 74HC02 va sur l'entrée 1A du 74HC32 (broche 1), D sur 1B (broche 2). La sortie 1Y est la broche 3."],
+    [34, "Le 74HC08 reçoit la sortie de l'OU (broche 1) et B (broche 2). Sa sortie 1Y (broche 3) est S : elle commande la LED, branchée vers GND à travers R."],
+    [40, "Les entrées des portes inutilisées vont à GND. Un point : les fils sont reliés. Un demi-cercle : les fils se croisent sans contact."],
+    [46, "Essai : ceinture bouclée et frein enfoncé (A et C fermés : 0), sélecteur sur P (B ouvert : 1). S = 1 : la LED s'allume."],
   ],
   draw(t) {
-    const CMB = [[0, 0], [1, 0], [0, 1], [1, 1]][Math.min(3, Math.floor(t / 5))], [B, N] = CMB, V = B & N;
-    const cx = 330, cy = 160, cw = 300, ch = 70, P = (k) => dipPin(cx, cy, cw, ch, k);
-    const ink = "#242852", wv = (v) => v ? "stroke:#297FD5;stroke-width:5" : "stroke:#242852;stroke-width:3", pl = (pts, st) => `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" style="${st};stroke-linejoin:round"/>`;
+    if (t < 10) return l4zoom(t);
+    const essai = t >= 46, V = { A: essai ? 0 : 1, B: essai ? 1 : 0, C: essai ? 0 : 1, D: 0 };
+    const N = 1 - (V.A | V.C), O = V.D | N, S = V.B & O, led = S === 1;
+    const cy = 130, ch = 56, cw = 160, CX = [300, 490, 680], P = (c, k) => dipPin(CX[c], cy, cw, ch, k);
+    const R5 = 36, GT = 62, GB = 440, Y7 = 212, LO = 226, SW0 = 360, SW1 = 400, xl = 860;
+    const COL = [["A", 55, 260, [0, 2]], ["C", 110, 285, [0, 3]], ["D", 165, 310, [1, 2]], ["B", 220, 335, [2, 2]]];
+    const ink = "#242852", red = "#D0312D", gnd = "#5A6478";
+    const ROUGE = `stroke:${red};stroke-width:2.5`, GRIS = `stroke:${gnd};stroke-width:2.2`;
+    const sig = (x) => (x ? "stroke:#297FD5;stroke-width:4.5" : `stroke:${ink};stroke-width:3`);
     const T2 = (x, y, s, o = {}) => TX(x, y, s, Object.assign({ color: ink }, o));
-    let s = '<svg viewBox="0 0 960 380">';
-    s += `<rect x="20" y="28" width="920" height="340" rx="12" style="fill:#F4F5F8;stroke:#C9D2E3"/>`;
-    for (let x = 40; x <= 920; x += 20) for (const y of [120, 300]) s += `<circle cx="${x}" cy="${y}" r="2" style="fill:#C9CFDB"/>`;
-    s += `<line x1="40" y1="52" x2="920" y2="52" style="stroke:#D0312D;stroke-width:4"/>` + T2(44, 46, "+5 V", { size: 13, bold: true, color: "#D0312D" });
-    s += `<line x1="380" y1="80" x2="920" y2="80" style="stroke:${ink};stroke-width:4"/>` + T2(916, 74, "GND", { size: 13, bold: true, anchor: "end" });
-    s += `<line x1="40" y1="348" x2="920" y2="348" style="stroke:${ink};stroke-width:4"/>` + T2(916, 364, "GND", { size: 13, bold: true, anchor: "end" });
-    // alimentation et entrées inutilisées
-    s += pl([P(14), [P(14)[0], 52]], "stroke:#D0312D;stroke-width:3") + `<circle cx="${P(14)[0]}" cy="52" r="4" style="fill:#D0312D"/>`;
-    [13, 12, 10, 9].forEach((k) => { s += pl([P(k), [P(k)[0], 80]], "stroke:#5A6478;stroke-width:2.5") + `<circle cx="${P(k)[0]}" cy="80" r="3.5" style="fill:${ink}"/>`; });
-    s += pl([P(7), [P(7)[0], 348]], `stroke:${ink};stroke-width:3`) + `<circle cx="${P(7)[0]}" cy="348" r="4" style="fill:${ink}"/>`;
-    s += pl([P(4), [P(4)[0], 262], [P(7)[0], 262]], "stroke:#5A6478;stroke-width:2.5") + pl([P(5), [P(5)[0], 262]], "stroke:#5A6478;stroke-width:2.5") + `<circle cx="${P(7)[0]}" cy="262" r="3.5" style="fill:${ink}"/>`;
-    // interrupteurs B et N
-    [["B", "bouteille", B, 280, 1], ["N", "niveau", N, 318, 2]].forEach(([n, l, v, y, pin]) => {
-      s += `<rect x="54" y="${y - 16}" width="140" height="32" rx="6" style="fill:#FFFFFF;stroke:#9AA2B4"/>` + T2(64, y + 6, `${n} ${l}`, { size: 14, bold: true });
-      s += `<rect x="150" y="${y - 8}" width="34" height="16" rx="8" style="fill:${v ? "#297FD5" : "#C9CFDB"}"/><circle cx="${v ? 176 : 158}" cy="${y}" r="7" style="fill:#FFFFFF;stroke:${ink}"/>`;
-      s += pl([[194, y], [P(pin)[0], y], P(pin)], wv(v)) + T2(204, y - 6, n + " = " + v, { size: 13, bold: true, color: v ? "#297FD5" : ink });
+    // tous les fils : [points, style] ; chaque fil saute les tronçons verticaux des autres (REGLES 3.3)
+    const F = [], pts = [], dots = [];
+    const add = (p, st) => { F.push([p, st]); pts.push(p); };
+    add([[30, R5], [930, R5]], `stroke:${red};stroke-width:4`);
+    add([[290, GT], [820, GT]], `stroke:${ink};stroke-width:4`);
+    add([[30, GB], [930, GB]], `stroke:${ink};stroke-width:4`);
+    CX.forEach((_, c) => {
+      const [x14] = P(c, 14), [x7] = P(c, 7);
+      add([P(c, 14), [x14, R5]], ROUGE); dots.push([x14, R5, red]);
+      add([P(c, 7), [x7, GB]], GRIS); dots.push([x7, GB, ink]);
+      L4UNUSED[c][0].forEach((k) => { const [x] = P(c, k); add([P(c, k), [x, GT]], GRIS); dots.push([x, GT, ink]); });
+      const bas = L4UNUSED[c][1].map((k) => P(c, k)[0]);
+      L4UNUSED[c][1].forEach((k, j) => { add([P(c, k), [bas[j], Y7]], GRIS); if (j > 0) dots.push([bas[j], Y7, gnd]); });
+      add([[bas[0], Y7], [x7, Y7]], GRIS); dots.push([x7, Y7, gnd]);
     });
-    // sortie 1Y → LED → résistance → GND
-    const xo = P(3)[0], on = V === 1;
-    s += pl([P(3), [xo, 266]], wv(V));
-    if (on) s += `<circle cx="${xo}" cy="282" r="22" style="fill:#FF5A3C;opacity:.3"/>`;
-    s += `<polygon points="${xo - 11},266 ${xo + 11},266 ${xo},286" style="fill:${on ? "#FF5A3C" : "#FFFFFF"};stroke:${ink};stroke-width:2"/><line x1="${xo - 11}" y1="287" x2="${xo + 11}" y2="287" style="stroke:${ink};stroke-width:2.5"/>`;
-    s += `<path d="M ${xo + 13} 272 l 10 -8 m -4 0 h 4 v 4 M ${xo + 13} 280 l 10 -8 m -4 0 h 4 v 4" style="fill:none;stroke:${on ? "#FF5A3C" : ink};stroke-width:1.6"/>`;
-    s += pl([[xo, 287], [xo, 300]], `stroke:${ink};stroke-width:2.5`) + `<rect x="${xo - 6}" y="300" width="12" height="30" style="fill:#FFFFFF;stroke:${ink};stroke-width:2"/>` + pl([[xo, 330], [xo, 348]], `stroke:${ink};stroke-width:2.5`);
-    s += T2(xo + 30, 296, "LED = vanne V", { size: 13, bold: true, color: on ? "#D0312D" : ink });
-    s += dipG(cx, cy, cw, ch, "74HC08", { nums: true, fs: 24 });
+    COL.forEach(([n, x, ly, [c, k]]) => {
+      const v = V[n], [px, py] = P(c, k);
+      add([[x, R5], [x, 70]], ROUGE); dots.push([x, R5, red]);
+      add([[x, 110], [x, SW0]], sig(v)); dots.push([x, ly, v ? "#297FD5" : ink]);
+      add([[x, ly], [px, ly], [px, py]], sig(v));
+      add([[x, SW1], [x, GB]], GRIS); dots.push([x, GB, ink]);
+    });
+    add([P(0, 1), [P(0, 1)[0], LO], [P(1, 1)[0], LO], P(1, 1)], sig(N));
+    add([P(1, 3), [P(1, 3)[0], LO], [P(2, 1)[0], LO], P(2, 1)], sig(O));
+    add([P(2, 3), [P(2, 3)[0], LO], [xl, LO], [xl, 250]], sig(S));
+    add([[xl, 332], [xl, GB]], GRIS); dots.push([xl, GB, ink]);
+    let s = '<svg viewBox="0 0 960 460">';
+    s += `<rect x="14" y="14" width="932" height="440" rx="12" style="fill:#F4F5F8;stroke:#C9D2E3"/>`;
+    s += T2(34, 29, "+5 V", { size: 13, bold: true, color: red }) + T2(284, 67, "GND", { size: 13, bold: true, anchor: "end" }) + T2(926, 433, "GND", { size: 13, bold: true, anchor: "end" });
+    CX.forEach((x, c) => { s += dipG(x, cy, cw, ch, ["74HC02", "74HC32", "74HC08"][c], { nums: true, fs: 18 }); });
+    F.forEach(([p, st], i) => { s += filP(p, null, pts.filter((_, j) => j !== i), { style: st }); });
+    dots.forEach(([x, y, c]) => { s += liaison(x, y, c, 3.8); });
+    // résistances de pull-up et interrupteurs (contact à fermeture, CEI 60617-7)
+    s += T2(236, 88, "pull-up", { size: 13, bold: true }) + T2(236, 106, "10 kΩ", { size: 13, color: gnd });
+    COL.forEach(([n, x]) => {
+      s += `<rect x="${x - 5}" y="70" width="10" height="40" style="fill:#FFFFFF;stroke:${ink};stroke-width:1.8"/>`;
+      s += contact(x, SW0, SW1, V[n] === 0, ink, 1) + T2(x - 15, 386, n, { size: 16, bold: true, italic: true, anchor: "end" });
+    });
+    // sortie S → R → LED → GND
+    s += `<rect x="${xl - 6}" y="250" width="12" height="40" style="fill:#FFFFFF;stroke:${ink};stroke-width:2"/>` + T2(xl - 12, 276, "R", { size: 14, italic: true, anchor: "end" });
+    s += `<line x1="${xl}" y1="290" x2="${xl}" y2="302" style="stroke:${ink};stroke-width:2.5"/>`;
+    if (led) s += `<circle cx="${xl}" cy="311" r="22" style="fill:#FF5A3C;opacity:.3"/>`;
+    s += `<polygon points="${xl - 11},302 ${xl + 11},302 ${xl},320" style="fill:${led ? "#FF5A3C" : "#FFFFFF"};stroke:${ink};stroke-width:2"/><line x1="${xl - 11}" y1="321" x2="${xl + 11}" y2="321" style="stroke:${ink};stroke-width:2.5"/>`;
+    s += `<line x1="${xl}" y1="321" x2="${xl}" y2="332" style="stroke:${ink};stroke-width:2.5"/>`;
+    s += `<path d="M ${xl + 13} 308 l 10 -8 m -4 0 h 4 v 4 M ${xl + 13} 316 l 10 -8 m -4 0 h 4 v 4" style="fill:none;stroke:${led ? "#FF5A3C" : ink};stroke-width:1.6"/>`;
+    s += T2(842, 218, "S", { size: 16, bold: true, italic: true, anchor: "middle" });
+    s += T2(876, 366, "LED", { size: 14, bold: true, color: led ? red : gnd }) + T2(876, 384, led ? "allumée" : "éteinte", { size: 14, bold: true, color: led ? red : gnd });
     // repères de l'étape en cours
-    const step = Math.min(3, Math.floor(t / 5)), pulse = 0.55 + 0.45 * Math.sin(t * 5);
-    const ring = (k) => `<circle cx="${P(k)[0]}" cy="${P(k)[1] + (k <= 7 ? -7 : 7)}" r="13" style="fill:none;stroke:#EE8A00;stroke-width:3;opacity:${pulse}"/>`;
-    ({ 0: [1, 2, 3], 1: [14, 7], 2: [4, 5, 9, 10, 12, 13], 3: [3] })[step].forEach((k) => { s += ring(k); });
+    const step = L4T.filter((x) => t >= x).length - 1, pulse = 0.55 + 0.45 * Math.sin(t * 5);
+    const ring = (x, y) => `<circle cx="${x}" cy="${y}" r="11" style="fill:none;stroke:#EE8A00;stroke-width:3;opacity:${pulse}"/>`;
+    const pin = (c, k) => { const [x, y] = P(c, k); return [x, y + (k <= 7 ? -6 : 6)]; };
+    const R = { 2: COL.map(([, x]) => [x, (SW0 + SW1) / 2]), 3: [0, 1, 2].flatMap((c) => [pin(c, 14), pin(c, 7)]), 4: [1, 2, 3].map((k) => pin(0, k)),
+      5: [1, 2, 3].map((k) => pin(1, k)), 6: [1, 2, 3].map((k) => pin(2, k)), 7: L4UNUSED.flatMap(([h, b], c) => h.concat(b).map((k) => pin(c, k))), 8: [pin(2, 3)] }[step] || [];
+    R.forEach(([x, y]) => { s += ring(x, y); });
     return s + "</svg>";
   },
 });

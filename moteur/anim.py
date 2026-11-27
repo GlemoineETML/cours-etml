@@ -209,6 +209,28 @@ def gate(d, x, y, key, s=1.0, vin=None, vout=None, labels=("A", "B"), alpha=1.0,
     return ins, (xo + L, y + h / 2)
 
 
+def masse(d, x, y, etiquette="GND", fil=30, color=NAVY, width=5, size=24, alpha=1.0):
+    """Masse GND sous le nœud (x, y) : court fil vertical et trait horizontal, étiquette à droite (REGLES 3.3).
+    Le symbole de la terre (traits décroissants) est réservé à une vraie liaison à la terre."""
+    c = mix(WHITE, color, alpha); yb = y + fil
+    d.line((x, y, x, yb), fill=c, width=width)
+    d.line((x - 26, yb, x + 26, yb), fill=c, width=width + 2)
+    if etiquette: text(d, (x + 36, yb), etiquette, size, mix(WHITE, NAVY, alpha), True, anchor="lm")
+
+
+def alimentation(d, x, y, etiquette="+5 V", fil=30, color=RED, width=5, size=26, alpha=1.0):
+    """Alimentation (+5 V, VCC) au-dessus du nœud (x, y) : miroir de la masse, étiquette au-dessus du trait (REGLES 3.3)."""
+    c = mix(WHITE, color, alpha); yh = y - fil
+    d.line((x, y, x, yh), fill=c, width=width)
+    d.line((x - 26, yh, x + 26, yh), fill=c, width=width + 2)
+    if etiquette: text(d, (x, yh - 10), etiquette, size, c, True, anchor="ms")
+
+
+def noeud(d, x, y, r=8, color=NAVY, alpha=1.0):
+    """Point de liaison à une jonction en T (REGLES 3.3) ; jamais sur un simple croisement."""
+    d.ellipse((x - r, y - r, x + r, y + r), fill=mix(WHITE, color, alpha))
+
+
 def lamp(d, xy, on, r=30, label=None, color=None):
     x, y = xy
     c = color or BLUE

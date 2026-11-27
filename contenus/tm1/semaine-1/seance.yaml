@@ -94,14 +94,18 @@ fichiers:
 # versions des présentations (cartouche de la diapositive de titre)
 versions:
   "100": "1.4"
-  "120": "1.3"
+  "120": "2.0"          # V2 (11/27/2026) : démarrage d'une voiture électrique (exercice TM1-A1-S2) à la place de la ligne de remplissage
+
+# date d'une nouvelle édition d'un seul fichier (cartouche) ; sinon la date de la séance
+dates:
+  "120": 11/27/2026
 
 # pas de lien artefact : seul le lien SharePoint est donné (demande de Gaël du 11/24/2026)
 
 # vidéos : couverture (image à 7 s, bouton lecture, durée affichée)
 videos:
   "105": "4 min 48"
-  "125": "5 min 25"
+  "125": "5 min 58"
 
 # ---------------------------------------------------------------- plan de cours (onglet PlanDeCours, moteur/plan.py)
 # Liens : « teams:<numéro> », « floyd:<chapitre>:<page> », « nextec:<clé> » ; {fichiers.<numéro>} est remplacé par le nom du fichier.

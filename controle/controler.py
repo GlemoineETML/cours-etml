@@ -126,8 +126,9 @@ def conventions(S, chemin):
         z = zipfile.ZipFile(chemin)
         lay = re.search(r'Target="\.\./slideLayouts/(slideLayout\d+\.xml)"', z.read("ppt/slides/_rels/slide1.xml.rels").decode("utf-8"))
         titre = diapos.get(1, []) + ([html.unescape(t) for t in re.findall(r"<a:t>([^<]*)</a:t>", z.read("ppt/slideLayouts/" + lay.group(1)).decode("utf-8"))] if lay else [])
-        if not any(S.editeur in p and S.date in p for p in titre):
-            E.append(f"{nom} : ligne « {S.editeur} · {S.date} » absente de la diapositive de titre (REGLES 5)")
+        date = S.dates.get(nom[:3], S.date)          # date propre au fichier (seance.yaml, dates) ou date de la séance
+        if not any(S.editeur in p and date in p for p in titre):
+            E.append(f"{nom} : ligne « {S.editeur} · {date} » absente de la diapositive de titre (REGLES 5)")
 
     # fiche élève / corrigé (REGLES 4)
     if chemin.endswith(".docx"):
@@ -200,6 +201,11 @@ JS_SVG = r"""
     const m = el.getScreenCTM(); if (!m) return [];
     const P = (x, y) => { const p = new DOMPoint(x, y).matrixTransform(m); return [p.x, p.y]; };
     if (el.tagName === "line") return [[P(+el.getAttribute("x1"), +el.getAttribute("y1")), P(+el.getAttribute("x2"), +el.getAttribute("y2"))]];
+    if (el.tagName === "path") {              // fils avec sauts (class="fil", moteur/pages/common.js) : échantillonnés tous les ~4 px
+      const L = el.getTotalLength(), n = Math.max(2, Math.ceil(L / 4)), q = [];
+      for (let k = 0; k <= n; k++) { const p = el.getPointAtLength(L * k / n); q.push(P(p.x, p.y)); }
+      return q.slice(1).map((v, i) => [q[i], v]);
+    }
     const v = el.getAttribute("points").trim().split(/\s+/).map((c) => c.split(",").map(Number));
     return v.slice(1).map((q, i) => [P(...v[i]), P(...q)]);
   };
@@ -215,7 +221,7 @@ JS_SVG = r"""
     const ts = [...svg.querySelectorAll("text")].filter((t) => t.textContent.trim() && getComputedStyle(t).opacity !== "0" && !(t.closest("[style*='opacity:0']")));
     const R = ts.map((t) => { const b = t.getBoundingClientRect(), h = b.height * 0.18;
       return { left: b.left + 1, right: b.right - 1, top: b.top + h, bottom: b.bottom - h, h: b.height, txt: t.textContent.trim() }; });
-    const traits = [...svg.querySelectorAll("line, polyline")];
+    const traits = [...svg.querySelectorAll("line, polyline, path.fil")];
     const cercles = [...svg.querySelectorAll("circle")].map((c) => { const b = c.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2, r: b.width / 2 }; })
       .filter((c) => c.r >= 14);                                     // anneaux et symboles ; les porteurs (r ≈ 9) portent leur signe
     for (let i = 0; i < R.length; i++) {

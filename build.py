@@ -61,7 +61,7 @@ def presentations(ctx, dossier):
     for f in contenus(dossier, "*.slides.js"):
         num = os.path.basename(f)[:3]
         nom = S.fichier(num)
-        cfg = {"donnees": fd, "diapositives": f, "titre": nom[len(num) + 1:-5], "version": S.versions[num],
+        cfg = {"donnees": fd, "diapositives": f, "titre": nom[len(num) + 1:-5], "version": S.versions[num], "date": S.dates.get(num),
                "travail": ctx.travail, "videos": ctx.sortie, "sortie": os.path.join(ctx.sortie, nom), "equations": ctx.equations,
                "medias": ctx.medias}
         fc = os.path.join(ctx.travail, f"deck_{num}.json")

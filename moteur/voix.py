@@ -13,7 +13,9 @@ LONGUEUR, VARIATION, VARIATION_W = 0.86, 0.75, 0.9      # débit, expressivité 
 DOSSIER = os.environ.get("ETML_VOIX", os.path.expanduser("~/.cache/etml-voix"))
 
 # écritures que la synthèse lit mal : remplacées avant la lecture (le texte affiché ne change pas)
-DIRE = [(r"\bles 1\b", "les uns"), (r"\bLe 1\b", "Le un"), (r"\b1, 2, 4 ou 8\b", "un, deux, quatre ou huit"),
+DIRE = [(r" = ", " égale "), (r"\b74HC0(\d)\b", r"septante-quatre H C zéro \1"), (r"\b74HC(\d+)\b", r"septante-quatre H C \1"),
+        (r"\bNON-OU\b", "non ou"), (r"\bNON-ET\b", "non et"), (r"\bCMOS\b", "cé mosse"),   # « 74 » : septante (Suisse romande)
+        (r"\bles 1\b", "les uns"), (r"\bLe 1\b", "Le un"), (r"\b1, 2, 4 ou 8\b", "un, deux, quatre ou huit"),
         (r"\b1\b", "un"), (r"\bX\b", "iks"), (r"\bfiche 230\b", "fiche deux cent trente"), (r"\bpage 221\b", "page deux cent vingt et un")]
 
 
